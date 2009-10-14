@@ -159,9 +159,9 @@ package
 		//	cube.getChildByName("red").rotateAround(_s, new Vector3D(0, -_s, 0));
 		//	cube.getChildByName("green").rotateAround(_r++, Vector3D.X_AXIS);
 			
-			camera.x = Math.sin(_r) * 650;
-			camera.y = viewport.containerSprite.mouseY*0.15+200;
-			camera.z = Math.cos(_r) * 650;
+			camera.x = Math.sin(_r) * 550;
+			camera.y = viewport.containerSprite.mouseY*0.25+200;
+			camera.z = Math.cos(_r) * 550;
 			_r = viewport.containerSprite.mouseX * 0.005;//Math.PI / 180 * 0.25;
 			_r = _r > Math.PI * 2 ? 0 : _r;
 			

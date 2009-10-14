@@ -321,7 +321,7 @@ package org.papervision3d.render
 				inUVT = outUVT;
 			}
 			
-			if (triangle.clipFlags & ClipFlags.FAR)
+			if (triangle.clipFlags & ClipFlags.FAR && inV.length > 0)
 			{
 				plane = camera.frustum.viewClippingPlanes[ Frustum3D.FAR ];
 				outV = new Vector.<Number>();
@@ -331,7 +331,7 @@ package org.papervision3d.render
 				inUVT = outUVT;
 			}
 			
-			if (triangle.clipFlags & ClipFlags.LEFT)
+			if (triangle.clipFlags & ClipFlags.LEFT && inV.length > 0)
 			{
 				plane = camera.frustum.viewClippingPlanes[ Frustum3D.LEFT ];
 				outV = new Vector.<Number>();
@@ -341,7 +341,7 @@ package org.papervision3d.render
 				inUVT = outUVT;
 			}
 			
-			if (triangle.clipFlags & ClipFlags.RIGHT)
+			if (triangle.clipFlags & ClipFlags.RIGHT && inV.length > 0)
 			{
 				plane = camera.frustum.viewClippingPlanes[ Frustum3D.RIGHT ];
 				outV = new Vector.<Number>();
@@ -351,7 +351,7 @@ package org.papervision3d.render
 				inUVT = outUVT;
 			}
 			
-			if (triangle.clipFlags & ClipFlags.TOP)
+			if (triangle.clipFlags & ClipFlags.TOP && inV.length > 0)
 			{
 				plane = camera.frustum.viewClippingPlanes[ Frustum3D.TOP ];
 				outV = new Vector.<Number>();
@@ -361,7 +361,7 @@ package org.papervision3d.render
 				inUVT = outUVT;
 			}
 			
-			if (triangle.clipFlags & ClipFlags.BOTTOM)
+			if (triangle.clipFlags & ClipFlags.BOTTOM && inV.length > 0)
 			{
 				plane = camera.frustum.viewClippingPlanes[ Frustum3D.BOTTOM ];
 				outV = new Vector.<Number>();
