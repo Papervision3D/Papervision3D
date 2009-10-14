@@ -144,7 +144,7 @@ package
 		private function loaderCompleteHandler(e:Event):void{
 			var s:Sphere = new Sphere(new BitmapMaterial((loader.content as Bitmap).bitmapData), 50, 4, 5);
 			scene.addChild(s);
-			s.y = 100;
+			s.y = 120;
 		}
 		
 		private var _r :Number = 0;

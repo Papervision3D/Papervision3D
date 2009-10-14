@@ -32,7 +32,7 @@ package org.papervision3d.objects.primitives
 			var aVtc:Array = new Array();
 			for (j=0;j<(iVer+1);j++) { // vertical
 				var fRad1:Number = Number(j/iVer);
-				var fZ:Number = -fRadius*Math.cos(fRad1*Math.PI);
+				var fZ:Number = fRadius*Math.cos(fRad1*Math.PI);
 				var fRds:Number = fRadius*Math.sin(fRad1*Math.PI);
 				var aRow:Array = new Array();
 				var oVtx:Vertex;
