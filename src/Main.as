@@ -1,11 +1,15 @@
 package 
 {
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageQuality;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.net.URLLoader;
+	import flash.net.URLRequest;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
@@ -22,6 +26,7 @@ package
 	import org.papervision3d.materials.WireframeMaterial;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.primitives.Cube;
+	import org.papervision3d.objects.primitives.Sphere;
 	import org.papervision3d.render.BasicRenderEngine;
 	import org.papervision3d.view.Viewport3D;
 
@@ -41,7 +46,7 @@ package
 		public var renderData :RenderData;
 		public var renderer :BasicRenderEngine;
 		public var tf :TextField;
-		
+		public var loader:Loader;
 		public var camera2 :Camera3D;
 		
 		public function Main()
@@ -118,6 +123,8 @@ package
 			cubeChild1.scaleY = 3;
 			cubeChild1.scaleZ = 0.1;
 			
+			
+			
 			scene.addChild( cube );
 			
 			camera2 = new Camera3D(90, 60, 300);
@@ -126,8 +133,18 @@ package
 			//cube.scaleX = 2;
 			//var plane :Plane = new Plane(new WireframeMaterial(0x0000FF), 400, 400, 1, 1, "Plane0");
 			//scene.addChild(plane);
-
+			
+			loader = new Loader();
+			loader.load(new URLRequest("http://zupko.info/lab/geolocate/earthmap1k.jpg"));
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loaderCompleteHandler);
+			
 			addEventListener(Event.ENTER_FRAME, render);
+		}
+		
+		private function loaderCompleteHandler(e:Event):void{
+			var s:Sphere = new Sphere(new BitmapMaterial((loader.content as Bitmap).bitmapData), 50, 4, 5);
+			scene.addChild(s);
+			s.y = 100;
 		}
 		
 		private var _r :Number = 0;
