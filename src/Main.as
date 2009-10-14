@@ -76,6 +76,7 @@ package
 			scene = new DisplayObject3D("Scene");
 			
 			camera = new Camera3D(50, 400, 2300, "Camera01");
+			
 			scene.addChild( camera );
 			camera.enableCulling = false
 			camera.showFrustum = false;
@@ -100,18 +101,21 @@ package
 			cubeChild0.x = 300;
 			//cubeChild0.z = -500;
 			
+			var bmp2:BitmapData = new BitmapData(256, 256);
+			bmp2.perlinNoise(128, 128, 4, 30239423, false, true);
 			
-			var cubeChild1 :Cube = new Cube(new WireframeMaterial(0x00FF00), 100, "blue");
+			var cubeChild1 :Cube = new Cube(new BitmapMaterial(bmp2), 100, "blue");
 			cube.addChild( cubeChild1 );
-			cubeChild1.z = 100;
+			cubeChild1.z = 300;
 
 			
 			var cubeChild2 :Cube = new Cube(new WireframeMaterial(0x0000FF), 100, "green");
 			cube.addChild( cubeChild2 );
 			cubeChild2.y = 200;
 			cubeChild2.z = 10;
-			cubeChild1.scaleX = 5;
-			cubeChild1.scaleY = 5;
+			
+			cubeChild1.scaleX = 3;
+			cubeChild1.scaleY = 3;
 			cubeChild1.scaleZ = 0.1;
 			
 			scene.addChild( cube );
@@ -155,10 +159,10 @@ package
 		//	cube.getChildByName("red").rotateAround(_s, new Vector3D(0, -_s, 0));
 		//	cube.getChildByName("green").rotateAround(_r++, Vector3D.X_AXIS);
 			
-			camera.x = Math.sin(_r) * 950;
-			camera.y = 500;
-			camera.z = Math.cos(_r) * 950;
-			_r += Math.PI / 180 * 0.25;
+			camera.x = Math.sin(_r) * 650;
+			camera.y = viewport.containerSprite.mouseY*0.15+200;
+			camera.z = Math.cos(_r) * 650;
+			_r = viewport.containerSprite.mouseX * 0.005;//Math.PI / 180 * 0.25;
 			_r = _r > Math.PI * 2 ? 0 : _r;
 			
 			camera.lookAt(cube);

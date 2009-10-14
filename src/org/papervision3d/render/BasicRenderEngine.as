@@ -20,9 +20,8 @@ package org.papervision3d.render
 	import org.papervision3d.core.render.data.RenderStats;
 	import org.papervision3d.core.render.draw.items.LineDrawable;
 	import org.papervision3d.core.render.draw.items.TriangleDrawable;
-	import org.papervision3d.core.render.draw.list.DrawableList;
 	import org.papervision3d.core.render.draw.list.IDrawableList;
-	import org.papervision3d.core.render.draw.sort.DefaultDrawSorter;
+	import org.papervision3d.core.render.draw.manager.DefaultDrawManager;
 	import org.papervision3d.core.render.engine.AbstractRenderEngine;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
@@ -46,6 +45,7 @@ package org.papervision3d.render
 		public var renderData :RenderData;
 		public var stats :RenderStats;
 		public var renderer : ObjectRenderer;
+		public var drawManager : DefaultDrawManager;
 		
 		private var _clipFlags :uint;
 		
@@ -66,8 +66,7 @@ package org.papervision3d.render
 		protected function init():void
 		{
 			pipeline = new BasicPipeline();
-			renderList = new DrawableList();
-			renderList.sorter = new DefaultDrawSorter();
+			drawManager = new DefaultDrawManager();
 			
 			clipper = new SutherlandHodgmanClipper();
 			rasterizer = new DefaultRasterizer();
@@ -88,19 +87,23 @@ package org.papervision3d.render
 			renderData.camera = camera;
 			renderData.viewport = viewport;
 			renderData.stats = stats;
+			renderData.drawManager = drawManager;
+			
 			
 			camera.update(renderData.viewport.sizeRectangle);
 						
 			pipeline.execute(renderData);
  
- 			renderList.clear();
+ 			drawManager.reset();
  			stats.clear();
  			
  			_drawablePool.reset();
  			
 			fillRenderList(camera, scene);
-			renderList.sorter.sort();
-			rasterizer.rasterize(renderList, renderData.viewport);
+			
+			drawManager.handleList();
+			
+			rasterizer.rasterize(renderData);
 		}
 		
 		/**
@@ -244,7 +247,7 @@ package org.papervision3d.render
 						drawable.uvtData[8] = renderer.geometry.uvtData[ triangle.v2.vectorIndexZ ];
 						drawable.material = triangle.material;
 						//trace(renderer.geometry.uvtData);
-						renderList.addDrawable(drawable);
+						drawManager.addDrawable(drawable);
 						
 						triangle.drawable = drawable;
 					}
@@ -276,7 +279,7 @@ package org.papervision3d.render
 					lineDrawable.screenZ = (renderer.viewVertexData[line.v0.vectorIndexZ]+renderer.viewVertexData[line.v1.vectorIndexZ])*0.5;
 					lineDrawable.material = line.material;
 					
-					renderList.addDrawable(lineDrawable);
+					drawManager.addDrawable(lineDrawable);
 				}
 			}
 				
@@ -417,7 +420,7 @@ package org.papervision3d.render
 				drawable.screenZ = (inV[2]+inV[i3+5]+inV[i3+8])/3;
 				drawable.material = triangle.material;
 				
-				renderList.addDrawable(drawable);
+				drawManager.addDrawable(drawable);
 			}
 		}
 		
