@@ -142,7 +142,7 @@ package
 		}
 		
 		private function loaderCompleteHandler(e:Event):void{
-			var s:Sphere = new Sphere(new BitmapMaterial((loader.content as Bitmap).bitmapData), 50, 4, 5);
+			var s:Sphere = new Sphere(new BitmapMaterial((loader.content as Bitmap).bitmapData), 50, 80, 80);
 			scene.addChild(s);
 			s.y = 120;
 		}

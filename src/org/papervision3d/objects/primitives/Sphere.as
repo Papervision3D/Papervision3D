@@ -15,9 +15,11 @@ package org.papervision3d.objects.primitives
 		private var segmentsW : int = 8;
 		
 		
-		public function Sphere(material:AbstractMaterial, radius:Number, segementsW:int, segmentsH:int)
+		public function Sphere(material:AbstractMaterial, radius:Number=100, segementsW:int=6, segmentsH:int=8)
 		{
 			super(name);
+			this.segmentsH = segmentsH;
+			this.segmentsW = segmentsW;
 			this.material = material;
 			renderer.geometry = triGeometry = new TriangleGeometry();
 			buildSphere(radius);
@@ -25,7 +27,9 @@ package org.papervision3d.objects.primitives
 		
 		private function buildSphere( fRadius:Number ):void
 		{
-	
+			/*
+				THE GEOMETRY IS BACKWARD - someone fix
+			*/
 			var i:Number, j:Number, k:Number;
 			var iHor:Number = this.segmentsW;
 			var iVer:Number = this.segmentsH;
@@ -33,7 +37,7 @@ package org.papervision3d.objects.primitives
 			for (j=0;j<(iVer+1);j++) { // vertical
 				var fRad1:Number = Number(j/iVer);
 				var fZ:Number = fRadius*Math.cos(fRad1*Math.PI);
-				var fRds:Number = fRadius*Math.sin(fRad1*Math.PI);
+				var fRds:Number = -fRadius*Math.sin(fRad1*Math.PI);
 				var aRow:Array = new Array();
 				var oVtx:Vertex;
 				
@@ -63,16 +67,16 @@ package org.papervision3d.objects.primitives
 	
 						var fJ0:Number = j		/ (iVerNum-1);
 						var fJ1:Number = (j-1)	/ (iVerNum-1);
-						var fI0:Number = (i+1)	/ iHorNum;
-						var fI1:Number = i		/ iHorNum;
+						var fI0:Number = 1-((i+1)	/ iHorNum);
+						var fI1:Number = 1-(i		/ iHorNum);
 						var aP4uv:UVCoord = new UVCoord(fI0,fJ1);
 						var aP1uv:UVCoord = new UVCoord(fI0,fJ0);
 						var aP2uv:UVCoord = new UVCoord(fI1,fJ0);
 						var aP3uv:UVCoord = new UVCoord(fI1,fJ1);
 						
-						if (j<(aVtc.length-1))	triGeometry.addTriangle(new Triangle(material, aP2, aP1, aP3, aP2uv, aP1uv, aP3uv));
+						if (j<(aVtc.length-1))	triGeometry.addTriangle(new Triangle(material, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv));
 						
-						if (j>1)				triGeometry.addTriangle(new Triangle(material, aP3, aP1, aP4, aP3uv, aP1uv, aP4uv));
+						if (j>1)				triGeometry.addTriangle(new Triangle(material, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv));
 	
 					}
 				}
