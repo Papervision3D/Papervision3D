@@ -19,8 +19,10 @@ package
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
-	import org.papervision3d.materials.BitmapMaterial;
+	import org.papervision3d.materials.Material;
 	import org.papervision3d.materials.WireframeMaterial;
+	import org.papervision3d.materials.shaders.BasicShader;
+	import org.papervision3d.materials.textures.AnimatedTexture;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.primitives.Cube;
 	import org.papervision3d.objects.special.UCS;
@@ -93,9 +95,10 @@ package
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
 			
-			sun = new Cube(new BitmapMaterial(bmp), 100, "Cube");
+			sun = new Cube(new Material(new AnimatedTexture(new TestSprite()), new BasicShader()), 100, "Cube");
 			earth = new Cube(new WireframeMaterial(0x0000ff), 50);
 			sun.addChild(earth);
+			//sun.transform.localScale = (new Vector3D(1, 2, 1));
 			earth.x = 300;
 			scene.addChild( sun );
 			earth.rotationX = 45;
@@ -120,7 +123,7 @@ package
 		{
 			sun.rotationY++;
 			
-			earth.transform.eulerAngles.y++;
+			earth.transform.localEulerAngles.y+=8;
 			earth.transform.dirty = true;
 			
 			moon.rotationY += 3;

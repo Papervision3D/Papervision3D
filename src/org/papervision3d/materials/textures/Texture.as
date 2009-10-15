@@ -9,9 +9,10 @@ package org.papervision3d.materials.textures
 		{
 			this.color = color;
 			this.alpha = alpha;
+			TextureManager.getInstance().addTexture(this);
 		}
 
-		public function updateTexture():void{
+		public function update():void{
 			
 		}
 	}

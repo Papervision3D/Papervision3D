@@ -27,6 +27,7 @@ package org.papervision3d.render
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.core.render.raster.DefaultRasterizer;
 	import org.papervision3d.core.render.raster.IRasterizer;
+	import org.papervision3d.materials.textures.TextureManager;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.view.Viewport3D;
 
@@ -89,7 +90,7 @@ package org.papervision3d.render
 			renderData.stats = stats;
 			renderData.drawManager = drawManager;
 			
-			
+			TextureManager.getInstance().updateTextures();
 			camera.update(renderData.viewport.sizeRectangle);
 						
 			pipeline.execute(renderData);

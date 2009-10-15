@@ -9,6 +9,7 @@ package org.papervision3d.materials.textures
 		protected var _bitmap : BitmapData;
 		public function Texture2D(bitmap:BitmapData)
 		{
+			super();
 			this._bitmap = bitmap;
 		}
 		
