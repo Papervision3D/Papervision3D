@@ -10,3 +10,5 @@ My thought is to add all textures to a globalmanager which will update them ever
 
 Shaders take the bitmap (or color or whatever) from the texture and "process" them somehow - returning a new result that is set to the drawProperties of the material - which is used for the final render to screen.
 
+
+*NOTE - actually think i will move drawProperties/clear into the shader itself, so that it can just easily manage that.  ie: a colorshader can set a graphicsolidfill instead, and dont have to have conditionals
