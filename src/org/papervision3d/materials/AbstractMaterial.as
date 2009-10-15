@@ -1,16 +1,12 @@
 package org.papervision3d.materials
 {
-	import flash.display.IGraphicsData;
-	
 	import org.papervision3d.materials.shaders.IShader;
 	import org.papervision3d.materials.textures.Texture;
 	
 	public class AbstractMaterial
 	{
-		protected var _drawProperties:IGraphicsData;
-		public var clear : IGraphicsData;
-		
-		public var texture : Texture;
+			
+		protected var _texture : Texture;
 		protected var _shader : IShader;
 			
 		public function AbstractMaterial()
@@ -18,13 +14,16 @@ package org.papervision3d.materials
 			
 			
 		}
+				
+				
+		public function set texture(value:Texture):void{
+			_texture = value;
+			if(_shader)
+				_shader.texture = _texture;
+		}		
 		
-		public function set drawProperties(value:IGraphicsData):void{
-			_drawProperties = value;
-		}
-		
-		public function get drawProperties():IGraphicsData{
-			return null;
+		public function get texture():Texture{
+			return _texture;
 		}
 				
 		public function set shader(value:IShader):void{

@@ -60,20 +60,20 @@ package org.papervision3d.objects.primitives
 			fbr = geometry.addVertex(new Vertex());
 			ftr = geometry.addVertex(new Vertex());
 			
-			lineGeometry.addLine( new Line(material, ntl, nbl), false );
-			lineGeometry.addLine( new Line(material, nbl, nbr), false );
-			lineGeometry.addLine( new Line(material, nbr, ntr), false );
-			lineGeometry.addLine( new Line(material, ntr, ntl), false );
+			lineGeometry.addLine( new Line(material.shader, ntl, nbl), false );
+			lineGeometry.addLine( new Line(material.shader, nbl, nbr), false );
+			lineGeometry.addLine( new Line(material.shader, nbr, ntr), false );
+			lineGeometry.addLine( new Line(material.shader, ntr, ntl), false );
 			
-			lineGeometry.addLine( new Line(material, ftl, fbl), false );
-			lineGeometry.addLine( new Line(material, fbl, fbr), false );
-			lineGeometry.addLine( new Line(material, fbr, ftr), false );
-			lineGeometry.addLine( new Line(material, ftr, ftl), false );
+			lineGeometry.addLine( new Line(material.shader, ftl, fbl), false );
+			lineGeometry.addLine( new Line(material.shader, fbl, fbr), false );
+			lineGeometry.addLine( new Line(material.shader, fbr, ftr), false );
+			lineGeometry.addLine( new Line(material.shader, ftr, ftl), false );
 			
-			lineGeometry.addLine( new Line(material, ntl, ftl), false );
-			lineGeometry.addLine( new Line(material, nbl, fbl), false );
-			lineGeometry.addLine( new Line(material, nbr, fbr), false );
-			lineGeometry.addLine( new Line(material, ntr, ftr), false );
+			lineGeometry.addLine( new Line(material.shader, ntl, ftl), false );
+			lineGeometry.addLine( new Line(material.shader, nbl, fbl), false );
+			lineGeometry.addLine( new Line(material.shader, nbr, fbr), false );
+			lineGeometry.addLine( new Line(material.shader, ntr, ftr), false );
 		} 
 		
 		/**

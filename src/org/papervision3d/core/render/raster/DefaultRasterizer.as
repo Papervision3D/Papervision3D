@@ -35,13 +35,13 @@ package org.papervision3d.core.render.raster
 				{
 					triangle = drawable as TriangleDrawable;
 					triangle.toViewportSpace(hw, -hh);
-					drawArray.push(triangle.material.drawProperties, triangle.path, triangle.material.clear);
+					drawArray.push(triangle.shader.drawProperties, triangle.path, triangle.shader.clear);
 				}
 				else if (drawable is LineDrawable)
 				{
 					line = drawable as LineDrawable;	
 					line.toViewportSpace(hw, -hh);
-					drawArray.push(line.material.drawProperties, line.path, line.material.clear);
+					drawArray.push(line.shader.drawProperties, line.path, line.shader.clear);
 				}
 			}
 

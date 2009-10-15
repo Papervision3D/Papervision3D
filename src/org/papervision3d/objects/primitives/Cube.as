@@ -53,28 +53,28 @@ package org.papervision3d.objects.primitives
 			var uv3 :UVCoord = new UVCoord(1, 1);
 						
 			// top
-			triGeometry.addTriangle(new Triangle(material, v[0], v[4], v[5], uv0, uv1, uv2) );
-			triGeometry.addTriangle(new Triangle(material, v[0], v[5], v[1], uv0, uv2, uv3) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[0], v[4], v[5], uv0, uv1, uv2) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[0], v[5], v[1], uv0, uv2, uv3) );
 			
 			// bottom
-			triGeometry.addTriangle(new Triangle(material, v[6], v[7], v[3], uv2, uv1, uv0) );
-			triGeometry.addTriangle(new Triangle(material, v[6], v[3], v[2], uv2, uv0, uv3) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[6], v[7], v[3], uv2, uv1, uv0) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[6], v[3], v[2], uv2, uv0, uv3) );
 			
 			// left
-			triGeometry.addTriangle(new Triangle(material, v[0], v[3], v[7], uv1, uv0, uv3) );
-			triGeometry.addTriangle(new Triangle(material, v[0], v[7], v[4], uv1, uv3, uv2) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[0], v[3], v[7], uv1, uv0, uv3) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[0], v[7], v[4], uv1, uv3, uv2) );
 			
 			// right
-			triGeometry.addTriangle(new Triangle(material, v[5], v[6], v[2], uv1, uv0, uv3) );
-			triGeometry.addTriangle(new Triangle(material, v[5], v[2], v[1], uv1, uv3, uv2) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[5], v[6], v[2], uv1, uv0, uv3) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[5], v[2], v[1], uv1, uv3, uv2) );
 			
 			// front
-			triGeometry.addTriangle(new Triangle(material, v[0], v[1], v[2], uv2, uv1, uv0) );
-			triGeometry.addTriangle(new Triangle(material, v[0], v[2], v[3], uv2, uv0, uv3) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[0], v[1], v[2], uv2, uv1, uv0) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[0], v[2], v[3], uv2, uv0, uv3) );
 			
 			// back
-			triGeometry.addTriangle(new Triangle(material, v[6], v[5], v[4], uv0, uv1, uv2) );
-			triGeometry.addTriangle(new Triangle(material, v[6], v[4], v[7], uv0, uv2, uv3) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[6], v[5], v[4], uv0, uv1, uv2) );
+			triGeometry.addTriangle(new Triangle(material.shader, v[6], v[4], v[7], uv0, uv2, uv3) );
 			
 		//	renderer.updateIndices();
 			

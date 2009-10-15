@@ -74,9 +74,9 @@ package org.papervision3d.objects.primitives
 						var aP2uv:UVCoord = new UVCoord(fI1,fJ0);
 						var aP3uv:UVCoord = new UVCoord(fI1,fJ1);
 						
-						if (j<(aVtc.length-1))	triGeometry.addTriangle(new Triangle(material, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv));
+						if (j<(aVtc.length-1))	triGeometry.addTriangle(new Triangle(material.shader, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv));
 						
-						if (j>1)				triGeometry.addTriangle(new Triangle(material, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv));
+						if (j>1)				triGeometry.addTriangle(new Triangle(material.shader, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv));
 	
 					}
 				}

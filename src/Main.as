@@ -22,6 +22,7 @@ package
 	import org.papervision3d.core.render.data.RenderStats;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.materials.BitmapMaterial;
+	import org.papervision3d.materials.WireframeMaterial;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.primitives.Cube;
 	import org.papervision3d.objects.primitives.Sphere;
@@ -94,7 +95,8 @@ package
 			cube = new Cube(new BitmapMaterial(bmp), 100, "Cube");
 			
 			
-			cubeChildx = new Sphere(new BitmapMaterial(new BitmapData(256, 256, true, 0x6600FFFF)), 50);
+			//cubeChildx = new Sphere(new BitmapMaterial(new BitmapData(256, 256, true, 0x6600FFFF)), 50);
+			cubeChildx = new Sphere(new WireframeMaterial());
 			cubeChildx.x = cubeChildx.y = 100;
 			cubeChildx.rotationX = 80;
 			cube.addChild(cubeChildx);

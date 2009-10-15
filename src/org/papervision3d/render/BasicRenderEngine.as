@@ -245,7 +245,7 @@ package org.papervision3d.render
 						drawable.uvtData[6] = triangle.uv2.u;
 						drawable.uvtData[7] = triangle.uv2.v;
 						drawable.uvtData[8] = renderer.geometry.uvtData[ triangle.v2.vectorIndexZ ];
-						drawable.material = triangle.material;
+						drawable.shader = triangle.shader;
 						//trace(renderer.geometry.uvtData);
 						drawManager.addDrawable(drawable);
 						
@@ -277,7 +277,7 @@ package org.papervision3d.render
 					lineDrawable.x1 = sv1.x;
 					lineDrawable.y1 = sv1.y;
 					lineDrawable.screenZ = (renderer.viewVertexData[line.v0.vectorIndexZ]+renderer.viewVertexData[line.v1.vectorIndexZ])*0.5;
-					lineDrawable.material = line.material;
+					lineDrawable.shader = line.shader;
 					
 					drawManager.addDrawable(lineDrawable);
 				}
@@ -418,7 +418,7 @@ package org.papervision3d.render
 				drawable.uvtData[8] = inUVT[i3+8];
 					
 				drawable.screenZ = (inV[2]+inV[i3+5]+inV[i3+8])/3;
-				drawable.material = triangle.material;
+				drawable.shader = triangle.shader;
 				
 				drawManager.addDrawable(drawable);
 			}

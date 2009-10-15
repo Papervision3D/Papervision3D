@@ -4,7 +4,7 @@ package org.papervision3d.core.geom
 	
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.render.draw.items.IDrawable;
-	import org.papervision3d.materials.AbstractMaterial;
+	import org.papervision3d.materials.shaders.IShader;
 	
 	public class Triangle
 	{
@@ -35,7 +35,7 @@ package org.papervision3d.core.geom
 		public var visible :Boolean;
 		
 		/** */
-		public var material : AbstractMaterial;
+		public var shader : IShader;
 		
 		/** */
 		pv3d var clipFlags :int;
@@ -50,9 +50,9 @@ package org.papervision3d.core.geom
 		 * @param
 		 * @param
 		 */ 
-		public function Triangle(material:AbstractMaterial, v0:Vertex, v1:Vertex, v2:Vertex, uv0:UVCoord=null, uv1:UVCoord=null, uv2:UVCoord=null)
+		public function Triangle(shader:IShader, v0:Vertex, v1:Vertex, v2:Vertex, uv0:UVCoord=null, uv1:UVCoord=null, uv2:UVCoord=null)
 		{
-			this.material = material;
+			this.shader = shader;
 			this.v0 = v0;
 			this.v1 = v1;
 			this.v2 = v2;
