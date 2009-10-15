@@ -124,13 +124,19 @@ package org.papervision3d.core.render.pipeline
 			}
 			
 			wt.rawData = object.transform.localToWorldMatrix.rawData;
+			
 			if (parent)
 			{
 				wt.append(parent.transform.worldTransform);	
-				object.transform._localTransform.append(parent.transform.m);
+				//object.transform._localTransform.append(parent.transform._localTransform);
 			}
-
-			object.transform.position = object.transform._localTransform.transformVector(object.transform.localPosition);
+			
+			object.transform.position = object.transform.worldTransform.transformVector(object.transform.localPosition);
+			
+			//wt.prepend(object.transform.rotation.matrix);
+			object.transform.rotateGlob(1, 0, 0, object.transform.eulerAngles.x, wt);
+			object.transform.rotateGlob(0, 1, 0, object.transform.eulerAngles.y, wt);
+			object.transform.rotateGlob(0, 0, 1, object.transform.eulerAngles.z, wt);
 			
 			for each (child in object._children)
 			{
