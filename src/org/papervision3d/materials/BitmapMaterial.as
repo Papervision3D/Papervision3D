@@ -16,7 +16,7 @@ package org.papervision3d.materials
 			super();
 			this.texture = new Texture2D(bitmapData);
 			this.shader = new BasicShader();
-			this.shader.texture = texture;
+			
 
 		}
 
