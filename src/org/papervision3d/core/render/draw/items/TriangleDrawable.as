@@ -42,7 +42,8 @@ package org.papervision3d.core.render.draw.items
 			_path.vertices[3] = y1;
 			_path.vertices[4] = x2;
 			_path.vertices[5] = y2;
-			_path.uvtData = uvtData;
+			if(shader.usesUV)
+				_path.uvtData = uvtData;
 			return _path;
 		}
 

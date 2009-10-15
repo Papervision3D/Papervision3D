@@ -1,26 +1,24 @@
 package org.papervision3d.materials.shaders
 {
 	import flash.display.GraphicsEndFill;
-	import flash.display.GraphicsGradientFill;
-	import flash.display.GraphicsStroke;
+	import flash.display.GraphicsSolidFill;
 	import flash.display.IGraphicsData;
 	
 	public class ColorShader extends AbstractShader
 	{
 		//This should be a graphicsSolidFill but i can't get the damn thing working!
-		private var graphicsFill : GraphicsGradientFill;
+		private var graphicsFill : GraphicsSolidFill;
 		public function ColorShader()
 		{
 			super();
-			this.drawProperties = new GraphicsStroke(0);
-			(_drawProperties as GraphicsStroke).fill = graphicsFill = new GraphicsGradientFill("linear", [0xFFFFFF, 0x202020], [1,1], [0, 0xFF]);
-			this.clear = new GraphicsStroke();
+			_usesUV = false;
+			this.drawProperties = graphicsFill = new GraphicsSolidFill(0, 1);
+			this.clear = new GraphicsEndFill();
 		}
 		
 		public override function get drawProperties():IGraphicsData{
-			
-			//graphicsFill.color = 0xFFFFFFFF;
-			//graphicsFill.alpha = 1;
+			graphicsFill.color = _texture.color;
+			graphicsFill.alpha = _texture.alpha;
 			return _drawProperties;
 		}
 		

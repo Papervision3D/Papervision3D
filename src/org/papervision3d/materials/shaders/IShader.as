@@ -18,5 +18,6 @@ package org.papervision3d.materials.shaders
 		function get drawProperties():IGraphicsData;
 		function set clear(value:IGraphicsData):void
 		function get clear():IGraphicsData;
+		function get usesUV():Boolean;
 	}
 }

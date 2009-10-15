@@ -15,6 +15,7 @@ package org.papervision3d.materials.shaders
 		protected var _material : AbstractMaterial;
 		protected var _drawProperties:IGraphicsData;
 		protected var _clear : IGraphicsData;
+		protected var _usesUV : Boolean = true;
 		
 		public function AbstractShader()
 		{
@@ -49,6 +50,10 @@ package org.papervision3d.materials.shaders
 		{
 			_baseBitmap = bitmapData.clone();
 			_outputBitmap = bitmapData.clone();
+		}
+		
+		public function get usesUV():Boolean{
+			return _usesUV;
 		}
 		
 		public function set material(value:AbstractMaterial) : void{
