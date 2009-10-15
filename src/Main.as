@@ -8,7 +8,6 @@ package
 	import flash.display.StageQuality;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
-	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
@@ -23,7 +22,6 @@ package
 	import org.papervision3d.core.render.data.RenderStats;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.materials.BitmapMaterial;
-	import org.papervision3d.materials.WireframeMaterial;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.primitives.Cube;
 	import org.papervision3d.objects.primitives.Sphere;
@@ -96,43 +94,13 @@ package
 			cube = new Cube(new BitmapMaterial(bmp), 100, "Cube");
 			
 			
-			var cubeChildx : Cube = new Cube(new BitmapMaterial(new BitmapData(256, 256, true, 0x6600FFFF)), 100);
-			cubeChildx.x = 100;
+			cubeChildx = new Sphere(new BitmapMaterial(new BitmapData(256, 256, true, 0x6600FFFF)), 50);
+			cubeChildx.x = cubeChildx.y = 100;
+			cubeChildx.rotationX = 80;
 			cube.addChild(cubeChildx);
-			//cube = new Cube(new WireframeMaterial(0xFF0000), 100, "Cube");
-			
-			var cubeChild0 :Cube = new Cube(new WireframeMaterial(0xFF0000), 100, "red");
-			cube.addChild( cubeChild0 );
-			cubeChild0.x = 300;
-			//cubeChild0.z = -500;
-			
-			var bmp2:BitmapData = new BitmapData(256, 256);
-			bmp2.perlinNoise(128, 128, 4, 30239423, false, true);
-			
-			var cubeChild1 :Cube = new Cube(new BitmapMaterial(bmp2), 100, "blue");
-			cube.addChild( cubeChild1 );
-			cubeChild1.z = 300;
-
-			
-			var cubeChild2 :Cube = new Cube(new WireframeMaterial(0x0000FF), 100, "green");
-			cube.addChild( cubeChild2 );
-			cubeChild2.y = 200;
-			cubeChild2.z = 10;
-			
-			cubeChild1.scaleX = 3;
-			cubeChild1.scaleY = 3;
-			cubeChild1.scaleZ = 0.1;
-			
-			
+				
 			
 			scene.addChild( cube );
-			
-			camera2 = new Camera3D(90, 60, 300);
-			cube.addChild(camera2);
-			camera2.showFrustum = true;
-			//cube.scaleX = 2;
-			//var plane :Plane = new Plane(new WireframeMaterial(0x0000FF), 400, 400, 1, 1, "Plane0");
-			//scene.addChild(plane);
 			
 			loader = new Loader();
 			loader.load(new URLRequest("http://zupko.info/lab/geolocate/earthmap1k.jpg"));
@@ -140,11 +108,14 @@ package
 			
 			addEventListener(Event.ENTER_FRAME, render);
 		}
+		private var cubeChildx : DisplayObject3D;
+		
 		
 		private function loaderCompleteHandler(e:Event):void{
 			var s:Sphere = new Sphere(new BitmapMaterial((loader.content as Bitmap).bitmapData), 50, 80, 80);
 			scene.addChild(s);
 			s.y = 120;
+			//cubeChildx.lookAt(s);
 		}
 		
 		private var _r :Number = 0;
@@ -152,35 +123,15 @@ package
 		 
 		private function render(event:Event=null):void
 		{
-			camera2.frustumGeometry.update(camera2);
-			
-			// rotation in global frame of reference : append
-		//	cube.x ++;
-			cube.rotationY--;
-			
-			//cube.getChildByName("blue").x += 0.1;
-			//cube.getChildByName("blue").rotationZ--;
-		//	cube.getChildByName("blue").lookAt( cube.getChildByName("red") );
-			cube.getChildByName("blue").rotationZ += 0.1;
-			
-			cube.getChildByName("blue").transform.eulerAngles.y--;
-			cube.getChildByName("green").lookAt( cube.getChildByName("red") );
-			
-			//cube.lookAt(cube.getChildByName("blue"));
-			
-			cube.getChildByName("red").transform.eulerAngles.z--;
-			cube.getChildByName("red").transform.eulerAngles.y += 4;
-			cube.getChildByName("red").transform.dirty = true;
-		//	cube.getChildByName("red").rotateAround(_s++, new Vector3D(0, _s, _s));
-		//	cube.getChildByName("red").scaleX = 2;
-		//	cube.getChildByName("red").rotateAround(_s, new Vector3D(0, -_s, 0));
-		//	cube.getChildByName("green").rotateAround(_r++, Vector3D.X_AXIS);
+		
+			_s += 0.02;
 			
 			camera.x = Math.sin(_r) * 550;
 			camera.y = viewport.containerSprite.mouseY*0.25+200;
 			camera.z = Math.cos(_r) * 550;
 			_r = viewport.containerSprite.mouseX * 0.005;//Math.PI / 180 * 0.25;
 			_r = _r > Math.PI * 2 ? 0 : _r;
+			
 			
 			camera.lookAt(cube);
 			//camera.lookAt( cube.getChildByName("blue") );
