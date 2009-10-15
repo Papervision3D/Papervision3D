@@ -1,14 +1,12 @@
-TextureTest Structure:
+TransformTest
+======================================
 
-Materials now all contain 2 objects: 
--Texture
--Shader
+This branch is to test / enhance the Transform3D class.
 
-The texture contains the graphics that will be drawn.  A movietexture, for instance, will update its bitmap every frame, while a bitmap texture will simply hold a bitmap.  Moreover, a texture has color, which can be set for ColorMaterial, for instance.
-
-My thought is to add all textures to a globalmanager which will update them every frame appropriately.  Really only needed for MovieTextures.  This will also allow for easy sharing of textures to save on time/speed.
-
-Shaders take the bitmap (or color or whatever) from the texture and "process" them somehow - returning a new result that is set to the drawProperties of the material - which is used for the final render to screen.
+Affected classes:
+* Transform3D
+* BasicPipeline
 
 
-*NOTE - actually think i will move drawProperties/clear into the shader itself, so that it can just easily manage that.  ie: a colorshader can set a graphicsolidfill instead, and dont have to have conditionals
+
+
