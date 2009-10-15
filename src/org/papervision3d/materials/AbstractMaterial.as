@@ -29,6 +29,8 @@ package org.papervision3d.materials
 		public function set shader(value:IShader):void{
 			_shader = value;
 			_shader.material = this;
+			if(_texture)
+				_shader.texture = _texture;
 		}
 		
 		public function get shader():IShader{
