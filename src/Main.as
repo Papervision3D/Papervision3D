@@ -23,6 +23,7 @@ package
 	import org.papervision3d.materials.WireframeMaterial;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.primitives.Cube;
+	import org.papervision3d.objects.special.UCS;
 	import org.papervision3d.render.BasicRenderEngine;
 	import org.papervision3d.view.Viewport3D;
 
@@ -46,6 +47,7 @@ package
 		
 		public var sun :Cube;
 		public var earth :Cube;
+		public var moon :Cube;
 		
 		public function Main()
 		{
@@ -98,6 +100,16 @@ package
 			scene.addChild( sun );
 			earth.rotationX = 45;
 
+			moon = new  Cube(new WireframeMaterial(0xcccccc), 20);
+			earth.addChild(moon);
+			moon.x = 100;
+			moon.rotationX = -45;
+			
+			camera.y = 500;
+			
+			var ucs :UCS = new UCS("ucs0", 100);
+			earth.addChild(ucs);
+
 			addEventListener(Event.ENTER_FRAME, render);
 		}
 		
@@ -107,9 +119,11 @@ package
 		private function render(event:Event=null):void
 		{
 			sun.rotationY++;
+			
 			earth.transform.eulerAngles.y++;
 			earth.transform.dirty = true;
 			
+			moon.rotationY += 3;
 			camera.lookAt(sun);
 
 			renderer.renderScene(scene, camera, viewport);	

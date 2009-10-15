@@ -74,22 +74,32 @@ package org.papervision3d.core.render.pipeline
 				var tgt :Vector3D = transform.scheduledLookAt.position;
 				var up :Vector3D = transform.scheduledLookAtUp;
 				var components :Vector.<Vector3D>;
-				
+		
 				// create the lookAt matrix
 				MatrixUtil.createLookAtMatrix(eye, tgt, up, _lookAtMatrix);
-						
+				
+				//_lookAtMatrix.appendTranslation(-eye.x, -eye.y, -eye.z);
+				var m :Matrix3D = object.transform.localToWorldMatrix.clone();
+				
+				m.append(_lookAtMatrix);
+			//	m.prependTranslation(-eye.x, -eye.y, -eye.z);
+				
 				// prepend it to the world matrix
-				object.transform.worldTransform.prepend(_lookAtMatrix);
+				//object.transform.worldTransform.prepend(_lookAtMatrix);
+				eye = object.transform.localPosition;
+				object.transform.worldTransform.rawData = _lookAtMatrix.rawData;
+				object.transform.worldTransform.appendTranslation(eye.x, eye.y, eye.z);
 				
 				if (parent)
 				{
 					_invWorldMatrix.rawData = parent.transform.worldTransform.rawData;
 					_invWorldMatrix.invert();
-					object.transform.worldTransform.append(_invWorldMatrix);
+				//	object.transform.worldTransform.append(_invWorldMatrix);
 				}
-				
+				return;
 				components = object.transform.worldTransform.decompose();
 				var euler :Vector3D = components[1];
+				trace(euler);
 				
 				object.transform.localEulerAngles.x = -euler.x * MathUtil.TO_DEGREES;
 				object.transform.localEulerAngles.y = euler.y * MathUtil.TO_DEGREES;
@@ -114,11 +124,19 @@ package org.papervision3d.core.render.pipeline
 			}
 			
 			wt.rawData = object.transform.localToWorldMatrix.rawData;
+			
 			if (parent)
 			{
 				wt.append(parent.transform.worldTransform);	
+				//object.transform._localTransform.append(parent.transform._localTransform);
 			}
-			object.transform.position = wt.transformVector(object.transform.localPosition);
+			
+			object.transform.position = object.transform.worldTransform.transformVector(object.transform.localPosition);
+			
+			//wt.prepend(object.transform.rotation.matrix);
+			object.transform.rotateGlob(1, 0, 0, object.transform.eulerAngles.x, wt);
+			object.transform.rotateGlob(0, 1, 0, object.transform.eulerAngles.y, wt);
+			object.transform.rotateGlob(0, 0, 1, object.transform.eulerAngles.z, wt);
 			
 			for each (child in object._children)
 			{

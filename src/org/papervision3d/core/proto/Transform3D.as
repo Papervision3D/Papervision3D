@@ -1,11 +1,12 @@
 package org.papervision3d.core.proto
 {
+	import __AS3__.vec.Vector;
+	
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	
 	import org.papervision3d.core.math.Quaternion;
 	import org.papervision3d.core.math.utils.MathUtil;
-	import org.papervision3d.core.math.utils.MatrixUtil;
 	import org.papervision3d.core.ns.pv3d;
 	
 	/**
@@ -176,7 +177,7 @@ package org.papervision3d.core.proto
 				_eulerAngles.x = eulerAngles.x % 360;
 				_eulerAngles.y = eulerAngles.y % 360;
 				_eulerAngles.z = eulerAngles.z % 360;
-				
+	
 				_rotation.setFromEuler(
 					-_eulerAngles.y * MathUtil.TO_RADIANS, 
 					_eulerAngles.z * MathUtil.TO_RADIANS,
@@ -186,6 +187,15 @@ package org.papervision3d.core.proto
 			_dirty = true;
 		}
 		
+		public function rotateGlob(x:Number, y:Number, z:Number, deg:Number, m:Matrix3D):void
+		{
+			var t :Vector.<Number> = m.rawData;
+			var dx:Number=x*t[0] + y*t[1] + z*t[2];
+			var dy:Number=x*t[4] + y*t[5] + z*t[6];
+			var dz:Number=x*t[8] + y*t[9] + z*t[10];
+			m.prependRotation(deg, new Vector3D(dx, dy, dz));
+		}
+				
 		/**
 		 * 
 		 */
@@ -237,9 +247,17 @@ package org.papervision3d.core.proto
 				rotate( _localEulerAngles, true );
 				rotate( _eulerAngles, false );
 				
-				_transform.rawData = _localRotation.matrix.rawData;	
-				_transform.append( _rotation.matrix );
+				_transform.rawData = _localTransform.rawData = _localRotation.matrix.rawData;	
+				
+				//rotateGlob(1, 0, 0, _eulerAngles.x);
+				//rotateGlob(0, 1, 0, _eulerAngles.y);
+				//rotateGlob(0, 0, 1, _eulerAngles.z);
+				
+				//_transform.prepend( _rotation.matrix );
 				_transform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
+				
+				_localTransform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
+				_localTransform.prependScale(_localScale.x, _localScale.y, _localScale.z);
 				
 				_transform.prependScale(_localScale.x, _localScale.y, _localScale.z);
 				
@@ -249,6 +267,8 @@ package org.papervision3d.core.proto
 			
 			return _transform;
 		}
+		
+		
 		
 		/**
 		 * The position of the transform in world space.
