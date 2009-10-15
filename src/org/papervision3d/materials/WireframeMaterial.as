@@ -8,8 +8,8 @@ package org.papervision3d.materials
 		public function WireframeMaterial(color:uint = 0xFF00FF)
 		{
 			super();
-			drawProperties = new GraphicsStroke(1);
-			(drawProperties as GraphicsStroke).fill = new GraphicsSolidFill(color, 1);
+			_drawProperties = new GraphicsStroke(1);
+			(_drawProperties as GraphicsStroke).fill = new GraphicsSolidFill(color, 1);
 			clear = new GraphicsStroke();
 		}
 		
