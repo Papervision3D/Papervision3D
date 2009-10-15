@@ -90,7 +90,7 @@ package org.papervision3d.render
 			renderData.stats = stats;
 			renderData.drawManager = drawManager;
 			
-			TextureManager.getInstance().updateTextures();
+			TextureManager.updateTextures();
 			camera.update(renderData.viewport.sizeRectangle);
 						
 			pipeline.execute(renderData);

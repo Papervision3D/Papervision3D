@@ -4,30 +4,24 @@ package org.papervision3d.materials.textures
 	
 	public class TextureManager
 	{
-		protected var textureDictionary : Dictionary;
+		protected static var textureDictionary : Dictionary = new Dictionary(true);;
 		
 		public function TextureManager()
 		{
 			textureDictionary = new Dictionary(true);
 		}
 		
-		public function addTexture(texture:Texture):Texture{
+		public static function addTexture(texture:Texture):Texture{
 			textureDictionary[texture] = texture;
 			return texture;
 		}
 		
-		public function updateTextures():void{
+		public static function updateTextures():void{
 			for each(var t:Texture in textureDictionary){
 				t.update();
 			}
 				
 		}
-		
-		private static var _instance:TextureManager;
-		public static function getInstance():TextureManager{
-			if(!_instance)
-				_instance = new TextureManager();
-			return _instance;
-		}
+
 	}
 }
