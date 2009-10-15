@@ -98,7 +98,7 @@ package
 			
 			
 			//cubeChildx = new Sphere(new BitmapMaterial(new BitmapData(256, 256, true, 0x6600FFFF)), 50);
-			cubeChildx = new Sphere(new Material(new Texture(0xff00ff, 1), new ColorShader()));
+			cubeChildx = new Sphere(new Material(new Texture(0xff00ff, 0.4), new ColorShader()));
 			cubeChildx.x = cubeChildx.y = 100;
 			cubeChildx.rotationX = 80;
 			cube.addChild(cubeChildx);
