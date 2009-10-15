@@ -234,39 +234,15 @@ package org.papervision3d.core.proto
 		{
 			if (_dirty)
 			{
-				if (false)
-				{
-					_transform.rawData = _lookAt.rawData;
-					//_transform.prependTranslation( -_localPosition.x, -_localPosition.y, -_localPosition.z);
-					_transform.append(_localRotation.matrix);
-					
-					
-					var euler :Vector3D = Quaternion.createFromMatrix(_transform).toEuler();
-					
-					euler.x *= MathUtil.TO_DEGREES;
-					euler.y *= MathUtil.TO_DEGREES;
-					euler.z *= MathUtil.TO_DEGREES;
-					
-					//_localEulerAngles.x = -euler.y;
-					//_localEulerAngles.y = euler.x;
-					//_localEulerAngles.z = euler.z;
-					
-					_transform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
-					
-					_lookAt = null;
-				}
-				else
-				{
-					rotate( _localEulerAngles, true );
-				
-					_transform.rawData = _localRotation.matrix.rawData;
-					
-					_transform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
-				}
+				rotate( _localEulerAngles, true );
 				rotate( _eulerAngles, false );
+				
+				_transform.rawData = _localRotation.matrix.rawData;	
 				_transform.append( _rotation.matrix );
+				_transform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
 				
 				_transform.prependScale(_localScale.x, _localScale.y, _localScale.z);
+				
 				_dirty = false;
 
 			}		
