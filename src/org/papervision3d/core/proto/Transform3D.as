@@ -5,7 +5,6 @@ package org.papervision3d.core.proto
 	
 	import org.papervision3d.core.math.Quaternion;
 	import org.papervision3d.core.math.utils.MathUtil;
-	import org.papervision3d.core.math.utils.MatrixUtil;
 	import org.papervision3d.core.ns.pv3d;
 	
 	/**
@@ -237,9 +236,12 @@ package org.papervision3d.core.proto
 				rotate( _localEulerAngles, true );
 				rotate( _eulerAngles, false );
 				
-				_transform.rawData = _localRotation.matrix.rawData;	
+				_transform.rawData = _localTransform.rawData = _localRotation.matrix.rawData;	
 				_transform.append( _rotation.matrix );
 				_transform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
+				
+				_localTransform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
+				_localTransform.prependScale(_localScale.x, _localScale.y, _localScale.z);
 				
 				_transform.prependScale(_localScale.x, _localScale.y, _localScale.z);
 				
@@ -249,6 +251,8 @@ package org.papervision3d.core.proto
 			
 			return _transform;
 		}
+		
+		public var m :Matrix3D = new Matrix3D();
 		
 		/**
 		 * The position of the transform in world space.
