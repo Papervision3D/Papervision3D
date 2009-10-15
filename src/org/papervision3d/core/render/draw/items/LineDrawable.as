@@ -4,6 +4,7 @@ package org.papervision3d.core.render.draw.items
 	
 	import flash.display.GraphicsPath;
 	import flash.display.GraphicsPathCommand;
+	import flash.display.IGraphicsPath;
 	
 	public class LineDrawable extends AbstractDrawable
 	{
@@ -27,14 +28,14 @@ package org.papervision3d.core.render.draw.items
 			_path.data.push(0, 0, 0, 0);
 		}
 		
-		public function toViewportSpace(hw:Number, hh:Number):void{
+		public override function toViewportSpace(hw:Number, hh:Number):void{
 			x0 *= hw;	
 			y0 *= hh;
 			x1 *= hw;
 			y1 *= hh;
 		}
 		
-		public function get path():GraphicsPath
+		public override function get path():IGraphicsPath
 		{
 			_path.data[0] = x0;
 			_path.data[1] = y0;

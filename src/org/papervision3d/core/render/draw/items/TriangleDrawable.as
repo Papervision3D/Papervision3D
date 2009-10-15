@@ -3,6 +3,7 @@ package org.papervision3d.core.render.draw.items
 	import __AS3__.vec.Vector;
 	
 	import flash.display.GraphicsTrianglePath;
+	import flash.display.IGraphicsPath;
 	
 	public class TriangleDrawable extends AbstractDrawable
 	{
@@ -26,7 +27,7 @@ package org.papervision3d.core.render.draw.items
 		}
 
 		
-		public function toViewportSpace(hw:Number, hh:Number):void{
+		public override function toViewportSpace(hw:Number, hh:Number):void{
 			x0 *= hw;	
 			y0 *= hh;
 			x1 *= hw;
@@ -35,7 +36,7 @@ package org.papervision3d.core.render.draw.items
 			y2 *= hh;
 		}
 		
-		public function get path():GraphicsTrianglePath{
+		public override function get path():IGraphicsPath{
 			_path.vertices[0] = x0;
 			_path.vertices[1] = y0;
 			_path.vertices[2] = x1;
