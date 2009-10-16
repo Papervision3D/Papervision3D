@@ -241,13 +241,13 @@ package org.papervision3d.render
 						drawable.uvtData = drawable.uvtData || new Vector.<Number>(9, true);
 						drawable.uvtData[0] = triangle.uv0.u;
 						drawable.uvtData[1] = triangle.uv0.v;
-						drawable.uvtData[2] = renderer.geometry.uvtData[ triangle.v0.vectorIndexZ ];
+						drawable.uvtData[2] = renderer.uvtData[ triangle.v0.vectorIndexZ ];
 						drawable.uvtData[3] = triangle.uv1.u;
 						drawable.uvtData[4] = triangle.uv1.v;
-						drawable.uvtData[5] = renderer.geometry.uvtData[ triangle.v1.vectorIndexZ ];
+						drawable.uvtData[5] = renderer.uvtData[ triangle.v1.vectorIndexZ ];
 						drawable.uvtData[6] = triangle.uv2.u;
 						drawable.uvtData[7] = triangle.uv2.v;
-						drawable.uvtData[8] = renderer.geometry.uvtData[ triangle.v2.vectorIndexZ ];
+						drawable.uvtData[8] = renderer.uvtData[ triangle.v2.vectorIndexZ ];
 						drawable.shader = triangle.shader;
 						//trace(renderer.geometry.uvtData);
 						drawManager.addDrawable(drawable);
@@ -285,6 +285,7 @@ package org.papervision3d.render
 					drawManager.addDrawable(lineDrawable);
 				}
 			}
+			
 			if(object.material)
 				object.material.shader.process(renderData, object);	
 			// Recurse
@@ -309,7 +310,7 @@ package org.papervision3d.render
 			var inV :Vector.<Number> = Vector.<Number>([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z]);
 			var outV :Vector.<Number> = new Vector.<Number>();
 			var outUVT :Vector.<Number> = new Vector.<Number>();
-			var uvtData :Vector.<Number> = renderer.geometry.uvtData;
+			var uvtData :Vector.<Number> = renderer.uvtData;
 			var inUVT :Vector.<Number> = Vector.<Number>([
 				triangle.uv0.u, triangle.uv0.v, 0,
 				triangle.uv1.u, triangle.uv1.v, 0,

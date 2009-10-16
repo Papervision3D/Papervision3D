@@ -21,10 +21,12 @@ package
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.materials.Material;
 	import org.papervision3d.materials.WireframeMaterial;
-	import org.papervision3d.materials.shaders.light.FlatShader;
+	import org.papervision3d.materials.shaders.ColorShader;
 	import org.papervision3d.materials.textures.AnimatedTexture;
 	import org.papervision3d.objects.DisplayObject3D;
+	import org.papervision3d.objects.lights.PointLight;
 	import org.papervision3d.objects.primitives.Cube;
+	import org.papervision3d.objects.primitives.Sphere;
 	import org.papervision3d.objects.special.UCS;
 	import org.papervision3d.render.BasicRenderEngine;
 	import org.papervision3d.view.Viewport3D;
@@ -47,7 +49,7 @@ package
 		public var loader:Loader;
 		public var camera2 :Camera3D;
 		
-		public var sun :Cube;
+		public var sun :Sphere;
 		public var earth :Cube;
 		public var moon :Cube;
 		
@@ -95,7 +97,7 @@ package
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
 			
-			sun = new Cube(new Material(new AnimatedTexture(new TestSprite()), new FlatShader()), 100, "Cube");
+			sun = new Sphere(new Material(new AnimatedTexture(new TestSprite()), new ColorShader()), 100);
 			earth = new Cube(new WireframeMaterial(0x0000ff), 50);
 			sun.addChild(earth);
 			//sun.transform.localScale = (new Vector3D(1, 2, 1));
@@ -107,6 +109,11 @@ package
 			earth.addChild(moon);
 			moon.x = 100;
 			moon.rotationX = -45;
+			
+			var light:PointLight = new PointLight();
+			light.x = 250;
+			scene.addChild(light);
+			
 			
 			camera.y = 500;
 			
@@ -122,6 +129,7 @@ package
 		private function render(event:Event=null):void
 		{
 			sun.rotationY++;
+			_s += 0.02;
 			
 			earth.transform.localEulerAngles.y+=8;
 			earth.transform.dirty = true;

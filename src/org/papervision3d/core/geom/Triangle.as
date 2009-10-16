@@ -61,5 +61,13 @@ package org.papervision3d.core.geom
 			this.uv2 = uv2 || new UVCoord();
 			this.visible = true;
 		}
+		
+		public function createNormal():void
+		{
+			var tv1 : Vector3D = v1.subtract(v0);
+			var tv2 : Vector3D = v2.subtract(v0);
+			normal = tv1.crossProduct(tv2);
+			normal.normalize();
+		}
 	}
 }

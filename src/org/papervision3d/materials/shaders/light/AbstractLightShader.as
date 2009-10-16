@@ -2,6 +2,7 @@ package org.papervision3d.materials.shaders.light
 {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.Sprite;
 	
 	import org.papervision3d.materials.shaders.BasicShader;
 	import org.papervision3d.materials.textures.Texture;
@@ -11,11 +12,13 @@ package org.papervision3d.materials.shaders.light
 	{
 		protected var _overlayTexture:BitmapData;
 		protected var _overlayBitmap : Bitmap;
+		protected var _drawContext : Sprite;
 		
 		public function AbstractLightShader()
 		{
 			super();
 			_overlayBitmap = new Bitmap();
+			_drawContext = new Sprite();
 		}
 
 		public override function set texture(value:Texture):void{

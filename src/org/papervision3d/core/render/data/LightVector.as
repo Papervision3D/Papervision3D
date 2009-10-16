@@ -6,7 +6,7 @@ package org.papervision3d.core.render.data
 	
 	public class LightVector
 	{
-		protected var vector : Vector.<ILight>;
+		public var vector : Vector.<ILight>;
 		public function LightVector()
 		{
 			vector = new Vector.<ILight>();	

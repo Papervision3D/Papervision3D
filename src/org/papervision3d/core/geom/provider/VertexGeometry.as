@@ -7,7 +7,7 @@ package org.papervision3d.core.geom.provider
 	public class VertexGeometry extends Geometry
 	{
 		public var vertices :Vector.<Vertex>;
-		public var uvtData :Vector.<Number>;
+		//public var uvtData :Vector.<Number>;
 		public var vertexData :Vector.<Number>;
 		public var screenVertexLength : int = 0;
 		public var viewVertexLength : int = 0;
@@ -22,7 +22,7 @@ package org.papervision3d.core.geom.provider
 			vertices = new Vector.<Vertex>();
 			
 			vertexData = new Vector.<Number>();
-			uvtData = new Vector.<Number>();
+			//uvtData = new Vector.<Number>();
 		}
 		
 		/**
@@ -56,7 +56,7 @@ package org.papervision3d.core.geom.provider
 				
 				vertex.screenIndexY = screenVertexLength+1;
 				screenVertexLength += 2;
-				uvtData.push(0, 0, 0);
+				//uvtData.push(0, 0, 0);
 				vertices.push(vertex);
 				
 				return vertex;
@@ -138,7 +138,7 @@ package org.papervision3d.core.geom.provider
 			vertexData.length = 0;
 			viewVertexLength = 0;
 			screenVertexLength = 0;
-			uvtData.length = 0;
+			//uvtData.length = 0;
 			
 			for each (vertex in vertices)
 			{
@@ -151,7 +151,7 @@ package org.papervision3d.core.geom.provider
 				
 				vertex.screenIndexY = screenVertexLength+1;
 				screenVertexLength += 2;
-				uvtData.push(0, 0, 0);
+				//uvtData.push(0, 0, 0);
 				
 			}
 		}

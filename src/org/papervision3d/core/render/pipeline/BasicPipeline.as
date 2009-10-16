@@ -193,7 +193,7 @@ package org.papervision3d.core.render.pipeline
 			// AKA: the perspective divide
 			// NOTE: some vertices may have moved to infinity, we need to check while processing triangles.
 			//       IF so we need to check whether we need to clip the triangles or disgard them.
-			Utils3D.projectVectors(st, renderer.geometry.vertexData, renderer.screenVertexData, renderer.geometry.uvtData);
+			Utils3D.projectVectors(st, renderer.geometry.vertexData, renderer.screenVertexData, renderer.uvtData);
 		}
 	}
 }
