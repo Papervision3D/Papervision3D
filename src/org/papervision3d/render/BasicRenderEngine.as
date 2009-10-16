@@ -90,6 +90,8 @@ package org.papervision3d.render
 			renderData.stats = stats;
 			renderData.drawManager = drawManager;
 			
+			renderData.lights.clear();
+			
 			TextureManager.updateTextures();
 			camera.update(renderData.viewport.sizeRectangle);
 						
@@ -283,7 +285,8 @@ package org.papervision3d.render
 					drawManager.addDrawable(lineDrawable);
 				}
 			}
-				
+			if(object.material)
+				object.material.shader.process(renderData, object);	
 			// Recurse
 			for each (child in object._children)
 			{

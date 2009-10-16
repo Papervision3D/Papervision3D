@@ -6,10 +6,11 @@ package org.papervision3d.materials.shaders
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.materials.AbstractMaterial;
 	import org.papervision3d.materials.textures.Texture;
+	import org.papervision3d.objects.DisplayObject3D;
 	
 	public interface IShader
 	{
-		function process(renderData:RenderData):void;
+		function process(renderData:RenderData, object:DisplayObject3D):void;
 		function set texture(value:Texture):void
 		function set bitmap(bitmapData:BitmapData):void;
 		function get bitmap():BitmapData;

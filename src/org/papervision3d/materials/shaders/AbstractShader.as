@@ -6,6 +6,7 @@ package org.papervision3d.materials.shaders
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.materials.AbstractMaterial;
 	import org.papervision3d.materials.textures.Texture;
+	import org.papervision3d.objects.DisplayObject3D;
 
 	public class AbstractShader implements IShader
 	{
@@ -16,12 +17,14 @@ package org.papervision3d.materials.shaders
 		protected var _drawProperties:IGraphicsData;
 		protected var _clear : IGraphicsData;
 		protected var _usesUV : Boolean = true;
+		protected var _dirty : Boolean = false;
+		
 		
 		public function AbstractShader()
 		{
 		}
 
-		public function process(renderData:RenderData):void
+		public function process(renderData:RenderData, object:DisplayObject3D):void
 		{
 		}
 		
@@ -59,6 +62,7 @@ package org.papervision3d.materials.shaders
 		public function set material(value:AbstractMaterial) : void{
 			
 			_material = value;
+			
 			
 		}
 		

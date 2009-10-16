@@ -14,6 +14,7 @@ package org.papervision3d.core.render.pipeline
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.objects.DisplayObject3D;
+	import org.papervision3d.objects.lights.ILight;
 	
 	/**
 	 * @author Tim Knip / floorplanner.com
@@ -47,7 +48,7 @@ package org.papervision3d.core.render.pipeline
 			
 			_scheduledLookAt.length = 0;
 			
-			transformToWorld(scene);	
+			transformToWorld(scene, renderData);	
 			
 			// handle lookAt
 			if (_scheduledLookAt.length)
@@ -99,7 +100,7 @@ package org.papervision3d.core.render.pipeline
 				return;
 				components = object.transform.worldTransform.decompose();
 				var euler :Vector3D = components[1];
-				trace(euler);
+				
 				
 				object.transform.localEulerAngles.x = -euler.x * MathUtil.TO_DEGREES;
 				object.transform.localEulerAngles.y = euler.y * MathUtil.TO_DEGREES;
@@ -113,7 +114,7 @@ package org.papervision3d.core.render.pipeline
 		/**
 		 * 
 		 */ 
-		protected function transformToWorld(object:DisplayObject3D, parent:DisplayObject3D=null, processLookAt:Boolean=false):void
+		protected function transformToWorld(object:DisplayObject3D, renderData:RenderData, parent:DisplayObject3D=null, processLookAt:Boolean=false):void
 		{
 			var child :DisplayObject3D;
 			var wt :Matrix3D = object.transform.worldTransform;
@@ -138,9 +139,13 @@ package org.papervision3d.core.render.pipeline
 			object.transform.rotateGlob(0, 1, 0, object.transform.eulerAngles.y, wt);
 			object.transform.rotateGlob(0, 0, 1, object.transform.eulerAngles.z, wt);
 			
+			if(object is ILight)
+				renderData.lights.addLight((object as ILight));
+				
+			
 			for each (child in object._children)
 			{
-				transformToWorld(child, object, processLookAt);
+				transformToWorld(child, renderData, object, processLookAt);
 			}
 		}
 
