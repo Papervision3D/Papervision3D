@@ -1,6 +1,5 @@
 package org.papervision3d.objects.primitives
 {
-	import org.papervision3d.core.geom.Geometry;
 	import org.papervision3d.core.geom.Triangle;
 	import org.papervision3d.core.geom.UVCoord;
 	import org.papervision3d.core.geom.Vertex;
@@ -54,6 +53,7 @@ package org.papervision3d.objects.primitives
 				aVtc.push(aRow);
 			}
 			var iVerNum:int = aVtc.length;
+			var totalTris:int = 0;
 			for (j=0;j<iVerNum;j++) {
 				var iHorNum:int = aVtc[j].length;
 				if (j>0) { // &&i>=0
@@ -74,16 +74,16 @@ package org.papervision3d.objects.primitives
 						var aP2uv:UVCoord = new UVCoord(fI1,fJ0);
 						var aP3uv:UVCoord = new UVCoord(fI1,fJ1);
 						
-						if (j<(aVtc.length-1))	triGeometry.addTriangle(new Triangle(material.shader, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv));
+						if (j<(aVtc.length-1)){	triGeometry.addTriangle(new Triangle(material.shader, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv)); totalTris++;}
 						
-						if (j>1)				triGeometry.addTriangle(new Triangle(material.shader, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv));
+						if (j>1)				{ triGeometry.addTriangle(new Triangle(material.shader, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv)); totalTris++;}
 	
 					}
 				}
 			}
 			
 			renderer.updateIndices();
-		
+			trace("HAS ", triGeometry.triangles.length, totalTris, " triangles");
 		}
 		
 	}

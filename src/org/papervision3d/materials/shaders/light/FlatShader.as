@@ -2,10 +2,11 @@ package org.papervision3d.materials.shaders.light
 {
 	import __AS3__.vec.Vector;
 	
-	import flash.display.GraphicsEndFill;
-	import flash.display.GraphicsSolidFill;
-	import flash.display.GraphicsTrianglePath;
+	import flash.display.BitmapData;
+	import flash.display.GradientType;
 	import flash.display.IGraphicsData;
+	import flash.display.Sprite;
+	import flash.geom.Matrix;
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
@@ -20,10 +21,12 @@ package org.papervision3d.materials.shaders.light
 	
 	public class FlatShader extends AbstractLightShader
 	{
+		protected var ambientColor : uint;
 		
 		public function FlatShader()
 		{
 			super();
+			buildMap();
 		}
 		private var lightMatrix:Matrix3D;
 		private var drawCommand:Vector.<IGraphicsData> = new Vector.<IGraphicsData>;
@@ -33,7 +36,7 @@ package org.papervision3d.materials.shaders.light
 		public override function process(renderData:RenderData, object:DisplayObject3D):void
 		{
 				drawCommand.length = 0;
-				
+				_drawContext.graphics.clear();
 				
 				lightMatrix = object.transform.worldTransform.clone();
 				lightMatrix.invert();
@@ -49,8 +52,11 @@ package org.papervision3d.materials.shaders.light
 					var light:PointLight = lights.vector[0] as PointLight;	
 					var pos:Vector3D = lightMatrix.transformVector(light.transform.position);
 					pos.normalize();
+					//trace((object.renderer.geometry as TriangleGeometry).triangles.length);
+					var i:int = 0;
 					for each(var t:Triangle in (object.renderer.geometry as TriangleGeometry).triangles){
-						handleTriangle(t, pos, light);
+						
+							handleTriangle(t, pos, light);
 					}
 					
 				}else{
@@ -60,7 +66,7 @@ package org.papervision3d.materials.shaders.light
 				//see below
 				//_drawContext.graphics.drawGraphicsData(drawCommand);
 
-				_outputBitmap.draw(_drawContext, null, null, "add");
+				_outputBitmap.draw(_drawContext, null, null, "multiply");
 
 		}
 		
@@ -69,21 +75,35 @@ package org.papervision3d.materials.shaders.light
 			if(!t.normal)
 				t.createNormal();
 			var g : Number = t.normal.dotProduct(lightVector);
+			
 			if(g < 0)
 				g = 0;
+				
 
 			_drawContext.graphics.moveTo(t.uv0.u*bh,  (1-t.uv0.v)*bh);
-			_drawContext.graphics.beginFill(g*0xFFFFFF, 1);
+			_drawContext.graphics.beginFill(flatMap.getPixel(g*0xFF, 0), 1);
 			_drawContext.graphics.lineTo(t.uv1.u*bw, (1-t.uv1.v)*bh);
 			_drawContext.graphics.lineTo(t.uv2.u*bw, (1-t.uv2.v)*bh);
 			_drawContext.graphics.lineTo(t.uv0.u*bw, (1-t.uv0.v)*bh);
 			_drawContext.graphics.endFill();
-			/*
+			
+			
 			//grrr - what am i doing wrong here?!?!?
-			drawCommand.push(new GraphicsSolidFill(g*0xFF0000, 1));
-			drawCommand.push(new GraphicsTrianglePath(new Vector.<Number>([t.uv1.u*bw, (1-t.uv1.v)*bh, t.uv2.u*bw, (1-t.uv2.v)*bh, t.uv0.u*bw,  (1-t.uv0.v)*bh])));
-			drawCommand.push(new GraphicsEndFill());*/
+			/* drawCommand.push(new GraphicsSolidFill(flatMap.getPixel(g*0xFF, 0), 1));
+			drawCommand.push(new GraphicsTrianglePath(new Vector.<Number>([t.uv0.u*bw,  (1-t.uv0.v)*bh, t.uv1.u*bw, (1-t.uv1.v)*bh, t.uv2.u*bw, (1-t.uv2.v)*bh])));
+			drawCommand.push(new GraphicsEndFill()); */
 		}
-
+		private var flatMap : BitmapData = new BitmapData(256, 1, false, 0);
+		private function buildMap():void{
+			
+			var s:Sprite = new Sprite();
+			var m:Matrix = new Matrix();
+			m.createGradientBox(256,1,0,0,0);
+			s.graphics.beginGradientFill(GradientType.LINEAR, [0x0,0x999999],[1,1],[0,255],m);
+			s.graphics.drawRect(0,0,256,1);
+			s.graphics.endFill();
+			flatMap.draw(s);
+		}
+		
 	}
 }

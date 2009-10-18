@@ -21,7 +21,7 @@ package
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.materials.Material;
 	import org.papervision3d.materials.WireframeMaterial;
-	import org.papervision3d.materials.shaders.ColorShader;
+	import org.papervision3d.materials.shaders.light.FlatShader;
 	import org.papervision3d.materials.textures.AnimatedTexture;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.lights.PointLight;
@@ -97,9 +97,10 @@ package
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
 			
-			sun = new Sphere(new Material(new AnimatedTexture(new TestSprite()), new ColorShader()), 100);
+			sun = new Sphere(new Material(new AnimatedTexture(new TestSprite()), new FlatShader()), 100, 20, 20);
+			//sun.y = 600;
 			earth = new Cube(new WireframeMaterial(0x0000ff), 50);
-			sun.addChild(earth);
+			//sun.addChild(earth);
 			//sun.transform.localScale = (new Vector3D(1, 2, 1));
 			earth.x = 300;
 			scene.addChild( sun );
@@ -112,6 +113,7 @@ package
 			
 			var light:PointLight = new PointLight();
 			light.x = 250;
+			
 			scene.addChild(light);
 			
 			

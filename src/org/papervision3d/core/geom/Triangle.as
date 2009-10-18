@@ -68,6 +68,7 @@ package org.papervision3d.core.geom
 			var tv2 : Vector3D = v2.subtract(v0);
 			normal = tv1.crossProduct(tv2);
 			normal.normalize();
+			
 		}
 	}
 }
