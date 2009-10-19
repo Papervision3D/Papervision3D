@@ -61,10 +61,49 @@ package org.papervision3d.core.render.pipeline
 			transformToView(camera, scene);
 		}
 		
+		protected function handleLookAt():void
+		{
+			while (_scheduledLookAt.length)
+			{
+				var object :DisplayObject3D = _scheduledLookAt.pop();
+				var parent :DisplayObject3D = object.parent as DisplayObject3D;
+				var transform :Transform3D = object.transform;
+				var eye :Vector3D = transform.position;
+				var leye :Vector3D = transform.localPosition;
+				var tgt :Vector3D = transform.scheduledLookAt.position;
+				var up :Vector3D = transform.scheduledLookAtUp;
+				
+				// create the lookAt matrix
+				MatrixUtil.createLookAtMatrix(eye, tgt, up, _lookAtMatrix);
+				
+			//	var p :Vector3D = leye.clone();
+				
+			//	p = _lookAtMatrix.transformVector(tgt);
+				
+				
+				transform.worldTransform.rawData = _lookAtMatrix.rawData;
+				//transform.worldTransform.prepend(_lookAtMatrix);
+				transform.worldTransform.appendTranslation(-eye.x, -eye.y, -eye.z);
+				//transform.worldTransform.append(_lookAtMatrix);
+				
+			//	_invWorldMatrix.rawData = parent.transform.m_rotation.rawData;
+			//	_invWorldMatrix.invert();
+				
+				//_lookAtMatrix.prepend(_invWorldMatrix);
+				
+			//	transform.update(_lookAtMatrix);
+				
+			//	transform.worldTransform.rawData = transform.transform.rawData;
+			//	transform.worldTransform.append(parent.transform.worldTransform);
+			//		transform.worldTransform.prepend(_invWorldMatrix);
+			//	transform.worldTransform.appendTranslation(-eye.x, -eye.y, eye.z);
+			}
+		}
+		
 		/**
 		 * Processes all scheduled lookAt's.
 		 */ 
-		protected function handleLookAt():void
+		protected function handleLookAt2():void
 		{
 			while (_scheduledLookAt.length)
 			{
@@ -79,25 +118,19 @@ package org.papervision3d.core.render.pipeline
 				// create the lookAt matrix
 				MatrixUtil.createLookAtMatrix(eye, tgt, up, _lookAtMatrix);
 				
-				//_lookAtMatrix.appendTranslation(-eye.x, -eye.y, -eye.z);
-				var m :Matrix3D = object.transform.localToWorldMatrix.clone();
-				
-				m.append(_lookAtMatrix);
-			//	m.prependTranslation(-eye.x, -eye.y, -eye.z);
-				
 				// prepend it to the world matrix
-				//object.transform.worldTransform.prepend(_lookAtMatrix);
-				eye = object.transform.localPosition;
+			//	object.transform.worldTransform.prepend(_lookAtMatrix);
+				//eye = object.transform.localPosition;
 				object.transform.worldTransform.rawData = _lookAtMatrix.rawData;
 				object.transform.worldTransform.appendTranslation(eye.x, eye.y, eye.z);
 				
 				if (parent)
 				{
-					_invWorldMatrix.rawData = parent.transform.worldTransform.rawData;
+					_invWorldMatrix.rawData = parent.transform.localRotation.matrix.rawData;
 					_invWorldMatrix.invert();
-				//	object.transform.worldTransform.append(_invWorldMatrix);
+					object.transform.worldTransform.append(_invWorldMatrix);
 				}
-				return;
+			//	return;
 				components = object.transform.worldTransform.decompose();
 				var euler :Vector3D = components[1];
 				
@@ -124,20 +157,16 @@ package org.papervision3d.core.render.pipeline
 				_scheduledLookAt.push( object );
 			}
 			
-			wt.rawData = object.transform.localToWorldMatrix.rawData;
+			object.transform.update();
+			
+			wt.rawData = object.transform.transform.rawData;
 			
 			if (parent)
 			{
-				wt.append(parent.transform.worldTransform);	
-				//object.transform._localTransform.append(parent.transform._localTransform);
+				wt.prepend(parent.transform.worldTransform);	
 			}
 			
-			object.transform.position = object.transform.worldTransform.transformVector(object.transform.localPosition);
-			
-			//wt.prepend(object.transform.rotation.matrix);
-			object.transform.rotateGlob(1, 0, 0, object.transform.eulerAngles.x, wt);
-			object.transform.rotateGlob(0, 1, 0, object.transform.eulerAngles.y, wt);
-			object.transform.rotateGlob(0, 0, 1, object.transform.eulerAngles.z, wt);
+			object.transform.position = wt.transformVector(object.transform.localPosition);
 			
 			if(object is ILight)
 				renderData.lights.addLight((object as ILight));

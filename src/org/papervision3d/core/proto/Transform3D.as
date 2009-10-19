@@ -268,7 +268,32 @@ package org.papervision3d.core.proto
 			return _transform;
 		}
 		
+		public function update(rot:Matrix3D=null):void
+		{
+			rotate( _localEulerAngles, true );
+			
+			m_rotation.rawData = rot ? rot.rawData : _localRotation.matrix.rawData;
+
+			if (!rot)
+			{
+		//	rotateGlob(1, 0, 0, _eulerAngles.x, m_rotation);
+		//	rotateGlob(0, 1, 0, _eulerAngles.y, m_rotation);
+		//	rotateGlob(0, 0, 1, _eulerAngles.z, m_rotation);	
+			}
+					
+			_transform.rawData = m_rotation.rawData;
+			_transform.prependTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
+
+			
+			//_transform.append(m);
+		}
 		
+		public var m_rotation :Matrix3D = new Matrix3D();
+		
+		public function get transform():Matrix3D
+		{
+			return _transform;
+		}
 		
 		/**
 		 * The position of the transform in world space.
@@ -346,6 +371,16 @@ package org.papervision3d.core.proto
 		public function set parent(value:Transform3D):void
 		{
 			_parent = value;
+		}
+		
+		public function pushMatrix():void
+		{
+			
+		}
+		
+		public function popMatrix():void
+		{
+			
 		}
 	}
 }

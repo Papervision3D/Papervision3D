@@ -19,10 +19,7 @@ package
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
-	import org.papervision3d.materials.Material;
 	import org.papervision3d.materials.WireframeMaterial;
-	import org.papervision3d.materials.shaders.light.FlatShader;
-	import org.papervision3d.materials.textures.AnimatedTexture;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.lights.PointLight;
 	import org.papervision3d.objects.primitives.Cube;
@@ -92,36 +89,38 @@ package
 			camera.z = 800;
 
 			renderer = new BasicRenderEngine();
-			renderer.clipFlags = ClipFlags.ALL;			
+			renderer.clipFlags = ClipFlags.NONE;			
 			
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
-			
-			sun = new Sphere(new Material(new AnimatedTexture(new TestSprite()), new FlatShader()), 100, 20, 20);
+			 
+			sun = new Sphere(new WireframeMaterial(0xffff00), 100);
 			//sun.y = 600;
-			earth = new Cube(new WireframeMaterial(0x0000ff), 50);
-			//sun.addChild(earth);
+			earth = new Cube(new WireframeMaterial(0x0000ff), 50, "earth");
+			sun.addChild(earth);
 			//sun.transform.localScale = (new Vector3D(1, 2, 1));
 			earth.x = 300;
 			scene.addChild( sun );
-			earth.rotationX = 45;
+	//		earth.rotationX = 45;
 
 			moon = new  Cube(new WireframeMaterial(0xcccccc), 20);
 			earth.addChild(moon);
 			moon.x = 100;
-			moon.rotationX = -45;
+			//moon.rotationX = -45;
 			
 			var light:PointLight = new PointLight();
 			light.x = 250;
 			
 			scene.addChild(light);
 			
-			
+			camera.x = -1000;
 			camera.y = 500;
 			
 			var ucs :UCS = new UCS("ucs0", 100);
 			earth.addChild(ucs);
 
+			sun.addChild(new UCS("ss", 200));
+			
 			addEventListener(Event.ENTER_FRAME, render);
 		}
 		
@@ -130,13 +129,15 @@ package
 		 
 		private function render(event:Event=null):void
 		{
-			sun.rotationY++;
+			//sun.rotationY++;
 			_s += 0.02;
 			
-			earth.transform.localEulerAngles.y+=8;
-			earth.transform.dirty = true;
+		//	earth.rotationY++;
+			earth.transform.localEulerAngles.y+=2;
+		//	earth.transform.dirty = true;
 			
-			moon.rotationY += 3;
+			moon.lookAt(sun);
+			//moon.rotationY += 3;
 			camera.lookAt(sun);
 
 			renderer.renderScene(scene, camera, viewport);	
