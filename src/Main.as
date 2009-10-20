@@ -120,7 +120,7 @@ package
 
 			sun.addChild(new UCS("ss", 200));
 			
-			earth.scaleZ = 2;
+		//	earth.scaleZ = 2;
 		//	earth.scaleX = earth.scaleY = 2;
 			
 			addEventListener(Event.ENTER_FRAME, render);
@@ -131,12 +131,12 @@ package
 		 
 		private function render(event:Event=null):void
 		{
-			sun.rotationY++;
+			sun.rotationY+=0.05;
 			_s += 0.02;
 			
 		//	earth.rotationY += 2;
 		//	earth.rotationY++;
-			earth.transform.eulerAngles.x += 2;
+			earth.transform.eulerAngles.y -= 2;
 		//	earth.transform.dirty = true;
 			
 			moon.lookAt(sun);
