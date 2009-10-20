@@ -23,12 +23,13 @@ package org.papervision3d.materials.shaders.light
 
 		public override function set texture(value:Texture):void{
 			super.texture = value;
-			
+			_outputBitmap = _baseBitmap.clone();
 			if(_texture is Texture2D){
 				var t2d:Texture2D = _texture as Texture2D;
 				_overlayTexture = new BitmapData(t2d.bitmap.width, t2d.bitmap.height, false, 0);
 				_overlayBitmap.bitmapData = _overlayTexture;
 			}
+			
 		}
 
 	}

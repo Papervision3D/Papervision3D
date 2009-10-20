@@ -20,7 +20,7 @@ package org.papervision3d.materials.shaders
 		}
 		
 		public override function get drawProperties():IGraphicsData{
-			graphicsFill.bitmapData = (_texture as Texture2D).bitmap;
+			graphicsFill.bitmapData = _outputBitmap;
 			return _drawProperties;
 		}
 		
@@ -30,7 +30,8 @@ package org.papervision3d.materials.shaders
 			graphicsFill.bitmapData = bitmap;
 		}
 		public override function set bitmap(bitmapData:BitmapData):void{
-			_baseBitmap = _outputBitmap = bitmapData;
+			_baseBitmap  = bitmapData;
+			_outputBitmap = bitmapData.clone();
 		}
 
 		

@@ -24,11 +24,11 @@ package org.papervision3d.objects.primitives
 			buildSphere(radius);
 		}
 		
+		private var grid:Array;
 		private function buildSphere( fRadius:Number ):void
 		{
-			/*
-				THE GEOMETRY IS BACKWARD - someone fix
-			*/
+			
+		
 			var i:Number, j:Number, k:Number;
 			var iHor:Number = this.segmentsW;
 			var iVer:Number = this.segmentsH;
@@ -82,8 +82,9 @@ package org.papervision3d.objects.primitives
 				}
 			}
 			
+			
 			renderer.updateIndices();
-			trace("HAS ", triGeometry.triangles.length, totalTris, " triangles");
+			//trace("HAS ", triGeometry.triangles.length, totalTris, " triangles");
 		}
 		
 	}

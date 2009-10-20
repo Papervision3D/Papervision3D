@@ -2,6 +2,7 @@ package org.papervision3d.materials.shaders.light
 {
 	import __AS3__.vec.Vector;
 	
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.GradientType;
 	import flash.display.IGraphicsData;
@@ -35,6 +36,7 @@ package org.papervision3d.materials.shaders.light
 		
 		public override function process(renderData:RenderData, object:DisplayObject3D):void
 		{
+			
 				drawCommand.length = 0;
 				_drawContext.graphics.clear();
 				
@@ -44,20 +46,27 @@ package org.papervision3d.materials.shaders.light
 				_outputBitmap.copyPixels(_baseBitmap, _outputBitmap.rect, new Point());
 				bh = _outputBitmap.height;
 				bw = _outputBitmap.width;
-					
+				
+				/* _drawContext.graphics.beginFill(0x444499, 0.25);
+				_drawContext.graphics.drawRect(0, 0, bw, bh);
+				_drawContext.graphics.endFill();
+				 */
+					trace(_baseBitmap == _outputBitmap);
 				var lights:LightVector = renderData.lights;
 
 				if(lights.vector.length > 0){
 					
 					var light:PointLight = lights.vector[0] as PointLight;	
 					var pos:Vector3D = lightMatrix.transformVector(light.transform.position);
+					
 					pos.normalize();
 					//trace((object.renderer.geometry as TriangleGeometry).triangles.length);
 					var i:int = 0;
 					for each(var t:Triangle in (object.renderer.geometry as TriangleGeometry).triangles){
-						
+							//trace(t.uv0.u, t.uv0.v, t.uv1.u, t.uv1.v, t.uv2.u, t.uv2.v);
 							handleTriangle(t, pos, light);
 					}
+					//trace("----------");
 					
 				}else{
 					_overlayTexture.fillRect(_overlayTexture.rect, 0xFF0499);
@@ -65,9 +74,16 @@ package org.papervision3d.materials.shaders.light
 				
 				//see below
 				//_drawContext.graphics.drawGraphicsData(drawCommand);
-
+				
 				_outputBitmap.draw(_drawContext, null, null, "multiply");
 
+		}
+		public function getOutput():Sprite{
+			return _drawContext;
+		}
+		
+		public function getBaseBitmap():Bitmap{
+			return new Bitmap(_baseBitmap);
 		}
 		
 		private function handleTriangle(t:Triangle, lightVector:Vector3D, light:ILight):void{
@@ -78,16 +94,15 @@ package org.papervision3d.materials.shaders.light
 			
 			if(g < 0)
 				g = 0;
-				
 
+_drawContext.graphics.beginFill(flatMap.getPixel(g*0xFF, 0), 1);
 			_drawContext.graphics.moveTo(t.uv0.u*bh,  (1-t.uv0.v)*bh);
-			_drawContext.graphics.beginFill(flatMap.getPixel(g*0xFF, 0), 1);
+			
 			_drawContext.graphics.lineTo(t.uv1.u*bw, (1-t.uv1.v)*bh);
 			_drawContext.graphics.lineTo(t.uv2.u*bw, (1-t.uv2.v)*bh);
 			_drawContext.graphics.lineTo(t.uv0.u*bw, (1-t.uv0.v)*bh);
+
 			_drawContext.graphics.endFill();
-			
-			
 			//grrr - what am i doing wrong here?!?!?
 			/* drawCommand.push(new GraphicsSolidFill(flatMap.getPixel(g*0xFF, 0), 1));
 			drawCommand.push(new GraphicsTrianglePath(new Vector.<Number>([t.uv0.u*bw,  (1-t.uv0.v)*bh, t.uv1.u*bw, (1-t.uv1.v)*bh, t.uv2.u*bw, (1-t.uv2.v)*bh])));
