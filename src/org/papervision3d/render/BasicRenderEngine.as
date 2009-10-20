@@ -24,7 +24,7 @@ package org.papervision3d.render
 	import org.papervision3d.core.render.draw.manager.DefaultDrawManager;
 	import org.papervision3d.core.render.engine.AbstractRenderEngine;
 	import org.papervision3d.core.render.object.ObjectRenderer;
-	import org.papervision3d.core.render.pipeline.GLPipeline;
+	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.core.render.raster.DefaultRasterizer;
 	import org.papervision3d.core.render.raster.IRasterizer;
 	import org.papervision3d.materials.textures.TextureManager;
@@ -66,7 +66,7 @@ package org.papervision3d.render
 		 */ 
 		protected function init():void
 		{
-			pipeline = new GLPipeline();
+			pipeline = new BasicPipeline();
 			drawManager = new DefaultDrawManager();
 			
 			clipper = new SutherlandHodgmanClipper();
@@ -224,7 +224,7 @@ package org.papervision3d.render
 						else if (flags) { triangle.clipFlags |= ClipFlags.BOTTOM };
 					}
 						
-					if (true && triangle.clipFlags == 0)
+					if (triangle.clipFlags == 0)
 					{
 						// Triangle completely inside the (view) frustum
 						var drawable :TriangleDrawable = triangle.drawable as TriangleDrawable || new TriangleDrawable();

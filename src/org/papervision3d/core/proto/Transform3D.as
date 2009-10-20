@@ -32,6 +32,9 @@ package org.papervision3d.core.proto
 		public var screenTransform :Matrix3D;
 		
 		/** */
+		public var local :Matrix3D;
+		
+		/** */
 		pv3d var scheduledLookAt :Transform3D;
 		
 		/** */
@@ -96,6 +99,8 @@ package org.papervision3d.core.proto
 			this.worldTransform = new Matrix3D();
 			this.viewTransform = new Matrix3D();
 			this.screenTransform = new Matrix3D();
+			
+			this.local = new Matrix3D();
 			
 			_dirty = true;
 		}
@@ -244,10 +249,27 @@ package org.papervision3d.core.proto
 		{
 			if (_dirty)
 			{
+				_transform.rawData = local.rawData;
+				_transform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
+			//	_transform.prependScale(_localScale.x, _localScale.y, _localScale.z);
+			}
+			
+			_dirty = false;
+			
+			return _transform;
+		}
+		
+		/**
+		 * 
+		 */ 
+		public function get localToWorldMatrix2():Matrix3D
+		{
+			if (_dirty)
+			{
 				rotate( _localEulerAngles, true );
 				rotate( _eulerAngles, false );
 				
-				_transform.rawData = _localTransform.rawData = _localRotation.matrix.rawData;	
+				_transform.rawData = _localRotation.matrix.rawData;	
 				
 				//rotateGlob(1, 0, 0, _eulerAngles.x);
 				//rotateGlob(0, 1, 0, _eulerAngles.y);
@@ -256,9 +278,7 @@ package org.papervision3d.core.proto
 				//_transform.prepend( _rotation.matrix );
 				_transform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
 				
-				_localTransform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
-				_localTransform.prependScale(_localScale.x, _localScale.y, _localScale.z);
-				
+
 				_transform.prependScale(_localScale.x, _localScale.y, _localScale.z);
 				
 				_dirty = false;

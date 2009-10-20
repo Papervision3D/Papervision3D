@@ -87,9 +87,10 @@ package
 			camera.enableCulling = false
 			camera.showFrustum = false;
 			camera.z = 800;
+			camera.y = 500;
 
 			renderer = new BasicRenderEngine();
-			renderer.clipFlags = ClipFlags.NONE;			
+			renderer.clipFlags = ClipFlags.ALL;			
 			
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
@@ -101,9 +102,9 @@ package
 			//sun.transform.localScale = (new Vector3D(1, 2, 1));
 			earth.x = 300;
 			scene.addChild( sun );
-	//		earth.rotationX = 45;
+			//earth.rotationX = 45;
 
-			moon = new  Cube(new WireframeMaterial(0xcccccc), 20);
+			moon = new  Cube(new WireframeMaterial(0xcccccc), 20, "moon");
 			earth.addChild(moon);
 			moon.x = 100;
 			//moon.rotationX = -45;
@@ -112,14 +113,15 @@ package
 			light.x = 250;
 			
 			scene.addChild(light);
-			
-			camera.x = -1000;
-			camera.y = 500;
+
 			
 			var ucs :UCS = new UCS("ucs0", 100);
 			earth.addChild(ucs);
 
 			sun.addChild(new UCS("ss", 200));
+			
+			earth.scaleZ = 2;
+		//	earth.scaleX = earth.scaleY = 2;
 			
 			addEventListener(Event.ENTER_FRAME, render);
 		}
@@ -129,15 +131,21 @@ package
 		 
 		private function render(event:Event=null):void
 		{
-			//sun.rotationY++;
+			sun.rotationY++;
 			_s += 0.02;
 			
+		//	earth.rotationY += 2;
 		//	earth.rotationY++;
-			earth.transform.localEulerAngles.y+=2;
+			earth.transform.eulerAngles.x += 2;
 		//	earth.transform.dirty = true;
 			
 			moon.lookAt(sun);
 			//moon.rotationY += 3;
+			
+		//	camera.x = Math.sin(_r) * 1000;
+		//	camera.z = Math.cos(_r) * 1000;
+		//	_r += Math.PI/90;
+			
 			camera.lookAt(sun);
 
 			renderer.renderScene(scene, camera, viewport);	

@@ -275,6 +275,7 @@ package org.papervision3d.core.proto
 		
 		public function set rotationX(value:Number):void
 		{
+			transform.local.prependRotation(value - transform.localEulerAngles.x, Vector3D.X_AXIS);
 			transform.localEulerAngles.x = value;
 			transform.dirty = true;
 		}
@@ -289,6 +290,7 @@ package org.papervision3d.core.proto
 		
 		public function set rotationY(value:Number):void
 		{
+			transform.local.prependRotation(value-transform.localEulerAngles.y, Vector3D.Y_AXIS);
 			transform.localEulerAngles.y = value
 			transform.dirty = true;
 		}
@@ -303,6 +305,7 @@ package org.papervision3d.core.proto
 		
 		public function set rotationZ(value:Number):void
 		{
+			transform.local.prependRotation(value - transform.localEulerAngles.z, Vector3D.Z_AXIS);
 			transform.localEulerAngles.z = value;
 			transform.dirty = true;
 		}
