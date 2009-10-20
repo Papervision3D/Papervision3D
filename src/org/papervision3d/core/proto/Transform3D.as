@@ -249,9 +249,12 @@ package org.papervision3d.core.proto
 		{
 			if (_dirty)
 			{
+				_localEulerAngles.x %= 360;
+				_localEulerAngles.y %= 360;
+				_localEulerAngles.z %= 360;
+				
 				_transform.rawData = local.rawData;
 				_transform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
-			//	_transform.prependScale(_localScale.x, _localScale.y, _localScale.z);
 			}
 			
 			_dirty = false;

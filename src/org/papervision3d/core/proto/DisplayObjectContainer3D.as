@@ -226,6 +226,33 @@ package org.papervision3d.core.proto
 		/**
 		 * 
 		 */ 
+		public function pitch(degrees:Number):void
+		{
+			transform.local.prependRotation(degrees, Vector3D.X_AXIS);
+			transform.dirty = true;
+		}
+		
+		/**
+		 * 
+		 */ 
+		public function yaw(degrees:Number):void
+		{
+			transform.local.prependRotation(degrees, Vector3D.Y_AXIS);
+			transform.dirty = true;
+		}
+		
+		/**
+		 * 
+		 */ 
+		public function roll(degrees:Number):void
+		{
+			transform.local.prependRotation(degrees, Vector3D.Z_AXIS);
+			transform.dirty = true;
+		}
+		
+		/**
+		 * 
+		 */ 
 		public function get x():Number
 		{
 			return transform.localPosition.x;
@@ -275,9 +302,8 @@ package org.papervision3d.core.proto
 		
 		public function set rotationX(value:Number):void
 		{
-			transform.local.prependRotation(value - transform.localEulerAngles.x, Vector3D.X_AXIS);
-			transform.localEulerAngles.x = value;
-			transform.dirty = true;
+			pitch(value - transform.localEulerAngles.x);
+			transform.localEulerAngles.x = value;	
 		}
 		
 		/**
@@ -290,9 +316,8 @@ package org.papervision3d.core.proto
 		
 		public function set rotationY(value:Number):void
 		{
-			transform.local.prependRotation(value-transform.localEulerAngles.y, Vector3D.Y_AXIS);
+			yaw(value - transform.localEulerAngles.y);
 			transform.localEulerAngles.y = value
-			transform.dirty = true;
 		}
 		
 		/**
@@ -305,9 +330,8 @@ package org.papervision3d.core.proto
 		
 		public function set rotationZ(value:Number):void
 		{
-			transform.local.prependRotation(value - transform.localEulerAngles.z, Vector3D.Z_AXIS);
+			roll(value - transform.localEulerAngles.z);
 			transform.localEulerAngles.z = value;
-			transform.dirty = true;
 		}
 		
 		/**

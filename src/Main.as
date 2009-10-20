@@ -7,6 +7,7 @@ package
 	import flash.display.StageQuality;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
@@ -49,6 +50,7 @@ package
 		public var sun :Sphere;
 		public var earth :Cube;
 		public var moon :Cube;
+		public var cube :Cube;
 		
 		public function Main()
 		{
@@ -90,7 +92,7 @@ package
 			camera.y = 500;
 
 			renderer = new BasicRenderEngine();
-			renderer.clipFlags = ClipFlags.ALL;			
+			renderer.clipFlags = ClipFlags.NEAR;			
 			
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
@@ -114,6 +116,10 @@ package
 			
 			scene.addChild(light);
 
+			cube = new Cube(new WireframeMaterial(0xff0000));
+			scene.addChild(cube);
+			cube.x = -400;
+			cube.z = -300;
 			
 			var ucs :UCS = new UCS("ucs0", 100);
 			earth.addChild(ucs);
@@ -122,7 +128,8 @@ package
 			
 			earth.scaleZ = 2;
 		//	earth.scaleX = earth.scaleY = 2;
-			
+			sun.rotationY = 45;
+			stage.addEventListener(KeyboardEvent.KEY_UP, keyUpHandler);
 			addEventListener(Event.ENTER_FRAME, render);
 		}
 		
@@ -131,12 +138,14 @@ package
 		 
 		private function render(event:Event=null):void
 		{
+			if (_animating)
+			{
 			sun.rotationY++;
 			_s += 0.02;
 			
-		//	earth.rotationY += 2;
-		//	earth.rotationY++;
-			earth.transform.eulerAngles.x += 2;
+			earth.rotationY += 2;
+		//	earth.rotationZ++;
+		//	earth.transform.eulerAngles.z += 2;
 		//	earth.transform.dirty = true;
 			
 			moon.lookAt(sun);
@@ -145,6 +154,9 @@ package
 		//	camera.x = Math.sin(_r) * 1000;
 		//	camera.z = Math.cos(_r) * 1000;
 		//	_r += Math.PI/90;
+			}
+			
+			cube.lookAt(earth);
 			
 			camera.lookAt(sun);
 
@@ -157,7 +169,24 @@ package
 				"\nculled objects: " + stats.culledObjects +
 				"\n\ntotal triangles: " + stats.totalTriangles +
 				"\nculled triangles: " + stats.culledTriangles +
-				"\nclipped triangles: " + stats.clippedTriangles;
+				"\nclipped triangles: " + stats.clippedTriangles +
+				"\n\nlocal: " + earth.transform.localEulerAngles +
+				"\nglobal: " + earth.transform.eulerAngles;
 		}
+		
+		private function keyUpHandler(event:KeyboardEvent):void
+		{
+			if (_animating)
+			{
+				sun.rotationX = sun.rotationY = sun.rotationZ = 0;
+				earth.rotationX = earth.rotationY = earth.rotationZ = 0;
+				earth.transform.eulerAngles.x = 0;
+				earth.transform.eulerAngles.y = 0;
+				earth.transform.eulerAngles.z = 0;
+			}
+			_animating = !_animating;
+		}
+		
+		private var _animating :Boolean = true;
 	}
 }

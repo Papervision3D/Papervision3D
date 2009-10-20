@@ -23,6 +23,7 @@ package org.papervision3d.core.render.pipeline
 		private var _lookAts :Vector.<DisplayObject3D>;
 		private var _defaultAt :Vector3D;
 		private var _defaultUp :Vector3D;
+		private var _pos :Vector3D;
 		
 		public function BasicPipeline()
 		{
@@ -30,6 +31,7 @@ package org.papervision3d.core.render.pipeline
 			
 			_defaultAt = new Vector3D(0, 0, -1);
 			_defaultUp = new Vector3D(0, -1, 0);
+			_pos = new Vector3D();
 		}
 		
 		public function execute(renderData:RenderData):void
@@ -61,11 +63,16 @@ package org.papervision3d.core.render.pipeline
 				var targetTM :Transform3D = object.transform.scheduledLookAt;
 				var sourceTM :Transform3D = object.transform;
 				var wt :Matrix3D = object.transform.worldTransform;
-				var pos :Vector3D = targetTM.position.subtract(object.transform.position);
+				var target :Vector3D = targetTM.position;
+				var eye :Vector3D = object.transform.position;
 
+				_pos.x = target.x - eye.x;
+				_pos.y = target.y - eye.y;
+				_pos.z = target.z - eye.z;
+				
 				wt.identity();
-				wt.pointAt(pos, _defaultAt, _defaultUp);
-				wt.appendTranslation(sourceTM.position.x, sourceTM.position.y, sourceTM.position.z);
+				wt.pointAt(_pos, _defaultAt, _defaultUp);
+				wt.appendTranslation(eye.x, eye.y, eye.z);
 			}
 		}
 		
@@ -81,9 +88,7 @@ package org.papervision3d.core.render.pipeline
 			}
 
 			wt.rawData = object.transform.localToWorldMatrix.rawData;
-			
-			var tmp :Matrix3D = wt.clone();
-			
+
 			if (object.parent)
 			{
 				wt.append(object.parent.transform.worldTransform);
