@@ -22,7 +22,7 @@ package
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.materials.Material;
 	import org.papervision3d.materials.WireframeMaterial;
-	import org.papervision3d.materials.shaders.NormalShader;
+	import org.papervision3d.materials.shaders.light.FlatShader;
 	import org.papervision3d.materials.textures.Texture2D;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.lights.PointLight;
@@ -101,7 +101,7 @@ package
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
 			
-			sun = new Sphere(new Material(new Texture2D((new earthMap() as Bitmap).bitmapData), new NormalShader()), 100, 8, 10);
+			sun = new Sphere(new Material(new Texture2D((new earthMap() as Bitmap).bitmapData), new FlatShader()), 100, 8, 10);
 			//addChild((sun.material.shader as FlatShader).getOutput());
 			//sun.y = 600;
 			earth = new Cube(new WireframeMaterial(0x0000ff), 50);
