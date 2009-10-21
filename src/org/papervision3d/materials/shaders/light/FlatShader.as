@@ -59,7 +59,7 @@ package org.papervision3d.materials.shaders.light
 					
 					for each(var t:Triangle in (object.renderer.geometry as TriangleGeometry).triangles){
 
-								handleTriangle(t, pos, light);
+						handleTriangle(t, pos, light);
 					}
 					
 				}else{

@@ -1,21 +1,13 @@
 package 
 {
-	import __AS3__.vec.Vector;
-	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
-	import flash.display.GraphicsGradientFill;
-	import flash.display.GraphicsSolidFill;
-	import flash.display.GraphicsStroke;
-	import flash.display.GraphicsTrianglePath;
-	import flash.display.IGraphicsData;
 	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageQuality;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
-	import flash.geom.Matrix;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
@@ -61,6 +53,7 @@ package
 		public var sun :Sphere;
 		public var earth :Cube;
 		public var moon :Cube;
+		public var cube :Cube;
 		
 		[Embed(source="testAssets/earthmap1k.jpg")]
 		public var earthMap:Class;
@@ -102,42 +95,45 @@ package
 			camera.enableCulling = false
 			camera.showFrustum = false;
 			camera.z = 800;
+			camera.y = 500;
 
 			renderer = new BasicRenderEngine();
-			renderer.clipFlags = ClipFlags.ALL;			
+			renderer.clipFlags = ClipFlags.NEAR;			
 			
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
+
 			
 			sun = new Sphere(new Material(new Texture2D((new earthMap() as Bitmap).bitmapData), new FlatShader()), 100, 4, 5);
-			sun.rotationX = -45;
 			//addChild(new earthMap()).alpha = 0.25;
 			//addChild((sun.material.shader as FlatShader).getOutputBitmap()).alpha = 0.25;
+
 			//sun.y = 600;
-			earth = new Cube(new WireframeMaterial(0x0000ff), 50);
-			//sun.addChild(earth);
+			earth = new Cube(new WireframeMaterial(0x0000ff), 50, "earth");
+			sun.addChild(earth);
 			//sun.transform.localScale = (new Vector3D(1, 2, 1));
 			earth.x = 300;
 			scene.addChild( sun );
-			earth.rotationX = 45;
+			//earth.rotationX = 45;
 
-			moon = new  Cube(new WireframeMaterial(0xcccccc), 20);
+			moon = new  Cube(new WireframeMaterial(0xcccccc), 20, "moon");
 			earth.addChild(moon);
 			moon.x = 100;
-			moon.rotationX = -45;
+			//moon.rotationX = -45;
 			
 			var light:PointLight = new PointLight(0xFFFFFF, 0x333333);
 			light.x = 250;
+		//	light.y = 400;
+			
 			
 			scene.addChild(light);
-			
+
 			
 			camera.y = 0;
 			
 			var ucs :UCS = new UCS("ucs0", 100);
 			earth.addChild(ucs);
-			
-		
+
 			addEventListener(Event.ENTER_FRAME, render);
 		}
 		
@@ -146,13 +142,23 @@ package
 		 
 		private function render(event:Event=null):void
 		{
+		
 			sun.rotationY++;
 			_s += 0.02;
 			
-			earth.transform.localEulerAngles.y+=8;
-			earth.transform.dirty = true;
+			earth.rotationY += 2;
+		//	earth.rotationZ++;
+		//	earth.transform.eulerAngles.z += 2;
+		//	earth.transform.dirty = true;
 			
-			moon.rotationY += 3;
+			moon.lookAt(sun);
+			//moon.rotationY += 3;
+			
+		//	camera.x = Math.sin(_r) * 1000;
+		//	camera.z = Math.cos(_r) * 1000;
+		//	_r += Math.PI/90;
+
+			
 			camera.lookAt(sun);
 
 			renderer.renderScene(scene, camera, viewport);	
@@ -164,7 +170,10 @@ package
 				"\nculled objects: " + stats.culledObjects +
 				"\n\ntotal triangles: " + stats.totalTriangles +
 				"\nculled triangles: " + stats.culledTriangles +
-				"\nclipped triangles: " + stats.clippedTriangles;
+				"\nclipped triangles: " + stats.clippedTriangles +
+				"\n\nlocal: " + earth.transform.localEulerAngles +
+				"\nglobal: " + earth.transform.eulerAngles;
 		}
+	
 	}
 }

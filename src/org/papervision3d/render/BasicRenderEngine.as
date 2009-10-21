@@ -74,7 +74,7 @@ package org.papervision3d.render
 			renderData = new RenderData();
 			stats = new RenderStats();
 			
-			_clipFlags = ClipFlags.NEAR;
+			_clipFlags = ClipFlags.NONE;
 			
 			_drawablePool = new DrawablePool(TriangleDrawable);
 		}
@@ -182,7 +182,7 @@ package org.papervision3d.render
 					{
 						if ((sv2.x - sv0.x) * (sv1.y - sv0.y) - (sv2.y - sv0.y) * (sv1.x - sv0.x) > 0)
 						{
-							stats.culledTriangles ++;
+						//	stats.culledTriangles ++;
 							continue;
 						}
 					}

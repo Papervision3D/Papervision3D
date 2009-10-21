@@ -32,6 +32,9 @@ package org.papervision3d.core.proto
 		public var screenTransform :Matrix3D;
 		
 		/** */
+		public var local :Matrix3D;
+		
+		/** */
 		pv3d var scheduledLookAt :Transform3D;
 		
 		/** */
@@ -96,6 +99,8 @@ package org.papervision3d.core.proto
 			this.worldTransform = new Matrix3D();
 			this.viewTransform = new Matrix3D();
 			this.screenTransform = new Matrix3D();
+			
+			this.local = new Matrix3D();
 			
 			_dirty = true;
 		}
@@ -244,10 +249,30 @@ package org.papervision3d.core.proto
 		{
 			if (_dirty)
 			{
+				_localEulerAngles.x %= 360;
+				_localEulerAngles.y %= 360;
+				_localEulerAngles.z %= 360;
+				
+				_transform.rawData = local.rawData;
+				_transform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
+			}
+			
+			_dirty = false;
+			
+			return _transform;
+		}
+		
+		/**
+		 * 
+		 */ 
+		public function get localToWorldMatrix2():Matrix3D
+		{
+			if (_dirty)
+			{
 				rotate( _localEulerAngles, true );
 				rotate( _eulerAngles, false );
 				
-				_transform.rawData = _localTransform.rawData = _localRotation.matrix.rawData;	
+				_transform.rawData = _localRotation.matrix.rawData;	
 				
 				//rotateGlob(1, 0, 0, _eulerAngles.x);
 				//rotateGlob(0, 1, 0, _eulerAngles.y);
@@ -256,9 +281,7 @@ package org.papervision3d.core.proto
 				//_transform.prepend( _rotation.matrix );
 				_transform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
 				
-				_localTransform.appendTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
-				_localTransform.prependScale(_localScale.x, _localScale.y, _localScale.z);
-				
+
 				_transform.prependScale(_localScale.x, _localScale.y, _localScale.z);
 				
 				_dirty = false;
@@ -268,7 +291,32 @@ package org.papervision3d.core.proto
 			return _transform;
 		}
 		
+		public function update(rot:Matrix3D=null):void
+		{
+			rotate( _localEulerAngles, true );
+			
+			m_rotation.rawData = rot ? rot.rawData : _localRotation.matrix.rawData;
+
+			if (!rot)
+			{
+		//	rotateGlob(1, 0, 0, _eulerAngles.x, m_rotation);
+		//	rotateGlob(0, 1, 0, _eulerAngles.y, m_rotation);
+		//	rotateGlob(0, 0, 1, _eulerAngles.z, m_rotation);	
+			}
+					
+			_transform.rawData = m_rotation.rawData;
+			_transform.prependTranslation( _localPosition.x, _localPosition.y, _localPosition.z);
+
+			
+			//_transform.append(m);
+		}
 		
+		public var m_rotation :Matrix3D = new Matrix3D();
+		
+		public function get transform():Matrix3D
+		{
+			return _transform;
+		}
 		
 		/**
 		 * The position of the transform in world space.
@@ -346,6 +394,16 @@ package org.papervision3d.core.proto
 		public function set parent(value:Transform3D):void
 		{
 			_parent = value;
+		}
+		
+		public function pushMatrix():void
+		{
+			
+		}
+		
+		public function popMatrix():void
+		{
+			
 		}
 	}
 }
