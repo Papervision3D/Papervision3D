@@ -75,7 +75,7 @@ package
 
 			tf = new TextField();
 			addChild(tf);
-			tf.x = 1;
+			tf.x = 1; 
 			tf.y = 110;
 			tf.width = 300;
 			tf.height = 200;
@@ -104,7 +104,7 @@ package
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
 
 			
-			sun = new Sphere(new Material(new Texture2D((new earthMap() as Bitmap).bitmapData), new FlatShader()), 100, 4, 5);
+			sun = new Sphere(new Material(new Texture2D((new earthMap() as Bitmap).bitmapData), new FlatShader()), 100, 14, 14);
 			//addChild(new earthMap()).alpha = 0.25;
 			//addChild((sun.material.shader as FlatShader).getOutputBitmap()).alpha = 0.25;
 
@@ -114,6 +114,7 @@ package
 			//sun.transform.localScale = (new Vector3D(1, 2, 1));
 			earth.x = 300;
 			scene.addChild( sun );
+			//sun.rotationX = 45;
 			//earth.rotationX = 45;
 
 			moon = new  Cube(new WireframeMaterial(0xcccccc), 20, "moon");
@@ -122,14 +123,16 @@ package
 			//moon.rotationX = -45;
 			
 			var light:PointLight = new PointLight(0xFFFFFF, 0x333333);
-			light.x = 250;
-		//	light.y = 400;
+			light.x = -200;
+			light.z = 200;
+			light.addChild(new Cube(new WireframeMaterial(0xFAFA34), 10));
+			light.y = 90;
 			
 			
 			scene.addChild(light);
 
 			
-			camera.y = 0;
+			camera.y = 100;
 			
 			var ucs :UCS = new UCS("ucs0", 100);
 			earth.addChild(ucs);
@@ -147,6 +150,7 @@ package
 			_s += 0.02;
 			
 			earth.rotationY += 2;
+			earth.rotationZ += 2;
 		//	earth.rotationZ++;
 		//	earth.transform.eulerAngles.z += 2;
 		//	earth.transform.dirty = true;

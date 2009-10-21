@@ -28,7 +28,7 @@ package org.papervision3d.materials.shaders.light
 			super();
 			//buildMap();
 		}
-		private var lightMatrix:Matrix3D;
+		private var lightMatrix:Matrix3D = new Matrix3D();
 		private var drawCommand:Vector.<IGraphicsData> = new Vector.<IGraphicsData>;
 		private var bh:Number = 1;
 		private var bw:Number = 1;
@@ -39,10 +39,10 @@ package org.papervision3d.materials.shaders.light
 				drawCommand.length = 0;
 				_drawContext.graphics.clear();
 				
-				lightMatrix = object.transform.worldTransform.clone();
+				lightMatrix.rawData = object.transform.worldTransform.rawData;
 				lightMatrix.invert();
 				
-				_outputBitmap.copyPixels(_baseBitmap, _outputBitmap.rect, new Point());
+				//_outputBitmap.copyPixels(_baseBitmap, _outputBitmap.rect, new Point());
 				bh = _outputBitmap.height;
 				bw = _outputBitmap.width;
 
@@ -52,9 +52,10 @@ package org.papervision3d.materials.shaders.light
 				if(lights.vector.length > 0){
 					
 					var light:PointLight = lights.vector[0] as PointLight;	
-					var pos:Vector3D = lightMatrix.transformVector(light.transform.position);
+					var pos:Vector3D = lightMatrix.transformVector(new Vector3D(light.x, -light.y, light.z));
 					
 					pos.normalize();
+				
 					var i:int = 0;
 					
 					for each(var t:Triangle in (object.renderer.geometry as TriangleGeometry).triangles){
@@ -69,7 +70,7 @@ package org.papervision3d.materials.shaders.light
 				//see below
 				_drawContext.graphics.drawGraphicsData(drawCommand);
 				
-				_outputBitmap.draw(_drawContext, null, null, "multiply");
+				_outputBitmap.draw(_drawContainer, null, null, "normal");
 
 		}
 		public function getOutput():Sprite{
@@ -89,10 +90,11 @@ package org.papervision3d.materials.shaders.light
 			
 			if(!t.normal)
 				t.createNormal();
-			var g : Number = t.normal.dotProduct(lightVector);
+			var g : Number = lightVector.dotProduct(t.normal);
 			
 			if(g < 0)
 				g = 0;
+			
 
 			var v:Vector.<Number> = new Vector.<Number>();
 			v.push(t.uv0.u*bw,  (1-t.uv0.v)*bh,  t.uv1.u*bw, (1-t.uv1.v)*bh, t.uv2.u*bw, (1-t.uv2.v)*bh);

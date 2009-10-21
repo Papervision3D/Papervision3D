@@ -13,12 +13,17 @@ package org.papervision3d.materials.shaders.light
 		protected var _overlayTexture:BitmapData;
 		protected var _overlayBitmap : Bitmap;
 		protected var _drawContext : Sprite;
+		protected var _drawContainer : Sprite;
 		
 		public function AbstractLightShader()
 		{
 			super();
 			_overlayBitmap = new Bitmap();
 			_drawContext = new Sprite();
+			_drawContainer = new Sprite();
+			
+			_drawContainer.addChild(_drawContext);
+			_drawContext.blendMode = "multiply";
 		}
 
 		public override function set texture(value:Texture):void{
@@ -28,6 +33,7 @@ package org.papervision3d.materials.shaders.light
 				var t2d:Texture2D = _texture as Texture2D;
 				_overlayTexture = new BitmapData(t2d.bitmap.width, t2d.bitmap.height, false, 0);
 				_overlayBitmap.bitmapData = _overlayTexture;
+				_drawContainer.addChildAt(new Bitmap(_baseBitmap),0);
 			}
 			
 		}

@@ -24,9 +24,9 @@ package org.papervision3d.objects.lights
 			if(!flatMapCreated){
 				var s:Sprite = new Sprite();
 				var m:Matrix = new Matrix();
-				m.createGradientBox(256,1,0,0,0);
+				m.createGradientBox(255,1,0,0,0);
 				s.graphics.beginGradientFill(GradientType.LINEAR, [ambientColor,lightColor],[1,1],[0,255],m);
-				s.graphics.drawRect(0,0,256,1);
+				s.graphics.drawRect(0,0,255,1);
 				s.graphics.endFill();
 				flatMap.draw(s);
 				flatMapCreated = true;

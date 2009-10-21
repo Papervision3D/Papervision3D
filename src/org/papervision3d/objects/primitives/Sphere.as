@@ -14,7 +14,7 @@ package org.papervision3d.objects.primitives
 		private var segmentsW : int = 8;
 		
 		
-		public function Sphere(material:AbstractMaterial, radius:Number=100, segementsW:int=6, segmentsH:int=8)
+		public function Sphere(material:AbstractMaterial, radius:Number=100, segmentsW:int=6, segmentsH:int=8)
 		{
 			super(name);
 			this.segmentsH = segmentsH;
@@ -46,7 +46,7 @@ package org.papervision3d.objects.primitives
 					var fY:Number = fRds*Math.cos(fRad2*Math.PI);
 					
 						oVtx = new Vertex(fY,fZ,fX);
-						renderer.geometry.addVertex(oVtx);
+						//renderer.geometry.addVertex(oVtx);
 					
 					aRow.push(oVtx);
 				}
