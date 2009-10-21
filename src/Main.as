@@ -101,8 +101,10 @@ package
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
 			
-			sun = new Sphere(new Material(new Texture2D((new earthMap() as Bitmap).bitmapData), new FlatShader()), 100, 8, 10);
-			//addChild((sun.material.shader as FlatShader).getOutput());
+			sun = new Sphere(new Material(new Texture2D((new earthMap() as Bitmap).bitmapData), new FlatShader()), 100, 4, 5);
+			sun.rotationX = -45;
+			//addChild(new earthMap()).alpha = 0.25;
+			//addChild((sun.material.shader as FlatShader).getOutputBitmap()).alpha = 0.25;
 			//sun.y = 600;
 			earth = new Cube(new WireframeMaterial(0x0000ff), 50);
 			//sun.addChild(earth);
@@ -116,7 +118,7 @@ package
 			moon.x = 100;
 			moon.rotationX = -45;
 			
-			var light:PointLight = new PointLight();
+			var light:PointLight = new PointLight(0xFFFFFF, 0x333333);
 			light.x = 250;
 			
 			scene.addChild(light);

@@ -22,12 +22,11 @@ package org.papervision3d.materials.shaders.light
 	
 	public class FlatShader extends AbstractLightShader
 	{
-		protected var ambientColor : uint;
-		
+
 		public function FlatShader()
 		{
 			super();
-			buildMap();
+			//buildMap();
 		}
 		private var lightMatrix:Matrix3D;
 		private var drawCommand:Vector.<IGraphicsData> = new Vector.<IGraphicsData>;
@@ -46,12 +45,8 @@ package org.papervision3d.materials.shaders.light
 				_outputBitmap.copyPixels(_baseBitmap, _outputBitmap.rect, new Point());
 				bh = _outputBitmap.height;
 				bw = _outputBitmap.width;
+
 				
-				/* _drawContext.graphics.beginFill(0x444499, 0.25);
-				_drawContext.graphics.drawRect(0, 0, bw, bh);
-				_drawContext.graphics.endFill();
-				 */
-					trace(_baseBitmap == _outputBitmap);
 				var lights:LightVector = renderData.lights;
 
 				if(lights.vector.length > 0){
@@ -60,11 +55,11 @@ package org.papervision3d.materials.shaders.light
 					var pos:Vector3D = lightMatrix.transformVector(light.transform.position);
 					
 					pos.normalize();
-					//trace((object.renderer.geometry as TriangleGeometry).triangles.length);
+				//	trace((object.renderer.geometry as TriangleGeometry).triangles.length);
 					var i:int = 0;
 					for each(var t:Triangle in (object.renderer.geometry as TriangleGeometry).triangles){
-							//trace(t.uv0.u, t.uv0.v, t.uv1.u, t.uv1.v, t.uv2.u, t.uv2.v);
-							handleTriangle(t, pos, light);
+
+								handleTriangle(t, pos, light);
 					}
 					//trace("----------");
 					
@@ -82,6 +77,10 @@ package org.papervision3d.materials.shaders.light
 			return _drawContext;
 		}
 		
+		public function getOutputBitmap():Bitmap{
+			return new Bitmap(_outputBitmap);
+		}
+		
 		public function getBaseBitmap():Bitmap{
 			return new Bitmap(_baseBitmap);
 		}
@@ -95,30 +94,23 @@ package org.papervision3d.materials.shaders.light
 			if(g < 0)
 				g = 0;
 
-_drawContext.graphics.beginFill(flatMap.getPixel(g*0xFF, 0), 1);
-			_drawContext.graphics.moveTo(t.uv0.u*bh,  (1-t.uv0.v)*bh);
-			
+
+			_drawContext.graphics.moveTo(t.uv0.u*bw,  (1-t.uv0.v)*bh);
+			_drawContext.graphics.beginFill(light.getFlatMap().getPixel(g*0xFF, 0),1);
 			_drawContext.graphics.lineTo(t.uv1.u*bw, (1-t.uv1.v)*bh);
 			_drawContext.graphics.lineTo(t.uv2.u*bw, (1-t.uv2.v)*bh);
 			_drawContext.graphics.lineTo(t.uv0.u*bw, (1-t.uv0.v)*bh);
+			
 
 			_drawContext.graphics.endFill();
+			
+
 			//grrr - what am i doing wrong here?!?!?
 			/* drawCommand.push(new GraphicsSolidFill(flatMap.getPixel(g*0xFF, 0), 1));
 			drawCommand.push(new GraphicsTrianglePath(new Vector.<Number>([t.uv0.u*bw,  (1-t.uv0.v)*bh, t.uv1.u*bw, (1-t.uv1.v)*bh, t.uv2.u*bw, (1-t.uv2.v)*bh])));
 			drawCommand.push(new GraphicsEndFill()); */
 		}
-		private var flatMap : BitmapData = new BitmapData(256, 1, false, 0);
-		private function buildMap():void{
-			
-			var s:Sprite = new Sprite();
-			var m:Matrix = new Matrix();
-			m.createGradientBox(256,1,0,0,0);
-			s.graphics.beginGradientFill(GradientType.LINEAR, [0x0,0x999999],[1,1],[0,255],m);
-			s.graphics.drawRect(0,0,256,1);
-			s.graphics.endFill();
-			flatMap.draw(s);
-		}
+		
 		
 	}
 }

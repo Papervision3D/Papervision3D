@@ -20,5 +20,7 @@ package org.papervision3d.materials.shaders
 		function set clear(value:IGraphicsData):void
 		function get clear():IGraphicsData;
 		function get usesUV():Boolean;
+		function set doubleSided(value:Boolean):void;
+		function get doubleSided():Boolean;
 	}
 }

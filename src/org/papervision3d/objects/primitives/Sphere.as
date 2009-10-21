@@ -44,10 +44,10 @@ package org.papervision3d.objects.primitives
 					var fRad2:Number = Number(2*i/iHor);
 					var fX:Number = fRds*Math.sin(fRad2*Math.PI);
 					var fY:Number = fRds*Math.cos(fRad2*Math.PI);
-					if (!((j==0||j==iVer)&&i>0)) { 
+					
 						oVtx = new Vertex(fY,fZ,fX);
 						renderer.geometry.addVertex(oVtx);
-					}
+					
 					aRow.push(oVtx);
 				}
 				aVtc.push(aRow);
@@ -74,9 +74,9 @@ package org.papervision3d.objects.primitives
 						var aP2uv:UVCoord = new UVCoord(fI1,fJ0);
 						var aP3uv:UVCoord = new UVCoord(fI1,fJ1);
 						
-						if (j<(aVtc.length-1)){	triGeometry.addTriangle(new Triangle(material.shader, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv)); totalTris++;}
+						if (j<(aVtc.length)){	triGeometry.addTriangle(new Triangle(material.shader, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv)); totalTris++;}
 						
-						if (j>1)				{ triGeometry.addTriangle(new Triangle(material.shader, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv)); totalTris++;}
+						if (j>0)				{ triGeometry.addTriangle(new Triangle(material.shader, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv)); totalTris++;}
 	
 					}
 				}
@@ -84,7 +84,7 @@ package org.papervision3d.objects.primitives
 			
 			
 			renderer.updateIndices();
-			//trace("HAS ", triGeometry.triangles.length, totalTris, " triangles");
+			trace("HAS ", triGeometry.triangles.length, totalTris, " triangles");
 		}
 		
 	}

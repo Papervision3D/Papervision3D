@@ -18,7 +18,8 @@ package org.papervision3d.materials.shaders
 		protected var _clear : IGraphicsData;
 		protected var _usesUV : Boolean = true;
 		protected var _dirty : Boolean = false;
-		
+				
+		protected var _doubleSided : Boolean = false;	
 		
 		public function AbstractShader()
 		{
@@ -34,6 +35,14 @@ package org.papervision3d.materials.shaders
 		
 		public function get clear():IGraphicsData{
 			return _clear;
+		}
+		
+		public function set doubleSided(value:Boolean):void{
+			_doubleSided = value;
+		}
+		
+		public function get doubleSided():Boolean{
+			return _doubleSided;
 		}
 		
 		

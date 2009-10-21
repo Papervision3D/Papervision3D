@@ -395,7 +395,7 @@ package org.papervision3d.render
 				v2.x = outV[i2+4];
 				v2.y = outV[i2+5];
 				
-				if ((v2.x - v0.x) * (v1.y - v0.y) - (v2.y - v0.y) * (v1.x - v0.x) > 0)
+				if (!triangle.shader.doubleSided && (v2.x - v0.x) * (v1.y - v0.y) - (v2.y - v0.y) * (v1.x - v0.x) > 0)
 				{
 					stats.culledTriangles ++;
 					continue;

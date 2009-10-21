@@ -8,7 +8,8 @@ package org.papervision3d.materials
 			
 		protected var _texture : Texture;
 		protected var _shader : IShader;
-			
+
+		
 		public function AbstractMaterial()
 		{
 			
