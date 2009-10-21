@@ -1,13 +1,21 @@
 package 
 {
+	import __AS3__.vec.Vector;
+	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.GraphicsGradientFill;
+	import flash.display.GraphicsSolidFill;
+	import flash.display.GraphicsStroke;
+	import flash.display.GraphicsTrianglePath;
+	import flash.display.IGraphicsData;
 	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageQuality;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.geom.Matrix;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
@@ -128,7 +136,8 @@ package
 			
 			var ucs :UCS = new UCS("ucs0", 100);
 			earth.addChild(ucs);
-
+			
+		
 			addEventListener(Event.ENTER_FRAME, render);
 		}
 		

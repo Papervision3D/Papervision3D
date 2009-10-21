@@ -3,11 +3,11 @@ package org.papervision3d.materials.shaders.light
 	import __AS3__.vec.Vector;
 	
 	import flash.display.Bitmap;
-	import flash.display.BitmapData;
-	import flash.display.GradientType;
+	import flash.display.GraphicsSolidFill;
+	import flash.display.GraphicsStroke;
+	import flash.display.GraphicsTrianglePath;
 	import flash.display.IGraphicsData;
 	import flash.display.Sprite;
-	import flash.geom.Matrix;
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
@@ -55,20 +55,19 @@ package org.papervision3d.materials.shaders.light
 					var pos:Vector3D = lightMatrix.transformVector(light.transform.position);
 					
 					pos.normalize();
-				//	trace((object.renderer.geometry as TriangleGeometry).triangles.length);
 					var i:int = 0;
+					
 					for each(var t:Triangle in (object.renderer.geometry as TriangleGeometry).triangles){
 
 								handleTriangle(t, pos, light);
 					}
-					//trace("----------");
 					
 				}else{
 					_overlayTexture.fillRect(_overlayTexture.rect, 0xFF0499);
 				}
 				
 				//see below
-				//_drawContext.graphics.drawGraphicsData(drawCommand);
+				_drawContext.graphics.drawGraphicsData(drawCommand);
 				
 				_outputBitmap.draw(_drawContext, null, null, "multiply");
 
@@ -85,6 +84,7 @@ package org.papervision3d.materials.shaders.light
 			return new Bitmap(_baseBitmap);
 		}
 		
+		
 		private function handleTriangle(t:Triangle, lightVector:Vector3D, light:ILight):void{
 			
 			if(!t.normal)
@@ -94,21 +94,13 @@ package org.papervision3d.materials.shaders.light
 			if(g < 0)
 				g = 0;
 
-
-			_drawContext.graphics.moveTo(t.uv0.u*bw,  (1-t.uv0.v)*bh);
-			_drawContext.graphics.beginFill(light.getFlatMap().getPixel(g*0xFF, 0),1);
-			_drawContext.graphics.lineTo(t.uv1.u*bw, (1-t.uv1.v)*bh);
-			_drawContext.graphics.lineTo(t.uv2.u*bw, (1-t.uv2.v)*bh);
-			_drawContext.graphics.lineTo(t.uv0.u*bw, (1-t.uv0.v)*bh);
+			var v:Vector.<Number> = new Vector.<Number>();
+			v.push(t.uv0.u*bw,  (1-t.uv0.v)*bh,  t.uv1.u*bw, (1-t.uv1.v)*bh, t.uv2.u*bw, (1-t.uv2.v)*bh);
 			
-
-			_drawContext.graphics.endFill();
 			
-
-			//grrr - what am i doing wrong here?!?!?
-			/* drawCommand.push(new GraphicsSolidFill(flatMap.getPixel(g*0xFF, 0), 1));
-			drawCommand.push(new GraphicsTrianglePath(new Vector.<Number>([t.uv0.u*bw,  (1-t.uv0.v)*bh, t.uv1.u*bw, (1-t.uv1.v)*bh, t.uv2.u*bw, (1-t.uv2.v)*bh])));
-			drawCommand.push(new GraphicsEndFill()); */
+			drawCommand.push(new GraphicsSolidFill(light.getFlatMap().getPixel(g*0xFF, 0)));
+			drawCommand.push(new GraphicsTrianglePath(v));
+			drawCommand.push(new  GraphicsStroke());
 		}
 		
 		
