@@ -84,7 +84,7 @@ package
 			tf.multiline = true;
 			tf.text = "Papervision3D - version 3.0";
 			
-			viewport = new Viewport3D(0, 0, true);
+			viewport = new Viewport3D(800, 600, true);
 			addChild(viewport);
 			
 			scene = new DisplayObject3D("Scene");
@@ -130,6 +130,7 @@ package
 			
 			
 			scene.addChild(light);
+
 
 			
 			camera.y = 100;

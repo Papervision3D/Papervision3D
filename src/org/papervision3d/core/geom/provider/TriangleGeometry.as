@@ -1,5 +1,10 @@
 package org.papervision3d.core.geom.provider
 {
+	import __AS3__.vec.Vector;
+	
+	import flash.geom.Vector3D;
+	import flash.utils.Dictionary;
+	
 	import org.papervision3d.core.geom.Triangle;
 	import org.papervision3d.core.geom.Vertex;
 	
@@ -7,6 +12,8 @@ package org.papervision3d.core.geom.provider
 	{
 		/** */
 		public var triangles :Vector.<Triangle>; 
+		
+		protected var vectorFaceLinks : Dictionary = new Dictionary(false);
 		/**
 		 * 
 		 */ 
@@ -35,6 +42,22 @@ package org.papervision3d.core.geom.provider
 				triangle.v2 = addVertex(triangle.v2);
 				
 				triangles.push(triangle);
+				
+				
+				if(!vectorFaceLinks[triangle.v0]){
+					vectorFaceLinks[triangle.v0] = new Vector.<Triangle>();
+				}
+				vectorFaceLinks[triangle.v0].push(triangle);
+				
+				if(!vectorFaceLinks[triangle.v1]){
+					vectorFaceLinks[triangle.v1] = new Vector.<Triangle>();
+				}
+				vectorFaceLinks[triangle.v1].push(triangle);
+				
+				if(!vectorFaceLinks[triangle.v2]){
+					vectorFaceLinks[triangle.v2] = new Vector.<Triangle>();
+				}
+				vectorFaceLinks[triangle.v2].push(triangle);
 
 				return triangle;	
 			}
@@ -42,6 +65,30 @@ package org.papervision3d.core.geom.provider
 			{
 				return triangles[index];
 			}
+		}
+		
+		public var vertexNormalsDirty : Boolean = true;
+		
+		public function generateVertexNormals():void{
+		
+			if(!vertexNormalsDirty)
+				return;
+					
+			var tmpNormal : Vector3D;
+			for each (var v:Vertex in this.vertices){
+			
+				var vA:Vector.<Triangle> = vectorFaceLinks[v];
+				tmpNormal = new Vector3D();
+				for each(var t:Triangle in vA){
+					if(!t.normal)
+						t.createNormal();
+					tmpNormal  = t.normal.add(tmpNormal);
+				}
+				
+				tmpNormal.normalize();
+				v.normal = tmpNormal.clone();
+			}
+			vertexNormalsDirty = false;
 		}
 		
 		/**

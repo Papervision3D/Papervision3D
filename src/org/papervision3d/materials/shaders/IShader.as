@@ -12,6 +12,7 @@ package org.papervision3d.materials.shaders
 	{
 		function process(renderData:RenderData, object:DisplayObject3D):void;
 		function set texture(value:Texture):void
+		function get texture():Texture;
 		function set bitmap(bitmapData:BitmapData):void;
 		function get bitmap():BitmapData;
 		function set material(value:AbstractMaterial) : void;

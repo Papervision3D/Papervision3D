@@ -37,6 +37,9 @@ package org.papervision3d.core.geom
 		/** */
 		public var shader : IShader;
 		
+		
+		pv3d var cullFlags : int;
+		
 		/** */
 		pv3d var clipFlags :int;
 		

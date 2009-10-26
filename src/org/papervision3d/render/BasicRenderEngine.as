@@ -140,7 +140,7 @@ package org.papervision3d.render
 				
 				for each (triangle in geometry.triangles)
 				{
-					triangle.clipFlags = 0;
+					triangle.clipFlags = triangle.cullFlags = 0;
 					triangle.visible = false;
 					
 					stats.totalTriangles++;
@@ -162,7 +162,7 @@ package org.papervision3d.render
 					if (_clipFlags & ClipFlags.NEAR)
 					{
 						flags = getClipFlags(clipPlanes[Frustum3D.NEAR], v0, v1, v2);
-						if (flags == 7 ) { stats.culledTriangles++; continue; }
+						if (flags == 7 ) { stats.culledTriangles++; triangle.cullFlags = 1; continue; }
 						else if (flags) { triangle.clipFlags |= ClipFlags.NEAR; }
 					}
 					
@@ -183,6 +183,8 @@ package org.papervision3d.render
 						if ((sv2.x - sv0.x) * (sv1.y - sv0.y) - (sv2.y - sv0.y) * (sv1.x - sv0.x) > 0)
 						{
 						//	stats.culledTriangles ++;
+							//triangle.clipFlags = 128;
+						
 							continue;
 						}
 					}

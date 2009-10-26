@@ -11,8 +11,11 @@ package org.papervision3d.objects.lights
 	{
 		protected var ambientColor:uint = 0x101010;
 		protected var lightColor:uint = 0xFFFFFF;
-		public function PointLight(lightColor:uint=0xAAAAAA, ambientColor:uint=0x000000)
+		protected var specularLevel : uint = 1;
+		
+		public function PointLight(lightColor:uint=0xAAAAAA, ambientColor:uint=0x000000, specular:int = 0)
 		{
+			this.specularLevel = specular;
 			this.ambientColor = ambientColor;
 			this.lightColor = lightColor;	
 		}
@@ -32,6 +35,26 @@ package org.papervision3d.objects.lights
 				flatMapCreated = true;
 			}
 			return flatMap;
+		}
+		
+		private var gouraudMap : BitmapData = new BitmapData(256, 1, false, 0);
+		private var	gouraudMapCreated :Boolean = false;
+		
+		public function getGouraudMap( ):BitmapData
+		{
+			if(!gouraudMapCreated){
+				gouraudMap = new BitmapData(255,3,false,0xFFFFFF);
+				var s:Sprite = new Sprite();
+				var m:Matrix = new Matrix();
+				m.createGradientBox(255,3,0,0,0);
+	//			s.graphics.beginGradientFill(GradientType.LINEAR, [ambientColor,lightColor],[1,1],[0,255],m);
+				s.graphics.beginGradientFill(GradientType.LINEAR, [ambientColor,ambientColor,lightColor],[1,1,1],[0,specularLevel,0xFF],m);
+				s.graphics.drawRect(0,0,255,3);
+				s.graphics.endFill();
+				gouraudMap.draw(s);
+				gouraudMapCreated = true;
+			}
+			return gouraudMap;
 		}
 	}
 }

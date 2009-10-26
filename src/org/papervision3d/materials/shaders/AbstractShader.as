@@ -58,6 +58,10 @@ package org.papervision3d.materials.shaders
 			_texture = value;
 		}
 		
+		public function get texture():Texture{
+			return _texture;
+		}
+		
 		public function set bitmap(bitmapData:BitmapData):void
 		{
 			_baseBitmap = bitmapData.clone();
