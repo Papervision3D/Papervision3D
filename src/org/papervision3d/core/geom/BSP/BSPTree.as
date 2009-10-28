@@ -169,12 +169,14 @@ package org.papervision3d.core.geom.BSP
 					for each(var tB:Triangle in results[1])
 						negSet.push(tB);
 				}else{
+					
 					//coincide?  do what?
-					var p:Plane3D = Plane3D.fromThreePoints(t.v0, t.v1, t.v2);
+					/*var p:Plane3D = Plane3D.fromThreePoints(t.v0, t.v1, t.v2);
 					if(GeomUtil.equalVector(p.normal, divider.normal, 0.1)){
-						node.back.polygonSet.push(t);}
+						node.front.polygonSet.push(t);}
 					else
-						node.front.polygonSet.push(t);
+						node.back.polygonSet.push(t);*/
+						node.polygonSet.push(t);
 				}
 				
 			}
