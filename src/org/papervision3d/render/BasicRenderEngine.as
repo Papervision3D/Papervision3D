@@ -5,6 +5,7 @@ package org.papervision3d.render
 	import flash.geom.Vector3D;
 	
 	import org.papervision3d.cameras.Camera3D;
+	import org.papervision3d.core.geom.BSP.BSPTree;
 	import org.papervision3d.core.geom.Line;
 	import org.papervision3d.core.geom.Triangle;
 	import org.papervision3d.core.geom.provider.LineGeometry;
@@ -129,6 +130,16 @@ package org.papervision3d.render
 		
 			renderer = object.renderer;	
 			stats.totalObjects++;
+			
+			
+			if(object is BSPTree){
+				//walk the tree!
+				(object as BSPTree).walkTree(camera, renderData);
+				
+				return;
+			}
+			
+			
 			
 			if (object.cullingState == 0 && object.renderer.geometry is TriangleGeometry)
 			{

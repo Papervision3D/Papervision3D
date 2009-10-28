@@ -1,6 +1,5 @@
 package 
 {
-	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Loader;
 	import flash.display.Sprite;
@@ -14,20 +13,19 @@ package
 	import net.hires.debug.Stats;
 	
 	import org.papervision3d.cameras.Camera3D;
+	import org.papervision3d.core.geom.BSP.BSPTree;
 	import org.papervision3d.core.geom.provider.VertexGeometry;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.render.clipping.ClipFlags;
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
+	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
-	import org.papervision3d.materials.Material;
+	import org.papervision3d.materials.BitmapMaterial;
 	import org.papervision3d.materials.WireframeMaterial;
-	import org.papervision3d.materials.shaders.light.FlatShader;
-	import org.papervision3d.materials.textures.Texture2D;
 	import org.papervision3d.objects.DisplayObject3D;
-	import org.papervision3d.objects.lights.PointLight;
 	import org.papervision3d.objects.primitives.Cube;
-	import org.papervision3d.objects.primitives.Sphere;
+	import org.papervision3d.objects.primitives.Plane;
 	import org.papervision3d.objects.special.UCS;
 	import org.papervision3d.render.BasicRenderEngine;
 	import org.papervision3d.view.Viewport3D;
@@ -50,7 +48,7 @@ package
 		public var loader:Loader;
 		public var camera2 :Camera3D;
 		
-		public var sun :Sphere;
+		public var sun :DisplayObject3D;
 		public var earth :Cube;
 		public var moon :Cube;
 		public var cube :Cube;
@@ -104,7 +102,7 @@ package
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
 
 			
-			sun = new Sphere(new Material(new Texture2D((new earthMap() as Bitmap).bitmapData), new FlatShader()), 100, 14, 14);
+			/* sun = new Sphere(new Material(new Texture2D((new earthMap() as Bitmap).bitmapData), new FlatShader()), 100, 14, 14);
 			//addChild(new earthMap()).alpha = 0.25;
 			//addChild((sun.material.shader as FlatShader).getOutputBitmap()).alpha = 0.25;
 
@@ -129,9 +127,27 @@ package
 			light.y = 90;
 			
 			
-			scene.addChild(light);
+			scene.addChild(light); */
 
-
+			sun = new DisplayObject3D();
+			scene.addChild(sun);
+			
+			earth = new Cube(new WireframeMaterial(0x0000ff), 50, "earth");
+			earth.addChild(new Plane(new BitmapMaterial(bmp), 300, 300));
+			
+			var do2:DisplayObject3D = new DisplayObject3D();
+			
+			
+		//	trace((do2.renderer.geometry as TriangleGeometry).triangles.length);
+			var BSP:BSPTree = new BSPTree(earth);
+			
+			
+			//just to see what it looks like
+			do2.renderer.geometry =  BSP.geom;
+			
+			do2.renderer.updateIndices();
+			scene.addChild(BSP);
+			
 			
 			camera.y = 100;
 			
@@ -147,22 +163,13 @@ package
 		private function render(event:Event=null):void
 		{
 		
-			sun.rotationY++;
+			//sun.rotationY++;
 			_s += 0.02;
-			
-			earth.rotationY += 2;
-			earth.rotationZ += 2;
-		//	earth.rotationZ++;
-		//	earth.transform.eulerAngles.z += 2;
-		//	earth.transform.dirty = true;
-			
-			moon.lookAt(sun);
-			//moon.rotationY += 3;
-			
-		//	camera.x = Math.sin(_r) * 1000;
-		//	camera.z = Math.cos(_r) * 1000;
-		//	_r += Math.PI/90;
 
+
+			camera.y = viewport.containerSprite.mouseY/(viewport.viewportHeight*0.5)*290;
+			camera.x = viewport.containerSprite.mouseX/(viewport.viewportWidth*0.5)*290;
+			camera.z = (camera.x + camera.z)/2+200;
 			
 			camera.lookAt(sun);
 

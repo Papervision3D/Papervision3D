@@ -50,8 +50,8 @@ package org.papervision3d.objects.primitives
 					var uv2 :UVCoord = new UVCoord(1, 0);
 					var uv3 :UVCoord = new UVCoord(1, 1);
 					
-					TriangleGeometry(renderer.geometry).addTriangle( new Triangle(material, v0, v1, v2, uv0, uv1, uv2) );
-					TriangleGeometry(renderer.geometry).addTriangle( new Triangle(material, v0, v2, v3, uv0, uv2, uv3) );
+					TriangleGeometry(renderer.geometry).addTriangle( new Triangle(material.shader, v0, v1, v2, uv0, uv1, uv2) );
+					TriangleGeometry(renderer.geometry).addTriangle( new Triangle(material.shader, v0, v2, v3, uv0, uv2, uv3) );
 				}
 			}
 			

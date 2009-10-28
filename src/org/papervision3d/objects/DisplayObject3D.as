@@ -29,7 +29,7 @@ package org.papervision3d.objects
 		{
 			super(name);
 		
-			renderer = new ObjectRenderer();
+			renderer = new ObjectRenderer(this);
 		}
 	}
 }
