@@ -101,51 +101,15 @@ package
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
 
-			
-			/* sun = new Sphere(new Material(new Texture2D((new earthMap() as Bitmap).bitmapData), new FlatShader()), 100, 14, 14);
-			//addChild(new earthMap()).alpha = 0.25;
-			//addChild((sun.material.shader as FlatShader).getOutputBitmap()).alpha = 0.25;
-
-			//sun.y = 600;
-			earth = new Cube(new WireframeMaterial(0x0000ff), 50, "earth");
-			sun.addChild(earth);
-			//sun.transform.localScale = (new Vector3D(1, 2, 1));
-			earth.x = 300;
-			scene.addChild( sun );
-			//sun.rotationX = 45;
-			//earth.rotationX = 45;
-
-			moon = new  Cube(new WireframeMaterial(0xcccccc), 20, "moon");
-			earth.addChild(moon);
-			moon.x = 100;
-			//moon.rotationX = -45;
-			
-			var light:PointLight = new PointLight(0xFFFFFF, 0x333333);
-			light.x = -200;
-			light.z = 200;
-			light.addChild(new Cube(new WireframeMaterial(0xFAFA34), 10));
-			light.y = 90;
-			
-			
-			scene.addChild(light); */
 
 			sun = new DisplayObject3D();
 			scene.addChild(sun);
 			
 			earth = new Cube(new WireframeMaterial(0x0000ff), 50, "earth");
 			earth.addChild(new Plane(new BitmapMaterial(bmp), 300, 300));
-			
-			var do2:DisplayObject3D = new DisplayObject3D();
-			
-			
-		//	trace((do2.renderer.geometry as TriangleGeometry).triangles.length);
+
 			var BSP:BSPTree = new BSPTree(earth);
-			
-			
-			//just to see what it looks like
-			do2.renderer.geometry =  BSP.geom;
-			
-			do2.renderer.updateIndices();
+
 			scene.addChild(BSP);
 			
 			

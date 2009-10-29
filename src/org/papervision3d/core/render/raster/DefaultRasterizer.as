@@ -2,6 +2,8 @@ package org.papervision3d.core.render.raster
 {
 	import __AS3__.vec.Vector;
 	
+	import flash.display.GraphicsSolidFill;
+	import flash.display.GraphicsStroke;
 	import flash.display.IGraphicsData;
 	
 	import org.papervision3d.core.render.data.RenderData;
@@ -12,11 +14,14 @@ package org.papervision3d.core.render.raster
 	public class DefaultRasterizer implements IRasterizer
 	{
 		public var drawArray:Vector.<IGraphicsData> = new Vector.<IGraphicsData>();
+		private var stroke:GraphicsStroke = new GraphicsStroke(1);
+		private var endStroke:GraphicsStroke = new GraphicsStroke();
 		
 		public function DefaultRasterizer()
 		{
+			stroke.fill = new GraphicsSolidFill(0x334059);
 		}
-
+		
 		public function rasterize(renderData:RenderData):void{
 			
 			var hw :Number = renderData.viewport.viewportWidth / 2;
@@ -31,7 +36,7 @@ package org.papervision3d.core.render.raster
 			for each (drawable in renderData.drawManager.drawables)
 			{
 				drawable.toViewportSpace(hw, -hh);
-				drawArray.push(drawable.shader.drawProperties, drawable.path, drawable.shader.clear);
+				drawArray.push(stroke, drawable.shader.drawProperties, drawable.path, drawable.shader.clear, endStroke);
 				
 			}
 

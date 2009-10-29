@@ -14,7 +14,7 @@ package org.papervision3d.core.render.draw.sort
 
 		public function sort():void
 		{
-			
+	
 			
 		}
 		
@@ -22,9 +22,6 @@ package org.papervision3d.core.render.draw.sort
 			_drawList = list;
 		}
 		
-		private function screenZCompare(x:AbstractDrawable, y:AbstractDrawable):Number{
-			return x.screenZ-y.screenZ;
-		}
 		
 	}
 }

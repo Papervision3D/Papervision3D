@@ -10,5 +10,6 @@ package org.papervision3d.core.render.draw.manager
 		function handleList():void;
 		function addDrawable(drawable:AbstractDrawable):void;
 		function get drawables():Vector.<AbstractDrawable>;
+		
 	}
 }

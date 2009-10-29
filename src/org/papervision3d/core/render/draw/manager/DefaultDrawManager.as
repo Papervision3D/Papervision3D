@@ -34,5 +34,12 @@ package org.papervision3d.core.render.draw.manager
 			return drawlist.drawables;
 		}
 		
+		public function set drawList(value:DrawableList):void{
+			drawlist = value;
+		}
+		
+		public function get drawList():DrawableList{
+			return drawlist;
+		}
 	}
 }

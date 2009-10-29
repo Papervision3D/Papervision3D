@@ -23,6 +23,7 @@ package org.papervision3d.render
 	import org.papervision3d.core.render.draw.items.TriangleDrawable;
 	import org.papervision3d.core.render.draw.list.IDrawableList;
 	import org.papervision3d.core.render.draw.manager.DefaultDrawManager;
+	import org.papervision3d.core.render.draw.sort.NullDrawSorter;
 	import org.papervision3d.core.render.engine.AbstractRenderEngine;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
@@ -69,6 +70,7 @@ package org.papervision3d.render
 		{
 			pipeline = new BasicPipeline();
 			drawManager = new DefaultDrawManager();
+			(drawManager as DefaultDrawManager).drawList.sorter  = new NullDrawSorter();
 			
 			clipper = new SutherlandHodgmanClipper();
 			rasterizer = new DefaultRasterizer();

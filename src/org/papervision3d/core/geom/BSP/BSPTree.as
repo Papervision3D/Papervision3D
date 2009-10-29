@@ -9,6 +9,7 @@ package org.papervision3d.core.geom.BSP
 	import org.papervision3d.core.geom.provider.TriangleGeometry;
 	import org.papervision3d.core.math.Plane3D;
 	import org.papervision3d.core.math.utils.GeomUtil;
+	import org.papervision3d.core.memory.pool.DrawablePool;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.draw.items.TriangleDrawable;
@@ -18,60 +19,64 @@ package org.papervision3d.core.geom.BSP
 	public class BSPTree extends DisplayObject3D
 	{
 		use namespace pv3d;
-		var rootNode:BSPTreeNode;
-		public var geom:TriangleGeometry;
-			
+		public var rootNode:BSPTreeNode;
+		protected var _drawablePool : DrawablePool;
+		
 		public function BSPTree(do3d:DisplayObject3D)
 		{
 			super();
-			
-			
+			_drawablePool = new DrawablePool(TriangleDrawable);
+
 			var geom : TriangleGeometry = GeomUtil.flattenObject(do3d);
 			rootNode = new BSPTreeNode(null);
 		
 			GenerateBSPTree(rootNode, geom.triangles, 0, geom);
 			renderer.geometry = geom;
 			renderer.updateIndices();
-			this.geom = geom;
 		}
 		
 		public function walkTree(camera:Camera3D, renderData:RenderData):void{
+			
+			_drawablePool.reset();
 			
 			//no polys, no children
 			if(rootNode.polygonSet == null && rootNode.back == null)
 				return;
 				
-			traverse(rootNode, camera.transform.position, renderData);
+			var eye: Vector3D = camera.transform.position;
+			
+			traverse(rootNode, eye, renderData);
 			
 			
 		}
 		
 		public function traverse(node:BSPTreeNode, eye:Vector3D, renderData:RenderData):void{
+			
 			if(node == null)
 				return;
-				
-			var side:uint = GeomUtil.classifyPoint(eye, rootNode.divider);
+			
+			var side:uint = GeomUtil.classifyPoint(eye, node.divider);
 			if(side == GeomUtil.FRONT){
-				traverse(node.front, eye, renderData);
-				drawPolygons(node.polygonSet, renderData.drawManager);
-				traverse(node.back, eye, renderData);
-				
-			}else if(side == GeomUtil.BACK){
-				
 				traverse(node.back, eye, renderData);
 				drawPolygons(node.polygonSet, renderData.drawManager);
 				traverse(node.front, eye, renderData);
-			}else{
+				
+			}else  if(side == GeomUtil.BACK) {
+				
+				traverse(node.front, eye, renderData);
+				drawPolygons(node.polygonSet, renderData.drawManager);
+				traverse(node.back, eye, renderData);
+			} else{
 				traverse(node.front, eye, renderData);
 				traverse(node.back, eye, renderData);
-			}
+			}  
 		}
 		
 		
 		private var v0:Vector3D = new Vector3D(), v1:Vector3D = new Vector3D(), v2:Vector3D = new Vector3D();
-		var sv0 :Vector3D = new Vector3D();
-		var sv1 :Vector3D = new Vector3D();
-		var sv2 :Vector3D = new Vector3D();
+		private var sv0 :Vector3D = new Vector3D();
+		private var sv1 :Vector3D = new Vector3D();
+		private var sv2 :Vector3D = new Vector3D();
 			
 		private function drawPolygons(polyList:Vector.<Triangle>, drawManager:IDrawManager):void{
 			
@@ -99,8 +104,8 @@ package org.papervision3d.core.geom.BSP
 					sv2.x = renderer.screenVertexData[ triangle.v2.screenIndexX ];	
 					sv2.y = renderer.screenVertexData[ triangle.v2.screenIndexY ];
 				
-				var drawable:TriangleDrawable = new TriangleDrawable();
-				drawable.screenZ = (v0.z + v1.z + v2.z) / 3;
+					var drawable:TriangleDrawable = _drawablePool.drawable as TriangleDrawable;
+					drawable.screenZ = 0;
 						
 						drawable.x0 = sv0.x;
 						drawable.y0 = sv0.y;
@@ -134,17 +139,20 @@ package org.papervision3d.core.geom.BSP
 		public static function GenerateBSPTree(node:BSPTreeNode, polySet:Vector.<Triangle>, depth:int, geom:TriangleGeometry):void{
 			
 			//trace("depth: ", depth);
-			if(depth > 18){
+			if(depth > 7){
 				trace("TOO DEEP!");
 				return;
 			}
 			
 			if(IsConvex(polySet)){
-				node.polygonSet = polySet;
+				for each(var t:Triangle in polySet)
+					node.polygonSet.push(t);
+					
+				node.divider = new Plane3D();
 				return;
 			}
 			
-			var poly:Triangle = polySet[int(Math.random()*polySet.length-1)];
+			var poly:Triangle = polySet[0];//int(Math.random()*polySet.length-1)];
 			var divider : Plane3D = Plane3D.fromThreePoints(poly.v0, poly.v1, poly.v2);
 			
 			var posSet : Vector.<Triangle> = new Vector.<Triangle>();
@@ -164,26 +172,30 @@ package org.papervision3d.core.geom.BSP
 				}else if(side == GeomUtil.STRADDLE){
 					
 					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider);
-					for each(var tF:Triangle in results[0])
+					for each(var tF:Triangle in results[0]){
 						posSet.push(tF);
-					for each(var tB:Triangle in results[1])
+					}
+					for each(var tB:Triangle in results[1]){
 						negSet.push(tB);
+					}
 				}else{
 					
 					//coincide?  do what?
-					/*var p:Plane3D = Plane3D.fromThreePoints(t.v0, t.v1, t.v2);
-					if(GeomUtil.equalVector(p.normal, divider.normal, 0.1)){
-						node.front.polygonSet.push(t);}
+					//var p:Plane3D = Plane3D.fromThreePoints(t.v0, t.v1, t.v2);
+					
+					/* if(GeomUtil.equalVector(p.normal, divider.normal, 0.1)){
+						node.front.polygonSet.push(nt);}
 					else
-						node.back.polygonSet.push(t);*/
+						node.back.polygonSet.push(nt); */  
 						node.polygonSet.push(t);
 				}
 				
 			}
 			
 			
-			GenerateBSPTree(node.front, posSet, depth++, geom);
-			GenerateBSPTree(node.back, negSet, depth++, geom);
+			
+			GenerateBSPTree(node.front, posSet, depth+1, geom);
+			GenerateBSPTree(node.back, negSet, depth+1, geom);
 			
 		}
 		
@@ -195,7 +207,8 @@ package org.papervision3d.core.geom.BSP
 		}
 		
 		protected static function IsConvex(polySet:Vector.<Triangle>):Boolean{
-			
+			if(polySet.length == 1)
+				return true;
 			for each(var t0:Triangle in polySet){
 				for each(var t1:Triangle in polySet){
 					if(t0 != t1 && !PolyInFront(t0, t1))
