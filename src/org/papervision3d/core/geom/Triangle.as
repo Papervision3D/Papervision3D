@@ -6,7 +6,7 @@ package org.papervision3d.core.geom
 	import org.papervision3d.core.render.draw.items.IDrawable;
 	import org.papervision3d.materials.shaders.IShader;
 	
-	public class Triangle
+	public class Triangle extends Geometry
 	{
 		use namespace pv3d;
 		

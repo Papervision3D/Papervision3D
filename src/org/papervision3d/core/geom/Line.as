@@ -3,7 +3,7 @@ package org.papervision3d.core.geom
 	import org.papervision3d.core.render.draw.items.IDrawable;
 	import org.papervision3d.materials.shaders.IShader;
 	
-	public class Line
+	public class Line extends Geometry
 	{
 		/** Start point of line. */
 		public var v0 :Vertex;

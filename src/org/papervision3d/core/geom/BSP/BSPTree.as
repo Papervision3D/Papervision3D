@@ -152,6 +152,11 @@ package org.papervision3d.core.geom.BSP
 			
 		}
 
+		private static function chooseRandomPoly(polySet:Vector.<Triangle>):Triangle{
+			return polySet[int(Math.random()*polySet.length-1)];
+		}
+		
+		
 		
 		private static var staticPlane:Plane3D = new Plane3D();
 		public static function GenerateBSPTree(node:BSPTreeNode, polySet:Vector.<Triangle>, depth:int, geom:TriangleGeometry):void{
@@ -168,7 +173,7 @@ package org.papervision3d.core.geom.BSP
 				return;
 			}
 			
-			var poly:Triangle = polySet[int(Math.random()*polySet.length-1)];
+			var poly:Triangle = chooseRandomPoly(polySet);
 			var divider : Plane3D = Plane3D.fromThreePoints(poly.v0, poly.v1, poly.v2);
 			
 			var posSet : Vector.<Triangle> = new Vector.<Triangle>();
@@ -187,7 +192,7 @@ package org.papervision3d.core.geom.BSP
 					negSet.push(t);
 				}else if(side == GeomUtil.STRADDLE){
 					
-					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.01, true, 0.01);
+					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.001, true, 0.05);
 					for each(var tF:Triangle in results[0]){
 						posSet.push(tF);
 					}
@@ -195,7 +200,7 @@ package org.papervision3d.core.geom.BSP
 						negSet.push(tB);
 					}
 				}else{
-											
+										
 					node.polygonSet.push(t);
 				}
 				
@@ -209,10 +214,10 @@ package org.papervision3d.core.geom.BSP
 		}
 		
 		
-		
+		private static var _workPlane : Plane3D = new Plane3D();
 		protected static function PolyInFront(t0:Triangle, t1:Triangle):Boolean{
-			var p:Plane3D = Plane3D.fromThreePoints(t1.v0, t1.v1, t1.v2);
-			return GeomUtil.classifyTriangle(t0, p) == GeomUtil.FRONT;
+			_workPlane.setThreePoints(t1.v0, t1.v1, t1.v2);
+			return GeomUtil.classifyTriangle(t0, _workPlane) == GeomUtil.FRONT;
 		}
 		
 		protected static function IsConvex(polySet:Vector.<Triangle>):Boolean{

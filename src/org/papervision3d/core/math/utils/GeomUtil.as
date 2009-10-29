@@ -248,6 +248,7 @@ package org.papervision3d.core.math.utils {
 						if(weldVertices) {
 							existing = findVertexInGeometry(geometry, v, weldTreshold) as Vertex;
 							if(existing) {
+								
 								v = existing;
 							}
 						}

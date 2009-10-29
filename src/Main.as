@@ -117,7 +117,8 @@ package
 			earth.addChild(new Cube(new BitmapMaterial(bmp2), 50)).x = 70;
 			var d:DisplayObject3D = earth.addChild(new Cube(new Material(new AnimatedTexture(new TestSprite()), new BasicShader()), 60));
 			d.x = -100;
-		
+			
+			
 			d.rotationZ = 45;
 
 			var BSP:BSPTree = new BSPTree(earth);
