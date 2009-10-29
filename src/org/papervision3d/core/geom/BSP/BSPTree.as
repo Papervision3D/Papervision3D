@@ -57,7 +57,7 @@ package org.papervision3d.core.geom.BSP
 				return;
 				
 			if(node.divider == null){
-				//node.divider = new Plane3D();
+				node.divider = staticPlane;
 			}
 			
 			var side:uint = GeomUtil.classifyPoint(eye, node.divider);
@@ -67,15 +67,15 @@ package org.papervision3d.core.geom.BSP
 				renderData.stats.totalTriangles += node.polygonSet;
 				traverse(node.front, eye, renderData);
 				
-			}else  if(side == GeomUtil.BACK) {
+			}else   if(side == GeomUtil.BACK)  {
 				
 				traverse(node.front, eye, renderData);
 				drawPolygons(node.polygonSet, renderData.drawManager);
 				renderData.stats.totalTriangles += node.polygonSet;
 				traverse(node.back, eye, renderData);
 			} else{
-				traverse(node.front, eye, renderData);
 				traverse(node.back, eye, renderData);
+				traverse(node.front, eye, renderData);
 			}  
 		}
 		
@@ -110,6 +110,16 @@ package org.papervision3d.core.geom.BSP
 					sv1.y = renderer.screenVertexData[ triangle.v1.screenIndexY ];
 					sv2.x = renderer.screenVertexData[ triangle.v2.screenIndexX ];	
 					sv2.y = renderer.screenVertexData[ triangle.v2.screenIndexY ];
+					
+
+						/* if ((sv2.x - sv0.x) * (sv1.y - sv0.y) - (sv2.y - sv0.y) * (sv1.x - sv0.x) > 0)
+						{
+						//	stats.culledTriangles ++;
+							//triangle.clipFlags = 128;
+						
+							continue;
+						}
+ */
 				
 					var drawable:TriangleDrawable = _drawablePool.drawable as TriangleDrawable;
 					drawable.screenZ = 0;
@@ -155,7 +165,6 @@ package org.papervision3d.core.geom.BSP
 			if(IsConvex(polySet)){
 				for each(var t:Triangle in polySet)
 					node.polygonSet.push(t);
-				node.divider =  staticPlane;
 				return;
 			}
 			
@@ -186,15 +195,7 @@ package org.papervision3d.core.geom.BSP
 						negSet.push(tB);
 					}
 				}else{
-					
-					//coincide?  do what?
-				/* 	var p:Plane3D = Plane3D.fromThreePoints(t.v0, t.v1, t.v2);
-					
-					 if(GeomUtil.equalVector(p.normal, divider.normal, 0.1)){
-						node.front.polygonSet.push(t);}
-					else
-						node.back.polygonSet.push(t);   */
-						
+											
 					node.polygonSet.push(t);
 				}
 				
