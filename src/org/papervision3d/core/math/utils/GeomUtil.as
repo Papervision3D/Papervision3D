@@ -138,7 +138,8 @@ package org.papervision3d.core.math.utils {
 				//NEED TO UPDATE!!
 				
 				var v:Vector.<Vector3D> = new Vector.<Vector3D>();
-				v.push(child.transform._localPosition, child.transform._localEulerAngles, child.transform._localScale);
+				v.push(child.transform.localPosition, child.transform.localEulerAngles, child.transform.localScale);
+				
 				child.transform.local.recompose(v);
 			//	child.localTransform.recompose(child._components);
 					

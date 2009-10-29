@@ -15,6 +15,7 @@ package org.papervision3d.materials.textures
 		}
 		
 		public override function update():void{
+			
 			_bitmap.fillRect(_bitmap.rect, 0 );
 			_bitmap.draw(drawItem);
 		}

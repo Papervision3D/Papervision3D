@@ -19,11 +19,13 @@ package
 	import org.papervision3d.core.render.clipping.ClipFlags;
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
-	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.materials.BitmapMaterial;
-	import org.papervision3d.materials.WireframeMaterial;
+	import org.papervision3d.materials.Material;
+	import org.papervision3d.materials.shaders.BasicShader;
+	import org.papervision3d.materials.textures.AnimatedTexture;
 	import org.papervision3d.objects.DisplayObject3D;
+	import org.papervision3d.objects.lights.PointLight;
 	import org.papervision3d.objects.primitives.Cube;
 	import org.papervision3d.objects.primitives.Plane;
 	import org.papervision3d.objects.special.UCS;
@@ -49,7 +51,7 @@ package
 		public var camera2 :Camera3D;
 		
 		public var sun :DisplayObject3D;
-		public var earth :Cube;
+		public var earth :DisplayObject3D;
 		public var moon :Cube;
 		public var cube :Cube;
 		
@@ -102,16 +104,24 @@ package
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
 
 
+			var bmp2:BitmapData = new BitmapData(256, 256);
+			bmp2.perlinNoise(256, 256, 2, 95800, true, true);
+
 			sun = new DisplayObject3D();
 			scene.addChild(sun);
 			
-			earth = new Cube(new WireframeMaterial(0x0000ff), 50, "earth");
+			var l:PointLight = new PointLight();
+			scene.addChild(l);
+			earth = new Cube(new BitmapMaterial(bmp), 50);
 			earth.addChild(new Plane(new BitmapMaterial(bmp), 300, 300));
+			earth.addChild(new Cube(new BitmapMaterial(bmp2), 50)).x = 70;
+			var d:DisplayObject3D = earth.addChild(new Cube(new Material(new AnimatedTexture(new TestSprite()), new BasicShader()), 60));
+			d.x = -100;
+			d.rotationZ = 45;
 
 			var BSP:BSPTree = new BSPTree(earth);
 
 			scene.addChild(BSP);
-			
 			
 			camera.y = 100;
 			

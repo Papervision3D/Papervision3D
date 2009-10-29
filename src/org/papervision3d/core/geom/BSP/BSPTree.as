@@ -29,7 +29,8 @@ package org.papervision3d.core.geom.BSP
 
 			var geom : TriangleGeometry = GeomUtil.flattenObject(do3d);
 			rootNode = new BSPTreeNode(null);
-		
+			
+			
 			GenerateBSPTree(rootNode, geom.triangles, 0, geom);
 			renderer.geometry = geom;
 			renderer.updateIndices();
@@ -54,6 +55,10 @@ package org.papervision3d.core.geom.BSP
 			
 			if(node == null)
 				return;
+				
+			if(node.divider == null){
+				//node.divider = new Plane3D();
+			}
 			
 			var side:uint = GeomUtil.classifyPoint(eye, node.divider);
 			if(side == GeomUtil.FRONT){
@@ -136,10 +141,11 @@ package org.papervision3d.core.geom.BSP
 		}
 
 		
+		private static var staticPlane:Plane3D = new Plane3D();
 		public static function GenerateBSPTree(node:BSPTreeNode, polySet:Vector.<Triangle>, depth:int, geom:TriangleGeometry):void{
 			
 			//trace("depth: ", depth);
-			if(depth > 7){
+			if(depth > 1800){
 				trace("TOO DEEP!");
 				return;
 			}
@@ -147,12 +153,11 @@ package org.papervision3d.core.geom.BSP
 			if(IsConvex(polySet)){
 				for each(var t:Triangle in polySet)
 					node.polygonSet.push(t);
-					
-				node.divider = new Plane3D();
+				node.divider =  staticPlane;
 				return;
 			}
 			
-			var poly:Triangle = polySet[0];//int(Math.random()*polySet.length-1)];
+			var poly:Triangle = polySet[int(Math.random()*polySet.length-1)];
 			var divider : Plane3D = Plane3D.fromThreePoints(poly.v0, poly.v1, poly.v2);
 			
 			var posSet : Vector.<Triangle> = new Vector.<Triangle>();
@@ -181,13 +186,14 @@ package org.papervision3d.core.geom.BSP
 				}else{
 					
 					//coincide?  do what?
-					//var p:Plane3D = Plane3D.fromThreePoints(t.v0, t.v1, t.v2);
+				/* 	var p:Plane3D = Plane3D.fromThreePoints(t.v0, t.v1, t.v2);
 					
-					/* if(GeomUtil.equalVector(p.normal, divider.normal, 0.1)){
-						node.front.polygonSet.push(nt);}
+					 if(GeomUtil.equalVector(p.normal, divider.normal, 0.1)){
+						node.front.polygonSet.push(t);}
 					else
-						node.back.polygonSet.push(nt); */  
-						node.polygonSet.push(t);
+						node.back.polygonSet.push(t);   */
+						
+					node.polygonSet.push(t);
 				}
 				
 			}

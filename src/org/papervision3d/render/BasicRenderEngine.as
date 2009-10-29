@@ -138,8 +138,7 @@ package org.papervision3d.render
 				//walk the tree!
 				(object as BSPTree).walkTree(camera, renderData);
 				
-				return;
-			}
+			}else{
 			
 			
 			
@@ -299,6 +298,7 @@ package org.papervision3d.render
 					
 					drawManager.addDrawable(lineDrawable);
 				}
+			}
 			}
 			
 			if(object.material)

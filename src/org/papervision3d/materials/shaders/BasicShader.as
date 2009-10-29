@@ -20,6 +20,7 @@ package org.papervision3d.materials.shaders
 		}
 		
 		public override function get drawProperties():IGraphicsData{
+			_outputBitmap = (texture as Texture2D).bitmap;
 			graphicsFill.bitmapData = _outputBitmap;
 			return _drawProperties;
 		}

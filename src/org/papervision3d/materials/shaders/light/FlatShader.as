@@ -62,7 +62,7 @@ package org.papervision3d.materials.shaders.light
 					*/
 					 
 					var pos:Vector3D = lightMatrix.transformVector(new Vector3D(light.x, -light.y, light.z));
-					trace(pos);
+					
 					pos.normalize();
 				
 					var i:int = 0;
