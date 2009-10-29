@@ -67,15 +67,12 @@ package org.papervision3d.core.geom.BSP
 				renderData.stats.totalTriangles += node.polygonSet;
 				traverse(node.front, eye, renderData);
 				
-			}else   if(side == GeomUtil.BACK)  {
-				
+			}else {
+				//fix via tim's recommend
 				traverse(node.front, eye, renderData);
 				drawPolygons(node.polygonSet, renderData.drawManager);
 				renderData.stats.totalTriangles += node.polygonSet;
 				traverse(node.back, eye, renderData);
-			} else{
-				traverse(node.back, eye, renderData);
-				traverse(node.front, eye, renderData);
 			}  
 		}
 		
@@ -192,7 +189,7 @@ package org.papervision3d.core.geom.BSP
 					negSet.push(t);
 				}else if(side == GeomUtil.STRADDLE){
 					
-					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.001, true, 0.05);
+					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.01, true, 0.05);
 					for each(var tF:Triangle in results[0]){
 						posSet.push(tF);
 					}
