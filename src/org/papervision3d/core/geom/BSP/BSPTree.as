@@ -153,6 +153,62 @@ package org.papervision3d.core.geom.BSP
 			return polySet[int(Math.random()*polySet.length-1)];
 		}
 		
+		//http://www.devmaster.net/articles/bsp-trees/ method - not sure how good actually is...
+		protected static function chooseBestPoly(polySet : Vector.<Triangle>) : Triangle
+		{
+
+			var _splitTestPlane : Plane3D = new Plane3D();
+			var bestTriangle : Triangle = polySet[0];
+			var leastSplits : Number = Number.POSITIVE_INFINITY;
+			var bestRelation : Number = -1;
+			
+			var splitCount : int = 0;
+			var backCount : int = 0;
+			var frontCount : int = 0;
+			var bestCount : Number = Number.POSITIVE_INFINITY;
+			var relation : Number = 0;
+			var minRelation : Number = Number.NEGATIVE_INFINITY * -1;
+			
+			
+				for each(var tri:Triangle in polySet){
+					
+					splitCount = 0;
+					frontCount = 0;
+					backCount = 0;
+					_splitTestPlane.setThreePoints(tri.v0, tri.v1, tri.v2);
+					for each(var tri2 :Triangle in polySet){
+						
+						if(tri == tri2){
+							continue;
+						}
+						
+						var side : uint = GeomUtil.classifyTriangle(tri2, _splitTestPlane, 0.01);
+						if(side == GeomUtil.BACK)
+							backCount++;
+						else if(side == GeomUtil.FRONT)
+							frontCount++;
+						else if(side == GeomUtil.STRADDLE)
+							splitCount++;
+							
+					} 
+					
+					if(frontCount<backCount)
+						relation = frontCount/backCount;
+					else
+						relation = backCount/frontCount;
+
+					if((relation > minRelation && splitCount < leastSplits) || (splitCount == leastSplits && relation > bestRelation)){
+						bestTriangle = tri;
+						leastSplits = splitCount;
+						bestRelation = relation;
+					}
+					
+				}
+
+			return bestTriangle;
+			
+		}
+		
 		
 		
 		private static var staticPlane:Plane3D = new Plane3D();
@@ -165,12 +221,12 @@ package org.papervision3d.core.geom.BSP
 			}
 			
 			if(IsConvex(polySet)){
-				for each(var t:Triangle in polySet)
-					node.polygonSet.push(t);
+				for each(var tt:Triangle in polySet)
+					node.polygonSet.push(tt);
 				return;
 			}
 			
-			var poly:Triangle = chooseRandomPoly(polySet);
+			var poly:Triangle = chooseBestPoly(polySet);
 			var divider : Plane3D = Plane3D.fromThreePoints(poly.v0, poly.v1, poly.v2);
 			
 			var posSet : Vector.<Triangle> = new Vector.<Triangle>();
@@ -189,7 +245,7 @@ package org.papervision3d.core.geom.BSP
 					negSet.push(t);
 				}else if(side == GeomUtil.STRADDLE){
 					
-					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.01, true, 0.05);
+					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.01, true, 0.25);
 					for each(var tF:Triangle in results[0]){
 						posSet.push(tF);
 					}
