@@ -144,10 +144,9 @@ package
 			//sun.rotationY++;
 			_s += 0.02;
 
-
 			camera.y = viewport.containerSprite.mouseY/(viewport.viewportHeight*0.5)*290;
 			camera.x = viewport.containerSprite.mouseX/(viewport.viewportWidth*0.5)*290;
-			camera.z = (camera.x + camera.z)/2+200;
+			camera.z = (camera.x + camera.z)/2+100;
 			
 			camera.lookAt(sun);
 

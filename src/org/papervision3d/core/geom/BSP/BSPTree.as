@@ -7,10 +7,12 @@ package org.papervision3d.core.geom.BSP
 	import org.papervision3d.cameras.Camera3D;
 	import org.papervision3d.core.geom.Triangle;
 	import org.papervision3d.core.geom.provider.TriangleGeometry;
+	import org.papervision3d.core.math.Frustum3D;
 	import org.papervision3d.core.math.Plane3D;
 	import org.papervision3d.core.math.utils.GeomUtil;
 	import org.papervision3d.core.memory.pool.DrawablePool;
 	import org.papervision3d.core.ns.pv3d;
+	import org.papervision3d.core.render.clipping.ClipFlags;
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.draw.items.TriangleDrawable;
 	import org.papervision3d.core.render.draw.manager.IDrawManager;
@@ -48,7 +50,7 @@ package org.papervision3d.core.geom.BSP
 			var eye: Vector3D = camera.transform.position;
 			
 			traverse(rootNode, eye, renderData);
-drawPolygonList(renderer.renderList, renderData.drawManager);
+			//drawPolygonList(renderer.renderList, renderData.drawManager, camera, renderData);
 			
 		}
 		
@@ -58,21 +60,21 @@ drawPolygonList(renderer.renderList, renderData.drawManager);
 				return;
 				
 			if(node.divider == null){
-				drawPolygons(node.polygonSet, renderData.drawManager);
+				addPolygons(node.polygonSet, renderData.drawManager);
 				return;
 			}
 			
 			var side:uint = GeomUtil.classifyPoint(eye, node.divider);
 			if(side == GeomUtil.FRONT){
 				traverse(node.back, eye, renderData);
-				drawPolygons(node.polygonSet, renderData.drawManager);
+				addPolygons(node.polygonSet, renderData.drawManager);
 				renderData.stats.totalTriangles += node.polygonSet;
 				traverse(node.front, eye, renderData);
 				
 			}else {
 				//fix via tim's recommend
 				traverse(node.front, eye, renderData);
-				drawPolygons(node.polygonSet, renderData.drawManager);
+				addPolygons(node.polygonSet, renderData.drawManager);
 				renderData.stats.totalTriangles += node.polygonSet;
 				traverse(node.back, eye, renderData);
 			}  
@@ -84,145 +86,14 @@ drawPolygonList(renderer.renderList, renderData.drawManager);
 		private var sv1 :Vector3D = new Vector3D();
 		private var sv2 :Vector3D = new Vector3D();
 			
-		private function drawPolygons(polyList:Vector.<Triangle>, drawManager:IDrawManager):void{
+		private function addPolygons(polyList:Vector.<Triangle>, drawManager:IDrawManager):void{
 			
 			for each(var triangle:Triangle in polyList){
 					renderer.renderList.push(triangle);
 			}
-			return;
-			{
-			
-				
-				// get vertices in view / camera space
-					v0.x = renderer.viewVertexData[ triangle.v0.vectorIndexX ];	
-					v0.y = renderer.viewVertexData[ triangle.v0.vectorIndexY ];
-					v0.z = renderer.viewVertexData[ triangle.v0.vectorIndexZ ];
-					v1.x = renderer.viewVertexData[ triangle.v1.vectorIndexX ];	
-					v1.y = renderer.viewVertexData[ triangle.v1.vectorIndexY ];
-					v1.z = renderer.viewVertexData[ triangle.v1.vectorIndexZ ];
-					v2.x = renderer.viewVertexData[ triangle.v2.vectorIndexX ];	
-					v2.y = renderer.viewVertexData[ triangle.v2.vectorIndexY ];
-					v2.z = renderer.viewVertexData[ triangle.v2.vectorIndexZ ];
-					
-					
-					// passed the near test loosely, verts may have projected to infinity
-					// we do it here, cause - paranoia - even these array accesses may cost us
-					sv0.x = renderer.screenVertexData[ triangle.v0.screenIndexX ];	
-					sv0.y = renderer.screenVertexData[ triangle.v0.screenIndexY ];
-					sv1.x = renderer.screenVertexData[ triangle.v1.screenIndexX ];	
-					sv1.y = renderer.screenVertexData[ triangle.v1.screenIndexY ];
-					sv2.x = renderer.screenVertexData[ triangle.v2.screenIndexX ];	
-					sv2.y = renderer.screenVertexData[ triangle.v2.screenIndexY ];
-					
-
-						 if ((sv2.x - sv0.x) * (sv1.y - sv0.y) - (sv2.y - sv0.y) * (sv1.x - sv0.x) > 0)
-						{
-						//	stats.culledTriangles ++;
-							//triangle.clipFlags = 128;
 						
-						//	continue;
-						}
- 
-				
-						var drawable:TriangleDrawable = _drawablePool.drawable as TriangleDrawable;
-						drawable.screenZ = 0;
-						
-						drawable.x0 = sv0.x;
-						drawable.y0 = sv0.y;
-						drawable.x1 = sv1.x;
-						drawable.y1 = sv1.y;
-						drawable.x2 = sv2.x;
-						drawable.y2 = sv2.y;
-						
-						drawable.uvtData = drawable.uvtData || new Vector.<Number>(9, true);
-						drawable.uvtData[0] = triangle.uv0.u;
-						drawable.uvtData[1] = triangle.uv0.v;
-						drawable.uvtData[2] = renderer.uvtData[ triangle.v0.vectorIndexZ ];
-						drawable.uvtData[3] = triangle.uv1.u;
-						drawable.uvtData[4] = triangle.uv1.v;
-						drawable.uvtData[5] = renderer.uvtData[ triangle.v1.vectorIndexZ ];
-						drawable.uvtData[6] = triangle.uv2.u;
-						drawable.uvtData[7] = triangle.uv2.v;
-						drawable.uvtData[8] = renderer.uvtData[ triangle.v2.vectorIndexZ ];
-						drawable.shader = triangle.shader;
-						//trace(renderer.geometry.uvtData);
-						drawManager.addDrawable(drawable);
-						
-						triangle.drawable = drawable;
-				
-				
-			}
-			
 		}
 		
-		private function drawPolygonList(polyList:Vector.<Triangle>, drawManager:IDrawManager):void{
-			
-			for each(var triangle:Triangle in polyList){
-			//		renderer.renderList.push(triangle);
-			
-			
-				
-				// get vertices in view / camera space
-					v0.x = renderer.viewVertexData[ triangle.v0.vectorIndexX ];	
-					v0.y = renderer.viewVertexData[ triangle.v0.vectorIndexY ];
-					v0.z = renderer.viewVertexData[ triangle.v0.vectorIndexZ ];
-					v1.x = renderer.viewVertexData[ triangle.v1.vectorIndexX ];	
-					v1.y = renderer.viewVertexData[ triangle.v1.vectorIndexY ];
-					v1.z = renderer.viewVertexData[ triangle.v1.vectorIndexZ ];
-					v2.x = renderer.viewVertexData[ triangle.v2.vectorIndexX ];	
-					v2.y = renderer.viewVertexData[ triangle.v2.vectorIndexY ];
-					v2.z = renderer.viewVertexData[ triangle.v2.vectorIndexZ ];
-					
-					
-					// passed the near test loosely, verts may have projected to infinity
-					// we do it here, cause - paranoia - even these array accesses may cost us
-					sv0.x = renderer.screenVertexData[ triangle.v0.screenIndexX ];	
-					sv0.y = renderer.screenVertexData[ triangle.v0.screenIndexY ];
-					sv1.x = renderer.screenVertexData[ triangle.v1.screenIndexX ];	
-					sv1.y = renderer.screenVertexData[ triangle.v1.screenIndexY ];
-					sv2.x = renderer.screenVertexData[ triangle.v2.screenIndexX ];	
-					sv2.y = renderer.screenVertexData[ triangle.v2.screenIndexY ];
-					
-
-						 if ((sv2.x - sv0.x) * (sv1.y - sv0.y) - (sv2.y - sv0.y) * (sv1.x - sv0.x) > 0)
-						{
-						//	stats.culledTriangles ++;
-							//triangle.clipFlags = 128;
-						
-						//	continue;
-						}
- 
-				
-						var drawable:TriangleDrawable = _drawablePool.drawable as TriangleDrawable;
-						drawable.screenZ = 0;
-						
-						drawable.x0 = sv0.x;
-						drawable.y0 = sv0.y;
-						drawable.x1 = sv1.x;
-						drawable.y1 = sv1.y;
-						drawable.x2 = sv2.x;
-						drawable.y2 = sv2.y;
-						
-						drawable.uvtData = drawable.uvtData || new Vector.<Number>(9, true);
-						drawable.uvtData[0] = triangle.uv0.u;
-						drawable.uvtData[1] = triangle.uv0.v;
-						drawable.uvtData[2] = renderer.uvtData[ triangle.v0.vectorIndexZ ];
-						drawable.uvtData[3] = triangle.uv1.u;
-						drawable.uvtData[4] = triangle.uv1.v;
-						drawable.uvtData[5] = renderer.uvtData[ triangle.v1.vectorIndexZ ];
-						drawable.uvtData[6] = triangle.uv2.u;
-						drawable.uvtData[7] = triangle.uv2.v;
-						drawable.uvtData[8] = renderer.uvtData[ triangle.v2.vectorIndexZ ];
-						drawable.shader = triangle.shader;
-						//trace(renderer.geometry.uvtData);
-						drawManager.addDrawable(drawable);
-						
-						triangle.drawable = drawable;
-				
-				
-			}
-			
-		}
 
 		private static function chooseRandomPoly(polySet:Vector.<Triangle>):Triangle{
 			return polySet[int(Math.random()*polySet.length-1)];

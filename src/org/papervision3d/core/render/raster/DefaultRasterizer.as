@@ -36,8 +36,8 @@ package org.papervision3d.core.render.raster
 			for each (drawable in renderData.drawManager.drawables)
 			{
 				drawable.toViewportSpace(hw, -hh);
-				//drawArray.push(stroke, drawable.shader.drawProperties, drawable.path, drawable.shader.clear, endStroke);
-				drawArray.push(drawable.shader.drawProperties, drawable.path, drawable.shader.clear);
+				drawArray.push(stroke, drawable.shader.drawProperties, drawable.path, drawable.shader.clear, endStroke);
+				//drawArray.push(drawable.shader.drawProperties, drawable.path, drawable.shader.clear);
 				
 			}
 

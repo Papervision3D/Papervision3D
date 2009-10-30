@@ -74,8 +74,9 @@ package org.papervision3d.render
 			rasterizer = new DefaultRasterizer();
 			renderData = new RenderData();
 			stats = new RenderStats();
+		
 			
-			_clipFlags = ClipFlags.NONE;
+			_clipFlags = ClipFlags.ALL;
 			
 			_drawablePool = new DrawablePool(TriangleDrawable);
 		}
@@ -110,226 +111,30 @@ package org.papervision3d.render
 			rasterizer.rasterize(renderData);
 		}
 		
-		private function fillRenderList(camera:Camera3D, object:DisplayObject3D):void{
-			
-			var child :DisplayObject3D;
-			object.renderer.fillRenderList(camera, renderData, clipper, _drawablePool);
-			
-			if(object.material)
-				object.material.shader.process(renderData, object);	
-				
-			for each (child in object._children)
-			{
-				fillRenderList(camera, child);
-			}
-		}
-		
-		/**
+			/**
 		 * Fills our renderlist.
 		 * <p>Get rid of triangles behind the near plane, clip straddling triangles if needed.</p>
 		 * 
 		 * @param	camera
 		 * @param	object
 		 */ 
-	/*	private function fillRenderList(camera:Camera3D, object:DisplayObject3D):void 
-		{
-			
-			
-			
-			return;
+		
+		private function fillRenderList(camera:Camera3D, object:DisplayObject3D):void{
 			
 			var child :DisplayObject3D;
-			var clipPlanes :Vector.<Plane3D> = camera.frustum.viewClippingPlanes;
-			var v0 :Vector3D = new Vector3D();
-			var v1 :Vector3D = new Vector3D();
-			var v2 :Vector3D = new Vector3D();
-			var sv0 :Vector3D = new Vector3D();
-			var sv1 :Vector3D = new Vector3D();
-			var sv2 :Vector3D = new Vector3D();
-		
-			renderer = object.renderer;	
-			stats.totalObjects++;
-			
-			
-			if(object is BSPTree){
-				//walk the tree!
-				(object as BSPTree).walkTree(camera, renderData);
-				return;
-			}
-			
-			
-			
-			
-			if (object.cullingState == 0 && object.renderer.geometry is TriangleGeometry)
-			{
-				var triangle :Triangle;
-				var inside :Boolean;
-				var flags :int = 0;
-				
-				geometry = object.renderer.geometry as TriangleGeometry;
-				var tris:Vector.<Triangle> = object.renderer.renderList ? object.renderer.renderList : geometry.triangles;
-			//trace(tris.length, geometry.triangles.length);
-				for each (triangle in tris)
-				{
-					triangle.clipFlags = triangle.cullFlags = 0;
-					triangle.visible = false;
-					
-					stats.totalTriangles++;
-					
-					// get vertices in view / camera space
-					v0.x = renderer.viewVertexData[ triangle.v0.vectorIndexX ];	
-					v0.y = renderer.viewVertexData[ triangle.v0.vectorIndexY ];
-					v0.z = renderer.viewVertexData[ triangle.v0.vectorIndexZ ];
-					v1.x = renderer.viewVertexData[ triangle.v1.vectorIndexX ];	
-					v1.y = renderer.viewVertexData[ triangle.v1.vectorIndexY ];
-					v1.z = renderer.viewVertexData[ triangle.v1.vectorIndexZ ];
-					v2.x = renderer.viewVertexData[ triangle.v2.vectorIndexX ];	
-					v2.y = renderer.viewVertexData[ triangle.v2.vectorIndexY ];
-					v2.z = renderer.viewVertexData[ triangle.v2.vectorIndexZ ];
-					
-					// Setup clipflags for the triangle (detect whether the tri is in, out or straddling 
-					// the frustum).
-					// First test the near plane, as verts behind near project to infinity.
-					if (_clipFlags & ClipFlags.NEAR)
-					{
-						flags = getClipFlags(clipPlanes[Frustum3D.NEAR], v0, v1, v2);
-						if (flags == 7 ) { stats.culledTriangles++; triangle.cullFlags = 1; continue; }
-						else if (flags) { triangle.clipFlags |= ClipFlags.NEAR; }
-					}
-					
-					// passed the near test loosely, verts may have projected to infinity
-					// we do it here, cause - paranoia - even these array accesses may cost us
-					sv0.x = renderer.screenVertexData[ triangle.v0.screenIndexX ];	
-					sv0.y = renderer.screenVertexData[ triangle.v0.screenIndexY ];
-					sv1.x = renderer.screenVertexData[ triangle.v1.screenIndexX ];	
-					sv1.y = renderer.screenVertexData[ triangle.v1.screenIndexY ];
-					sv2.x = renderer.screenVertexData[ triangle.v2.screenIndexX ];	
-					sv2.y = renderer.screenVertexData[ triangle.v2.screenIndexY ];
-					
-					// When *not* straddling the near plane we can safely test for backfacing triangles 
-					// (as we're sure the infinity case is filtered out).
-					// Hence we can have an early out by a simple backface test.
-					if (triangle.clipFlags != ClipFlags.NEAR)
-					{
-						if ((sv2.x - sv0.x) * (sv1.y - sv0.y) - (sv2.y - sv0.y) * (sv1.x - sv0.x) > 0)
-						{
-						//	stats.culledTriangles ++;
-							//triangle.clipFlags = 128;
-						
-							continue;
-						}
-					}
-					
-					// Okay, all vertices are in front of the near plane and backfacing tris are gone.
-					// Continue setting up clipflags
-					if (_clipFlags & ClipFlags.FAR)
-					{
-						flags = getClipFlags(clipPlanes[Frustum3D.FAR], v0, v1, v2);
-						if (flags == 7 ) { stats.culledTriangles++; continue; }
-						else if (flags) { triangle.clipFlags |= ClipFlags.FAR; }
-					}
-					
-					if (_clipFlags & ClipFlags.LEFT)
-					{
-						flags = getClipFlags(clipPlanes[Frustum3D.LEFT], v0, v1, v2);
-						if (flags == 7 ) { stats.culledTriangles++; continue; }
-						else if (flags) { triangle.clipFlags |= ClipFlags.LEFT; }
-					}
-					
-					if (_clipFlags & ClipFlags.RIGHT)
-					{
-						flags = getClipFlags(clipPlanes[Frustum3D.RIGHT], v0, v1, v2);
-						if (flags == 7 ) { stats.culledTriangles++; continue; }
-						else if (flags) { triangle.clipFlags |= ClipFlags.RIGHT; }
-					}
-					
-					if (_clipFlags & ClipFlags.TOP)
-					{
-						flags = getClipFlags(clipPlanes[Frustum3D.TOP], v0, v1, v2);
-						if (flags == 7 ) { stats.culledTriangles++; continue; }
-						else if (flags) { triangle.clipFlags |= ClipFlags.TOP; }
-					}
-					
-					if (_clipFlags & ClipFlags.BOTTOM)
-					{
-						flags = getClipFlags(clipPlanes[Frustum3D.BOTTOM], v0, v1, v2);
-						if (flags == 7 ) { stats.culledTriangles++; continue; }
-						else if (flags) { triangle.clipFlags |= ClipFlags.BOTTOM };
-					}
-						
-					if (triangle.clipFlags == 0)
-					{
-						// Triangle completely inside the (view) frustum
-						var drawable :TriangleDrawable = triangle.drawable as TriangleDrawable || new TriangleDrawable();
-						
-						drawable.screenZ = (v0.z + v1.z + v2.z) / 3;
-						
-						drawable.x0 = sv0.x;
-						drawable.y0 = sv0.y;
-						drawable.x1 = sv1.x;
-						drawable.y1 = sv1.y;
-						drawable.x2 = sv2.x;
-						drawable.y2 = sv2.y;
-						
-						drawable.uvtData = drawable.uvtData || new Vector.<Number>(9, true);
-						drawable.uvtData[0] = triangle.uv0.u;
-						drawable.uvtData[1] = triangle.uv0.v;
-						drawable.uvtData[2] = renderer.uvtData[ triangle.v0.vectorIndexZ ];
-						drawable.uvtData[3] = triangle.uv1.u;
-						drawable.uvtData[4] = triangle.uv1.v;
-						drawable.uvtData[5] = renderer.uvtData[ triangle.v1.vectorIndexZ ];
-						drawable.uvtData[6] = triangle.uv2.u;
-						drawable.uvtData[7] = triangle.uv2.v;
-						drawable.uvtData[8] = renderer.uvtData[ triangle.v2.vectorIndexZ ];
-						drawable.shader = triangle.shader;
-						//trace(renderer.geometry.uvtData);
-						drawManager.addDrawable(drawable);
-						
-						triangle.drawable = drawable;
-					}
-					else
-					{
-						// Triangle straddles some plane of the (view) camera frustum, we need clip 'm
-						clipViewTriangle(camera, triangle, v0, v1, v2);
-					}	
-				}
-			}
-			else if (object.cullingState == 0 && object.renderer.geometry is LineGeometry)
-			{
-				var lineGeometry:LineGeometry = LineGeometry(object.renderer.geometry);
-				var line :Line;
-					
-				for each (line in lineGeometry.lines)
-				{
-					var lineDrawable :LineDrawable = line.drawable as LineDrawable || new LineDrawable();
-					
-					sv0.x = renderer.screenVertexData[ line.v0.screenIndexX ];	
-					sv0.y = renderer.screenVertexData[ line.v0.screenIndexY ];
-					sv1.x = renderer.screenVertexData[ line.v1.screenIndexX ];	
-					sv1.y = renderer.screenVertexData[ line.v1.screenIndexY ];
-				
-					lineDrawable.x0 = sv0.x;
-					lineDrawable.y0 = sv0.y;
-					lineDrawable.x1 = sv1.x;
-					lineDrawable.y1 = sv1.y;
-					lineDrawable.screenZ = (renderer.viewVertexData[line.v0.vectorIndexZ]+renderer.viewVertexData[line.v1.vectorIndexZ])*0.5;
-					lineDrawable.shader = line.shader;
-					
-					drawManager.addDrawable(lineDrawable);
-				}
-			}
-			
+			object.renderer.fillRenderList(camera, renderData, clipper, _drawablePool, _clipFlags);
 			
 			if(object.material)
 				object.material.shader.process(renderData, object);	
-			// Recurse
+				
 			for each (child in object._children)
 			{
 				fillRenderList(camera, child);
 			}
 		}
 		
-		*/
+	
+
 		
 		
 		/**

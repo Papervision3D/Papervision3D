@@ -8,9 +8,7 @@ package org.papervision3d.core.render.object
 	
 	import org.papervision3d.cameras.Camera3D;
 	import org.papervision3d.core.geom.BSP.BSPTree;
-	import org.papervision3d.core.geom.Line;
 	import org.papervision3d.core.geom.Triangle;
-	import org.papervision3d.core.geom.provider.LineGeometry;
 	import org.papervision3d.core.geom.provider.TriangleGeometry;
 	import org.papervision3d.core.geom.provider.VertexGeometry;
 	import org.papervision3d.core.math.Frustum3D;
@@ -21,7 +19,6 @@ package org.papervision3d.core.render.object
 	import org.papervision3d.core.render.clipping.IPolygonClipper;
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
-	import org.papervision3d.core.render.draw.items.LineDrawable;
 	import org.papervision3d.core.render.draw.items.TriangleDrawable;
 	import org.papervision3d.objects.DisplayObject3D;
 	
@@ -42,6 +39,7 @@ package org.papervision3d.core.render.object
 			viewVertexData = new Vector.<Number>();
 			screenVertexData = new Vector.<Number>();
 			uvtData = new Vector.<Number>();
+			
 				
 		}
 		
@@ -52,11 +50,9 @@ package org.papervision3d.core.render.object
 			uvtData.length = geometry.viewVertexLength;
 			
 		}
-		
-		
-		private var _clipFlags :uint;
 
-		public function fillRenderList(camera:Camera3D, renderData:RenderData, clipper:IPolygonClipper, drawablePool:DrawablePool ):void 
+
+		public function fillRenderList(camera:Camera3D, renderData:RenderData, clipper:IPolygonClipper, drawablePool:DrawablePool, _clipFlags:uint ):void 
 		{
 			use namespace pv3d;
 			var stats : RenderStats = renderData.stats;
@@ -76,7 +72,7 @@ package org.papervision3d.core.render.object
 			if(object is BSPTree){
 				//walk the tree!
 				(object as BSPTree).walkTree(camera, renderData);
-				return;
+				
 			}
 			
 			
@@ -89,7 +85,7 @@ package org.papervision3d.core.render.object
 				var flags :int = 0;
 
 				var tris:Vector.<Triangle> = renderList ? renderList : (geometry as TriangleGeometry).triangles;
-			//trace(tris.length, geometry.triangles.length);
+			
 				for each (triangle in tris)
 				{
 					triangle.clipFlags = triangle.cullFlags = 0;
@@ -181,7 +177,7 @@ package org.papervision3d.core.render.object
 					if (triangle.clipFlags == 0)
 					{
 						// Triangle completely inside the (view) frustum
-						var drawable :TriangleDrawable = triangle.drawable as TriangleDrawable || new TriangleDrawable();
+						var drawable :TriangleDrawable =  drawablePool.drawable as TriangleDrawable;
 						
 						drawable.screenZ = (v0.z + v1.z + v2.z) / 3;
 						
@@ -210,8 +206,9 @@ package org.papervision3d.core.render.object
 					}
 					else
 					{
+						
 						// Triangle straddles some plane of the (view) camera frustum, we need clip 'm
-						clipViewTriangle(camera, triangle, v0, v1, v2, renderData, clipper, drawablePool);
+						clipViewTriangle(camera, triangle, v0, v1, v2, renderData, clipper, drawablePool, _clipFlags);
 					}	
 				}
 			}
@@ -233,7 +230,7 @@ package org.papervision3d.core.render.object
 		 * @param	v1
 		 * @param 	v2
 		 */ 
-		private function clipViewTriangle(camera:Camera3D, triangle:Triangle, v0:Vector3D, v1:Vector3D, v2:Vector3D, renderData:RenderData, clipper:IPolygonClipper, drawablePool:DrawablePool):void
+		private function clipViewTriangle(camera:Camera3D, triangle:Triangle, v0:Vector3D, v1:Vector3D, v2:Vector3D, renderData:RenderData, clipper:IPolygonClipper, drawablePool:DrawablePool, _clipFlags:uint):void
 		{		
 			use namespace pv3d;
 			var stats : RenderStats = renderData.stats;
@@ -372,27 +369,6 @@ package org.papervision3d.core.render.object
 			return flags;
 		}
 		
-		/**
-		 * Clip flags.
-		 * 
-		 * @see org.papervision3d.core.render.clipping.ClipFlags
-		 */
-		public function get clipFlags():int
-		{
-			return _clipFlags;
-		}
-		
-		public function set clipFlags(value:int):void
-		{
-			if (value >= 0 && value <= ClipFlags.ALL)
-			{
-				_clipFlags = value;
-			}
-			else
-			{
-				throw new IllegalOperationError("clipFlags should be a value between 0 and " + ClipFlags.ALL + "\nsee org.papervision3d.core.render.clipping.ClipFlags");
-			}
-		}
 
 
 	}
