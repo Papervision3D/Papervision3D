@@ -67,6 +67,13 @@ package org.papervision3d.core.geom.provider
 			}
 		}
 		
+		public function removeTriangle(triangle:Triangle):void{
+			
+			var index :int = triangles.indexOf(triangle);
+			triangles.splice(index, 1);
+			
+		}
+		
 		public var vertexNormalsDirty : Boolean = true;
 		
 		public function generateVertexNormals():void{

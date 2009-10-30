@@ -1,14 +1,13 @@
 package org.papervision3d.render
 {
+	import __AS3__.vec.Vector;
+	
 	import flash.errors.IllegalOperationError;
 	import flash.geom.Utils3D;
 	import flash.geom.Vector3D;
 	
 	import org.papervision3d.cameras.Camera3D;
-	import org.papervision3d.core.geom.BSP.BSPTree;
-	import org.papervision3d.core.geom.Line;
 	import org.papervision3d.core.geom.Triangle;
-	import org.papervision3d.core.geom.provider.LineGeometry;
 	import org.papervision3d.core.geom.provider.TriangleGeometry;
 	import org.papervision3d.core.math.Frustum3D;
 	import org.papervision3d.core.math.Plane3D;
@@ -19,7 +18,6 @@ package org.papervision3d.render
 	import org.papervision3d.core.render.clipping.SutherlandHodgmanClipper;
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
-	import org.papervision3d.core.render.draw.items.LineDrawable;
 	import org.papervision3d.core.render.draw.items.TriangleDrawable;
 	import org.papervision3d.core.render.draw.list.IDrawableList;
 	import org.papervision3d.core.render.draw.manager.DefaultDrawManager;
@@ -112,6 +110,20 @@ package org.papervision3d.render
 			rasterizer.rasterize(renderData);
 		}
 		
+		private function fillRenderList(camera:Camera3D, object:DisplayObject3D):void{
+			
+			var child :DisplayObject3D;
+			object.renderer.fillRenderList(camera, renderData, clipper, _drawablePool);
+			
+			if(object.material)
+				object.material.shader.process(renderData, object);	
+				
+			for each (child in object._children)
+			{
+				fillRenderList(camera, child);
+			}
+		}
+		
 		/**
 		 * Fills our renderlist.
 		 * <p>Get rid of triangles behind the near plane, clip straddling triangles if needed.</p>
@@ -119,8 +131,13 @@ package org.papervision3d.render
 		 * @param	camera
 		 * @param	object
 		 */ 
-		private function fillRenderList(camera:Camera3D, object:DisplayObject3D):void 
+	/*	private function fillRenderList(camera:Camera3D, object:DisplayObject3D):void 
 		{
+			
+			
+			
+			return;
+			
 			var child :DisplayObject3D;
 			var clipPlanes :Vector.<Plane3D> = camera.frustum.viewClippingPlanes;
 			var v0 :Vector3D = new Vector3D();
@@ -137,8 +154,9 @@ package org.papervision3d.render
 			if(object is BSPTree){
 				//walk the tree!
 				(object as BSPTree).walkTree(camera, renderData);
-				
-			}else{
+				return;
+			}
+			
 			
 			
 			
@@ -149,8 +167,9 @@ package org.papervision3d.render
 				var flags :int = 0;
 				
 				geometry = object.renderer.geometry as TriangleGeometry;
-				
-				for each (triangle in geometry.triangles)
+				var tris:Vector.<Triangle> = object.renderer.renderList ? object.renderer.renderList : geometry.triangles;
+			//trace(tris.length, geometry.triangles.length);
+				for each (triangle in tris)
 				{
 					triangle.clipFlags = triangle.cullFlags = 0;
 					triangle.visible = false;
@@ -299,7 +318,7 @@ package org.papervision3d.render
 					drawManager.addDrawable(lineDrawable);
 				}
 			}
-			}
+			
 			
 			if(object.material)
 				object.material.shader.process(renderData, object);	
@@ -309,6 +328,9 @@ package org.papervision3d.render
 				fillRenderList(camera, child);
 			}
 		}
+		
+		*/
+		
 		
 		/**
 		 * Clips a triangle in view / camera space. Typically used for the near and far planes.

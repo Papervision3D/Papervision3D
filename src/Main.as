@@ -94,6 +94,7 @@ package
 			scene.addChild( camera );
 			camera.enableCulling = false
 			camera.showFrustum = false;
+			camera.near = 1;
 			camera.z = 800;
 			camera.y = 500;
 
