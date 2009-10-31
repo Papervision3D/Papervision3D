@@ -68,7 +68,7 @@ package org.papervision3d.render
 		{
 			pipeline = new BasicPipeline();
 			drawManager = new DefaultDrawManager();
-			(drawManager as DefaultDrawManager).drawList.sorter  = new NullDrawSorter();
+			//(drawManager as DefaultDrawManager).drawList.sorter  = new NullDrawSorter();
 			
 			clipper = new SutherlandHodgmanClipper();
 			rasterizer = new DefaultRasterizer();
@@ -122,6 +122,7 @@ package org.papervision3d.render
 		private function fillRenderList(camera:Camera3D, object:DisplayObject3D):void{
 			
 			var child :DisplayObject3D;
+			drawManager.currentDisplayObject = object;
 			object.renderer.fillRenderList(camera, renderData, clipper, _drawablePool, _clipFlags);
 			
 			if(object.material)
@@ -131,6 +132,8 @@ package org.papervision3d.render
 			{
 				fillRenderList(camera, child);
 			}
+			
+			drawManager.endDisplayObject();
 		}
 		
 

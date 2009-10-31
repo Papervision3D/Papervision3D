@@ -2,7 +2,6 @@ package org.papervision3d.core.render.object
 {
 	import __AS3__.vec.Vector;
 	
-	import flash.errors.IllegalOperationError;
 	import flash.geom.Utils3D;
 	import flash.geom.Vector3D;
 	
@@ -20,6 +19,9 @@ package org.papervision3d.core.render.object
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
 	import org.papervision3d.core.render.draw.items.TriangleDrawable;
+	import org.papervision3d.core.render.draw.list.AbstractDrawableList;
+	import org.papervision3d.core.render.draw.list.DrawableList;
+	import org.papervision3d.core.render.draw.sort.NullDrawSorter;
 	import org.papervision3d.objects.DisplayObject3D;
 	
 	public class ObjectRenderer
@@ -30,7 +32,7 @@ package org.papervision3d.core.render.object
 		public var uvtData : Vector.<Number>;
 		protected var object : DisplayObject3D;
 		public var renderList : Vector.<Triangle>;
-		
+		public var drawableList : AbstractDrawableList;
 			
 		public function ObjectRenderer(obj:DisplayObject3D)
 		{
@@ -40,7 +42,10 @@ package org.papervision3d.core.render.object
 			screenVertexData = new Vector.<Number>();
 			uvtData = new Vector.<Number>();
 			
-				
+			if(object is BSPTree){
+				drawableList = new DrawableList();
+				drawableList.sorter = new NullDrawSorter();
+			}	
 		}
 		
 		public function updateIndices():void{
@@ -68,7 +73,7 @@ package org.papervision3d.core.render.object
 			
 			stats.totalObjects++;
 			
-			renderData.drawManager.currentDisplayObject = object;
+			
 			
 			if(object is BSPTree){
 				//walk the tree!

@@ -10,6 +10,7 @@ package org.papervision3d.core.render.raster
 	import org.papervision3d.core.render.draw.items.AbstractDrawable;
 	import org.papervision3d.core.render.draw.items.LineDrawable;
 	import org.papervision3d.core.render.draw.items.TriangleDrawable;
+	import org.papervision3d.core.render.draw.list.AbstractDrawableList;
 	
 	public class DefaultRasterizer implements IRasterizer
 	{
@@ -22,27 +23,39 @@ package org.papervision3d.core.render.raster
 			stroke.fill = new GraphicsSolidFill(0x334059);
 		}
 		
+		private var hw:Number;
+		private var hh:Number;
+		private var drawable:AbstractDrawable;
+		
 		public function rasterize(renderData:RenderData):void{
 			
-			var hw :Number = renderData.viewport.viewportWidth / 2;
-			var hh :Number = renderData.viewport.viewportHeight / 2;
-			var drawable : AbstractDrawable;
+			hw = renderData.viewport.viewportWidth / 2;
+			hh = renderData.viewport.viewportHeight / 2;
+			
 			var triangle :TriangleDrawable;
 			var line :LineDrawable;
 			
 			drawArray.length = 0;
 			renderData.viewport.containerSprite.graphics.clear();	
 
-			for each (drawable in renderData.drawManager.drawables)
-			{
-				drawable.toViewportSpace(hw, -hh);
-				drawArray.push(stroke, drawable.shader.drawProperties, drawable.path, drawable.shader.clear, endStroke);
-				//drawArray.push(drawable.shader.drawProperties, drawable.path, drawable.shader.clear);
-				
-			}
+			drawDrawableList(renderData.drawManager.drawables);
 
 			renderData.viewport.containerSprite.graphics.drawGraphicsData(drawArray);
 			
+		}
+		
+		protected function drawDrawableList(drawables:Vector.<AbstractDrawable>):void{
+			for each (drawable in drawables)
+			{
+				if(drawable is AbstractDrawableList){
+					//trace("drawing the list", (drawable as AbstractDrawableList).drawables.length);
+					drawDrawableList((drawable as AbstractDrawableList).drawables);
+				}else{
+					drawable.toViewportSpace(hw, -hh);
+					drawArray.push(stroke, drawable.shader.drawProperties, drawable.path, drawable.shader.clear, endStroke);
+				}
+							
+			}
 		}
 	}
 }

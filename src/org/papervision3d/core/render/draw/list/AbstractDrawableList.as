@@ -3,7 +3,7 @@ package org.papervision3d.core.render.draw.list
 	import org.papervision3d.core.render.draw.items.AbstractDrawable;
 	import org.papervision3d.core.render.draw.sort.IDrawSorter;
 
-	public class AbstractDrawableList implements IDrawableList
+	public class AbstractDrawableList extends AbstractDrawable implements IDrawableList
 	{
 		protected var _sorter : IDrawSorter;
 		
@@ -15,6 +15,10 @@ package org.papervision3d.core.render.draw.list
 		{
 		}
 		
+		public function getDepth():Number{
+			return 0;
+		}
+				
 		public function clear():void
 		{
 		}

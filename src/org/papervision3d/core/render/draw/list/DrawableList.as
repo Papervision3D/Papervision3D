@@ -15,10 +15,17 @@ package org.papervision3d.core.render.draw.list
 		public override function addDrawable(drawable:AbstractDrawable):void
 		{
 			_drawables.push(drawable);
+			screenZ += drawable.screenZ;
+		}
+		
+		public override function getDepth():Number{
+			screenZ /= _drawables.length;
+			return screenZ;
 		}
 		
 		public override function clear():void
 		{
+			screenZ = 0;
 			_drawables.length = 0;
 		}
 		

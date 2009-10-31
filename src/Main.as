@@ -16,18 +16,19 @@ package
 	import org.papervision3d.core.geom.BSP.BSPTree;
 	import org.papervision3d.core.geom.provider.VertexGeometry;
 	import org.papervision3d.core.ns.pv3d;
-	import org.papervision3d.core.render.clipping.ClipFlags;
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.materials.BitmapMaterial;
 	import org.papervision3d.materials.Material;
+	import org.papervision3d.materials.WireframeMaterial;
 	import org.papervision3d.materials.shaders.BasicShader;
 	import org.papervision3d.materials.textures.AnimatedTexture;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.lights.PointLight;
 	import org.papervision3d.objects.primitives.Cube;
 	import org.papervision3d.objects.primitives.Plane;
+	import org.papervision3d.objects.primitives.Sphere;
 	import org.papervision3d.objects.special.UCS;
 	import org.papervision3d.render.BasicRenderEngine;
 	import org.papervision3d.view.Viewport3D;
@@ -99,7 +100,7 @@ package
 			camera.y = 500;
 
 			renderer = new BasicRenderEngine();
-			renderer.clipFlags = ClipFlags.NEAR;			
+			//renderer.clipFlags = ClipFlags.NEAR;			
 			
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
@@ -116,6 +117,9 @@ package
 			earth = new Cube(new BitmapMaterial(bmp), 50);
 			earth.addChild(new Plane(new BitmapMaterial(bmp, true), 300, 300));
 			earth.addChild(new Cube(new BitmapMaterial(bmp2), 50)).x = 70;
+			earth.addChild(new Cube(new BitmapMaterial(bmp2), 50)).z = -70;
+			earth.addChild(new Cube(new BitmapMaterial(bmp), 50)).z = 70;
+			earth.addChild(new Sphere(new BitmapMaterial(bmp2), 60)).x = 150;
 			var d:DisplayObject3D = earth.addChild(new Cube(new Material(new AnimatedTexture(new TestSprite()), new BasicShader()), 60));
 			d.x = -100;
 			d.y = 10;
@@ -127,6 +131,9 @@ package
 
 			scene.addChild(BSP);
 			
+			var blue : Sphere = new Sphere(new WireframeMaterial(0x2045AB), 30, 8, 8);
+			scene.addChild(blue);
+			blue.y = 100;
 			camera.y = 100;
 			
 			var ucs :UCS = new UCS("ucs0", 100);
