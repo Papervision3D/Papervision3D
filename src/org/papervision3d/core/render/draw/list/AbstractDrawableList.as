@@ -7,8 +7,9 @@ package org.papervision3d.core.render.draw.list
 	{
 		protected var _sorter : IDrawSorter;
 		
-		public function AbstractDrawableList()
+		public function AbstractDrawableList(sorter :IDrawSorter = null)
 		{
+			this.sorter = sorter;
 		}
 
 		public function addDrawable(drawable:AbstractDrawable):void
@@ -30,7 +31,10 @@ package org.papervision3d.core.render.draw.list
 		
 		public function set sorter(sorter:IDrawSorter):void{
 			_sorter = sorter;
-			_sorter.drawlist = this;
+			
+			if(_sorter){	
+				_sorter.drawlist = this;
+			}
 		}
 		
 		public function get sorter():IDrawSorter{

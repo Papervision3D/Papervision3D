@@ -52,19 +52,25 @@ package org.papervision3d.objects.primitives
 				}
 				aVtc.push(aRow);
 			}
+			
+			
+			
 			var iVerNum:int = aVtc.length;
 			var totalTris:int = 0;
 			for (j=0;j<iVerNum;j++) {
 				var iHorNum:int = aVtc[j].length;
+				
 				if (j>0) { // &&i>=0
 					for (i=0;i<iHorNum;i++) {
 						// select vertices
+						
 						var bEnd:Boolean = i==(iHorNum-1);
 						var aP1:Vertex = aVtc[j][bEnd?0:i+1];
 						var aP2:Vertex = aVtc[j][(bEnd?iHorNum-1:i)];
 						var aP3:Vertex = aVtc[j-1][(bEnd?iHorNum-1:i)];
 						var aP4:Vertex = aVtc[j-1][bEnd?0:i+1];
-	
+
+						
 						var fJ0:Number = j		/ (iVerNum-1);
 						var fJ1:Number = (j-1)	/ (iVerNum-1);
 						var fI0:Number = 1-((i+1)	/ iHorNum);
@@ -74,9 +80,9 @@ package org.papervision3d.objects.primitives
 						var aP2uv:UVCoord = new UVCoord(fI1,fJ0);
 						var aP3uv:UVCoord = new UVCoord(fI1,fJ1);
 						
-						if (j<(aVtc.length)){	triGeometry.addTriangle(new Triangle(material.shader, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv)); totalTris++;}
+						/* if (j<(aVtc.length)) */ {	triGeometry.addTriangle(new Triangle(material.shader, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv)); }
 						
-						if (j>0)				{ triGeometry.addTriangle(new Triangle(material.shader, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv)); totalTris++;}
+						/* if (j>0) 	 */			{ triGeometry.addTriangle(new Triangle(material.shader, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv)); }
 	
 					}
 				}
@@ -84,7 +90,7 @@ package org.papervision3d.objects.primitives
 			
 			
 			renderer.updateIndices();
-			trace("HAS ", triGeometry.triangles.length, totalTris, " triangles");
+			
 		}
 		
 	}

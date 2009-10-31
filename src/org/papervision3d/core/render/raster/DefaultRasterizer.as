@@ -32,9 +32,6 @@ package org.papervision3d.core.render.raster
 			hw = renderData.viewport.viewportWidth / 2;
 			hh = renderData.viewport.viewportHeight / 2;
 			
-			var triangle :TriangleDrawable;
-			var line :LineDrawable;
-			
 			drawArray.length = 0;
 			renderData.viewport.containerSprite.graphics.clear();	
 
@@ -52,7 +49,8 @@ package org.papervision3d.core.render.raster
 					drawDrawableList((drawable as AbstractDrawableList).drawables);
 				}else{
 					drawable.toViewportSpace(hw, -hh);
-					drawArray.push(stroke, drawable.shader.drawProperties, drawable.path, drawable.shader.clear, endStroke);
+					//drawArray.push(stroke, drawable.shader.drawProperties, drawable.path, drawable.shader.clear, endStroke);
+					drawArray.push(drawable.shader.drawProperties, drawable.path, drawable.shader.clear);
 				}
 							
 			}

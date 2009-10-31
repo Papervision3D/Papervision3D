@@ -3,6 +3,7 @@ package org.papervision3d.objects.special
 	import org.papervision3d.core.geom.Line;
 	import org.papervision3d.core.geom.Vertex;
 	import org.papervision3d.core.geom.provider.LineGeometry;
+	import org.papervision3d.core.render.object.LineObjectRenderer;
 	import org.papervision3d.materials.WireframeMaterial;
 	import org.papervision3d.objects.DisplayObject3D;
 	
@@ -15,7 +16,8 @@ package org.papervision3d.objects.special
 			super(name);
 			this.size = size;
 			this.material = new WireframeMaterial(0xff0000);
-			this.renderer.geometry = new LineGeometry();
+			this.renderer = new LineObjectRenderer(this);
+			
 			init();
 		}
 

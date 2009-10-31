@@ -1,14 +1,19 @@
 package org.papervision3d.core.render.draw.list
 {
 	import org.papervision3d.core.render.draw.items.AbstractDrawable;
-	import org.papervision3d.core.render.draw.items.IDrawable;
+	import org.papervision3d.core.render.draw.sort.DefaultDrawSorter;
+	import org.papervision3d.core.render.draw.sort.IDrawSorter;
 	
 	public class DrawableList extends AbstractDrawableList implements IDrawableList
 	{
 		private var _drawables :Vector.<AbstractDrawable>;
 		
-		public function DrawableList()
+		public function DrawableList(sorter:IDrawSorter = null, sortMode:String = "z", sortIndex:Number = 0)
 		{
+			super(sorter ? sorter : new DefaultDrawSorter());
+			this.sorter.sortMode = sortMode;
+			this.sortIndex = sortIndex;									
+										
 			_drawables = new Vector.<AbstractDrawable>();
 		}
 

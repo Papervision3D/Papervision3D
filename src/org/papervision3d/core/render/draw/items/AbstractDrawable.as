@@ -8,6 +8,7 @@ package org.papervision3d.core.render.draw.items
 	{
 		public var shader : IShader;
 		public var screenZ :Number;
+		public var sortIndex : Number = 0;
 		
 		public function AbstractDrawable()
 		{

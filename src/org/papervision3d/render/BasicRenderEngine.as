@@ -76,7 +76,7 @@ package org.papervision3d.render
 			stats = new RenderStats();
 		
 			
-			_clipFlags = ClipFlags.ALL;
+			_clipFlags = ClipFlags.NEAR;
 			
 			_drawablePool = new DrawablePool(TriangleDrawable);
 		}
@@ -122,7 +122,7 @@ package org.papervision3d.render
 		private function fillRenderList(camera:Camera3D, object:DisplayObject3D):void{
 			
 			var child :DisplayObject3D;
-			drawManager.currentDisplayObject = object;
+			drawManager.pushDisplayObject(object);
 			object.renderer.fillRenderList(camera, renderData, clipper, _drawablePool, _clipFlags);
 			
 			if(object.material)
@@ -133,7 +133,7 @@ package org.papervision3d.render
 				fillRenderList(camera, child);
 			}
 			
-			drawManager.endDisplayObject();
+			drawManager.popDisplayObject();
 		}
 		
 

@@ -1,6 +1,13 @@
 package org.papervision3d.core.render.object
 {
+	import flash.geom.Vector3D;
+	
+	import org.papervision3d.cameras.Camera3D;
+	import org.papervision3d.core.geom.Line;
 	import org.papervision3d.core.geom.provider.LineGeometry;
+	import org.papervision3d.core.memory.pool.DrawablePool;
+	import org.papervision3d.core.render.clipping.IPolygonClipper;
+	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.draw.items.LineDrawable;
 	import org.papervision3d.objects.DisplayObject3D;
 	
@@ -10,10 +17,11 @@ package org.papervision3d.core.render.object
 		public function LineObjectRenderer(obj:DisplayObject3D)
 		{
 			super(obj);
-			lineGeometry = geometry as LineGeometry;
+			geometry = lineGeometry = new LineGeometry();
+			 
 		}
 		
-		public override function fillRenderList(camera:Camera3D, renderData:RenderData, clipper:IPolygonClipper, drawablePool:DrawablePool ):void{
+		public override function fillRenderList(camera:Camera3D, renderData:RenderData, clipper:IPolygonClipper, drawablePool:DrawablePool, _clipFlags:uint ):void{
 			
 			var sv0 :Vector3D = new Vector3D();
 			var sv1 :Vector3D = new Vector3D();

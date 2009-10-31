@@ -58,7 +58,7 @@ package org.papervision3d.core.render.draw.manager
 			return drawlist;
 		}
 		
-		public function set currentDisplayObject(do3d:DisplayObject3D):void{
+		public function pushDisplayObject(do3d:DisplayObject3D):void{
 			_currentDo3d = do3d;
 			_objectStack.push(_currentDo3d);
 			
@@ -71,7 +71,7 @@ package org.papervision3d.core.render.draw.manager
 			}
 		}
 		
-		public function endDisplayObject():void{
+		public function popDisplayObject():void{
 			
 			if(_currentDo3d.renderer.drawableList){
 				var list : AbstractDrawableList = _listStack.pop();

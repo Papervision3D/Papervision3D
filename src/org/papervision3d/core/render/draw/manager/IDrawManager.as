@@ -11,6 +11,7 @@ package org.papervision3d.core.render.draw.manager
 		function handleList():void;
 		function addDrawable(drawable:AbstractDrawable):void;
 		function get drawables():Vector.<AbstractDrawable>;
-		function set currentDisplayObject(do3d:DisplayObject3D):void;
+		function pushDisplayObject(do3d:DisplayObject3D):void;
+		function popDisplayObject():void;
 	}
 }

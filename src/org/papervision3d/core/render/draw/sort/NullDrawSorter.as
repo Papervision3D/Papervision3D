@@ -1,8 +1,5 @@
 package org.papervision3d.core.render.draw.sort
 {
-	import __AS3__.vec.Vector;
-	
-	import org.papervision3d.core.render.draw.items.AbstractDrawable;
 	import org.papervision3d.core.render.draw.list.IDrawableList;
 
 	public class NullDrawSorter implements IDrawSorter
@@ -16,6 +13,14 @@ package org.papervision3d.core.render.draw.sort
 		{
 	
 			
+		}
+		
+		public function set sortMode(value:String):void{
+			
+		}
+		
+		public function get sortMode():String{
+			return "";
 		}
 		
 		public function set drawlist(list:IDrawableList):void{

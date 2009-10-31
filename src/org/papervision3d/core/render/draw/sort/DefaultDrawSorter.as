@@ -8,19 +8,39 @@ package org.papervision3d.core.render.draw.sort
 	public class DefaultDrawSorter implements IDrawSorter
 	{
 		protected var _drawList : IDrawableList;
-		public function DefaultDrawSorter()
+		public static const ZSORT : String = "z";
+		public static const INDEXSORT : String = "index";
+		protected var _sortMode :String;
+		
+		public function DefaultDrawSorter(sortMode : String = "z")
 		{
+			this.sortMode = sortMode;
 		}
 
 		public function sort():void
 		{
 			var v:Vector.<AbstractDrawable> = _drawList.drawables;
-			v.sort(screenZCompare);
+			if(_sortMode == ZSORT)
+				v.sort(screenZCompare);
+			else if(_sortMode == INDEXSORT)
+				v.sort(sortIndexCompare);
 			
 		}
 		
 		public function set drawlist(list:IDrawableList):void{
 			_drawList = list;
+		}
+		
+		public function set sortMode(value:String):void{
+			_sortMode = value;
+		}
+		
+		public function get sortMode():String{
+			return _sortMode;
+		}
+		
+		private function sortIndexCompare(x:AbstractDrawable, y:AbstractDrawable):Number{
+			return x.sortIndex-y.sortIndex;
 		}
 		
 		private function screenZCompare(x:AbstractDrawable, y:AbstractDrawable):Number{

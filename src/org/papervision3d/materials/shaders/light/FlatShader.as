@@ -56,12 +56,8 @@ package org.papervision3d.materials.shaders.light
 					var light:PointLight = lights.vector[0] as PointLight;	
 					
 					_lightMap = light.getFlatMap();
-					
-					/*
-					 	Why is Y upside down in the inversion??
-					*/
-					 
-					var pos:Vector3D = lightMatrix.transformVector(new Vector3D(light.x, -light.y, light.z));
+
+					var pos:Vector3D = lightMatrix.transformVector(light.transform.position);
 					
 					pos.normalize();
 				
