@@ -68,6 +68,7 @@ package org.papervision3d.core.render.object
 			
 			stats.totalObjects++;
 			
+			renderData.drawManager.currentDisplayObject = object;
 			
 			if(object is BSPTree){
 				//walk the tree!
@@ -83,8 +84,9 @@ package org.papervision3d.core.render.object
 				var triangle :Triangle;
 				var inside :Boolean;
 				var flags :int = 0;
-
-				var tris:Vector.<Triangle> = renderList ? renderList : (geometry as TriangleGeometry).triangles;
+				
+				
+				var tris:Vector.<Triangle> = renderList.length > 0 ? renderList : (geometry as TriangleGeometry).triangles;
 			
 				for each (triangle in tris)
 				{
@@ -206,7 +208,7 @@ package org.papervision3d.core.render.object
 					}
 					else
 					{
-						
+						//trace(triangle.clipFlags);
 						// Triangle straddles some plane of the (view) camera frustum, we need clip 'm
 						clipViewTriangle(camera, triangle, v0, v1, v2, renderData, clipper, drawablePool, _clipFlags);
 					}	
