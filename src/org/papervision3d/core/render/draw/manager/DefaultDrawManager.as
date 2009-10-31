@@ -5,10 +5,12 @@ package org.papervision3d.core.render.draw.manager
 	import org.papervision3d.core.render.draw.items.AbstractDrawable;
 	import org.papervision3d.core.render.draw.list.DrawableList;
 	import org.papervision3d.core.render.draw.sort.DefaultDrawSorter;
+	import org.papervision3d.objects.DisplayObject3D;
 
 	public class DefaultDrawManager implements IDrawManager
 	{
 		private var drawlist:DrawableList;
+		private var _currentDo3d:DisplayObject3D;
 		
 		public function DefaultDrawManager()
 		{
@@ -40,6 +42,10 @@ package org.papervision3d.core.render.draw.manager
 		
 		public function get drawList():DrawableList{
 			return drawlist;
+		}
+		
+		public function set currentDisplayObject(do3d:DisplayObject3D):void{
+			
 		}
 	}
 }

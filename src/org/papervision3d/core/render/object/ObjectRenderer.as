@@ -128,7 +128,7 @@ package org.papervision3d.core.render.object
 					// Hence we can have an early out by a simple backface test.
 					if (triangle.clipFlags != ClipFlags.NEAR)
 					{
-						if ((sv2.x - sv0.x) * (sv1.y - sv0.y) - (sv2.y - sv0.y) * (sv1.x - sv0.x) > 0)
+						if (!triangle.shader.doubleSided &&  (sv2.x - sv0.x) * (sv1.y - sv0.y) - (sv2.y - sv0.y) * (sv1.x - sv0.x) > 0)
 						{
 						//	stats.culledTriangles ++;
 							//triangle.clipFlags = 128;
@@ -213,10 +213,6 @@ package org.papervision3d.core.render.object
 				}
 			}
 			
-			
-			
-			
-			// Recurse
 			
 		}
 		

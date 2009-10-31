@@ -8,12 +8,17 @@ package org.papervision3d.materials
 			
 		protected var _texture : Texture;
 		protected var _shader : IShader;
-
+		protected var _doubleSided : Boolean = false;
 		
 		public function AbstractMaterial()
 		{
 			
 			
+		}
+		
+		public function set doubleSided(value:Boolean):void{
+			if(_shader)
+				_shader.doubleSided = value;
 		}
 				
 				
@@ -32,6 +37,7 @@ package org.papervision3d.materials
 			_shader.material = this;
 			if(_texture)
 				_shader.texture = _texture;
+			_shader.doubleSided = _doubleSided;
 		}
 		
 		public function get shader():IShader{

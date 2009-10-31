@@ -114,7 +114,7 @@ package
 			var l:PointLight = new PointLight();
 			scene.addChild(l);
 			earth = new Cube(new BitmapMaterial(bmp), 50);
-			earth.addChild(new Plane(new BitmapMaterial(bmp), 300, 300));
+			earth.addChild(new Plane(new BitmapMaterial(bmp, true), 300, 300));
 			earth.addChild(new Cube(new BitmapMaterial(bmp2), 50)).x = 70;
 			var d:DisplayObject3D = earth.addChild(new Cube(new Material(new AnimatedTexture(new TestSprite()), new BasicShader()), 60));
 			d.x = -100;

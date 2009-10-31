@@ -3,14 +3,15 @@ package org.papervision3d.materials
 	import org.papervision3d.materials.shaders.WireframeShader;
 	import org.papervision3d.materials.textures.Texture;
 	
-	public class WireframeMaterial extends AbstractMaterial
+	public class WireframeMaterial extends Material
 	{
-		public function WireframeMaterial(color:uint = 0xFF00FF)
+		public function WireframeMaterial(color:uint = 0xFF00FF, alpha:Number = 1)
 		{
-			super();
-			shader = new WireframeShader();
-			texture = new Texture();
+			
+			super(new Texture(), new WireframeShader());
 			texture.color = color;
+			texture.alpha = 1;	
+			
 			
 		}
 		
