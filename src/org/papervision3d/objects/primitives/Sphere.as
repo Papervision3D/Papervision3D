@@ -25,10 +25,9 @@ package org.papervision3d.objects.primitives
 		}
 		
 		private var grid:Array;
-		private function buildSphere( fRadius:Number ):void
+		private function buildSphere( fRadius:Number, yUp:Boolean = true):void
 		{
 			
-		
 			var i:Number, j:Number, k:Number;
 			var iHor:Number = this.segmentsW;
 			var iVer:Number = this.segmentsH;
@@ -36,7 +35,7 @@ package org.papervision3d.objects.primitives
 			for (j=0;j<(iVer+1);j++) { // vertical
 				var fRad1:Number = Number(j/iVer);
 				var fZ:Number = fRadius*Math.cos(fRad1*Math.PI);
-				var fRds:Number = -fRadius*Math.sin(fRad1*Math.PI);
+				var fRds:Number = fRadius*Math.sin(fRad1*Math.PI);
 				var aRow:Array = new Array();
 				var oVtx:Vertex;
 				
@@ -52,9 +51,7 @@ package org.papervision3d.objects.primitives
 				}
 				aVtc.push(aRow);
 			}
-			
-			
-			
+
 			var iVerNum:int = aVtc.length;
 			var totalTris:int = 0;
 			for (j=0;j<iVerNum;j++) {
@@ -70,7 +67,6 @@ package org.papervision3d.objects.primitives
 						var aP3:Vertex = aVtc[j-1][(bEnd?iHorNum-1:i)];
 						var aP4:Vertex = aVtc[j-1][bEnd?0:i+1];
 
-						
 						var fJ0:Number = j		/ (iVerNum-1);
 						var fJ1:Number = (j-1)	/ (iVerNum-1);
 						var fI0:Number = 1-((i+1)	/ iHorNum);
@@ -80,17 +76,31 @@ package org.papervision3d.objects.primitives
 						var aP2uv:UVCoord = new UVCoord(fI1,fJ0);
 						var aP3uv:UVCoord = new UVCoord(fI1,fJ1);
 						
-						/* if (j<(aVtc.length)) */ {	triGeometry.addTriangle(new Triangle(material.shader, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv)); }
+							
+						var t:Triangle = triGeometry.addTriangle(new Triangle(material.shader, aP1, aP2, aP3, aP1uv, aP2uv, aP3uv));
+						t.createNormal();
 						
-						/* if (j>0) 	 */			{ triGeometry.addTriangle(new Triangle(material.shader, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv)); }
+						var t2 : Triangle = triGeometry.addTriangle(new Triangle(material.shader, aP1, aP3, aP4, aP1uv, aP3uv, aP4uv));
+						
+						// A hack fix for sphere... 
+						if(j == 1)
+							t2.normal = t.normal;
 	
 					}
 				}
 			}
 			
-			
 			renderer.updateIndices();
 			
+		}
+		
+		private function compareUV(uv1:UVCoord, uv2:UVCoord):Boolean{
+			if(uv1.u == uv2.u && uv2.u == uv2.v){
+				trace(uv1.u, uv1.v);
+				return true;
+			}
+			return false;
+		
 		}
 		
 	}

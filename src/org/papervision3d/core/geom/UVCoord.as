@@ -16,5 +16,9 @@ package org.papervision3d.core.geom
 			this.u = u;
 			this.v = v;
 		}
+		
+		public function toString():String{
+			return "u: "+u+" v:"+v;
+		}
 	}
 }

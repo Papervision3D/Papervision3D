@@ -1,16 +1,9 @@
 package org.papervision3d.render
 {
-	import __AS3__.vec.Vector;
-	
 	import flash.errors.IllegalOperationError;
-	import flash.geom.Utils3D;
-	import flash.geom.Vector3D;
 	
 	import org.papervision3d.cameras.Camera3D;
-	import org.papervision3d.core.geom.Triangle;
 	import org.papervision3d.core.geom.provider.TriangleGeometry;
-	import org.papervision3d.core.math.Frustum3D;
-	import org.papervision3d.core.math.Plane3D;
 	import org.papervision3d.core.memory.pool.DrawablePool;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.render.clipping.ClipFlags;
@@ -21,7 +14,6 @@ package org.papervision3d.render
 	import org.papervision3d.core.render.draw.items.TriangleDrawable;
 	import org.papervision3d.core.render.draw.list.IDrawableList;
 	import org.papervision3d.core.render.draw.manager.DefaultDrawManager;
-	import org.papervision3d.core.render.draw.sort.NullDrawSorter;
 	import org.papervision3d.core.render.engine.AbstractRenderEngine;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
@@ -86,6 +78,7 @@ package org.papervision3d.render
 		 */ 
 		override public function renderScene(scene:DisplayObject3D, camera:Camera3D, viewport:Viewport3D):void
 		{	
+			
 			renderData.scene = scene;
 			renderData.camera = camera;
 			renderData.viewport = viewport;
@@ -96,9 +89,11 @@ package org.papervision3d.render
 			
 			TextureManager.updateTextures();
 			camera.update(renderData.viewport.sizeRectangle);
-						
+		
+			
 			pipeline.execute(renderData);
- 
+ 			
+ 			
  			drawManager.reset();
  			stats.clear();
  			
@@ -109,6 +104,7 @@ package org.papervision3d.render
 			drawManager.handleList();
 			
 			rasterizer.rasterize(renderData);
+			
 		}
 		
 			/**

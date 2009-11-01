@@ -2,12 +2,20 @@ package org.papervision3d.core.geom
 {
 	import flash.geom.Vector3D;
 	
+	import org.papervision3d.core.memory.pool.TrianglePool;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.render.draw.items.IDrawable;
 	import org.papervision3d.materials.shaders.IShader;
 	
 	public class Triangle extends Geometry
 	{
+		
+		protected static var _pool:TrianglePool;
+		public static function get pool():TrianglePool{
+			 if(!_pool) _pool = new TrianglePool();
+			 return _pool;
+		}
+		
 		use namespace pv3d;
 		
 		/** */

@@ -2,20 +2,24 @@ package org.papervision3d.core.geom.BSP
 {
 	import __AS3__.vec.Vector;
 	
+	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
+	import flash.utils.Dictionary;
 	
 	import org.papervision3d.cameras.Camera3D;
 	import org.papervision3d.core.geom.Triangle;
 	import org.papervision3d.core.geom.provider.TriangleGeometry;
-	import org.papervision3d.core.math.Frustum3D;
 	import org.papervision3d.core.math.Plane3D;
 	import org.papervision3d.core.math.utils.GeomUtil;
 	import org.papervision3d.core.memory.pool.DrawablePool;
+	import org.papervision3d.core.memory.pool.TrianglePool;
 	import org.papervision3d.core.ns.pv3d;
-	import org.papervision3d.core.render.clipping.ClipFlags;
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.draw.items.TriangleDrawable;
 	import org.papervision3d.core.render.draw.manager.IDrawManager;
+	import org.papervision3d.core.render.object.BSPChildRenderer;
+	import org.papervision3d.core.render.object.BSPRenderer;
+	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.objects.DisplayObject3D;
 	
 	public class BSPTree extends DisplayObject3D
@@ -23,62 +27,87 @@ package org.papervision3d.core.geom.BSP
 		use namespace pv3d;
 		public var rootNode:BSPTreeNode;
 		protected var _drawablePool : DrawablePool;
+		public var dynamicRenderer:BSPRenderer;
+		
+		private var staticTriCount:int = 0;
+		private var staticViewVertexCount:int = 0;
+		private var staticScreenVertexCount:int = 0;
+		private var staticVertexCount:int = 0;
 		
 		public function BSPTree(do3d:DisplayObject3D)
 		{
 			super();
+			
 			_drawablePool = new DrawablePool(TriangleDrawable);
 
 			var geom : TriangleGeometry = GeomUtil.flattenObject(do3d);
-			rootNode = new BSPTreeNode(null);
-			
-			
+			rootNode = new BSPTreeNode(false);
+
 			GenerateBSPTree(rootNode, geom.triangles, 0, geom);
 			renderer.geometry = geom;
 			renderer.updateIndices();
+			updateStaticCounts();
+			dynamicRenderer = new BSPRenderer(this);
 		}
 		
-		public function walkTree(camera:Camera3D, renderData:RenderData):void{
+		protected function resetToStatic():void{
 			
-			_drawablePool.reset();
-			renderer.renderList.length = 0;
+			/* nodeCount = 0;
+			countNodes(rootNode);
+			trace("NODE COUNT BEFORE: ", nodeCount); */
 			
-			//no polys, no children
-			if(rootNode.polygonSet == null && rootNode.back == null)
-				return;
-				
-			var eye: Vector3D = camera.transform.position;
+			(renderer.geometry as TriangleGeometry).triangles.length = staticTriCount;
 			
-			traverse(rootNode, eye, renderData);
-			//drawPolygonList(renderer.renderList, renderData.drawManager, camera, renderData);
+			renderer.geometry.vertices.length = staticVertexCount;
+			renderer.geometry.vertexData.length = staticViewVertexCount;
+			renderer.geometry.viewVertexLength = staticViewVertexCount;
+			renderer.geometry.screenVertexLength = staticScreenVertexCount;
+			renderer.updateIndices();
 			
+			
+			clearDynamicNodes(rootNode);
+			
+			/* nodeCount = 0;
+			countNodes(rootNode);
+			trace("NODE COUNT AFTER: ", nodeCount); */
 		}
-		
-		public function traverse(node:BSPTreeNode, eye:Vector3D, renderData:RenderData):void{
-			
+		private static var nodeCount : int = 0;
+		public function countNodes(node:BSPTreeNode):void{
 			if(node == null)
 				return;
-				
-			if(node.divider == null){
-				addPolygons(node.polygonSet, renderData.drawManager);
-				return;
+			nodeCount++;
+			countNodes(node.front);
+			countNodes(node.back);
+		}
+		protected function clearDynamicNodes(node:BSPTreeNode):void{
+			
+			node.dynamicPolySet.length = 0;
+			
+			if(node.front){
+				if(node.front.isDynamic){
+					node.front = null;
+					node.back = null;
+					node.divider = null;
+					
+					return;
+				}
+				clearDynamicNodes(node.front);
+				clearDynamicNodes(node.back);
+			}else{
+				node.divider = null;
 			}
 			
-			var side:uint = GeomUtil.classifyPoint(eye, node.divider);
-			if(side == GeomUtil.FRONT){
-				traverse(node.back, eye, renderData);
-				addPolygons(node.polygonSet, renderData.drawManager);
-				renderData.stats.totalTriangles += node.polygonSet;
-				traverse(node.front, eye, renderData);
-				
-			}else {
-				//fix via tim's recommend
-				traverse(node.front, eye, renderData);
-				addPolygons(node.polygonSet, renderData.drawManager);
-				renderData.stats.totalTriangles += node.polygonSet;
-				traverse(node.back, eye, renderData);
-			}  
 		}
+		
+		protected function updateStaticCounts():void{
+			staticTriCount = (renderer.geometry as TriangleGeometry).triangles.length;
+			staticScreenVertexCount = renderer.geometry.screenVertexLength;
+			staticViewVertexCount = renderer.geometry.viewVertexLength;
+			staticVertexCount = renderer.geometry.vertices.length;
+			
+		}
+		
+		
 		
 		
 		private var v0:Vector3D = new Vector3D(), v1:Vector3D = new Vector3D(), v2:Vector3D = new Vector3D();
@@ -86,14 +115,94 @@ package org.papervision3d.core.geom.BSP
 		private var sv1 :Vector3D = new Vector3D();
 		private var sv2 :Vector3D = new Vector3D();
 			
-		private function addPolygons(polyList:Vector.<Triangle>, drawManager:IDrawManager):void{
+		private function addPolygons(polyList:Vector.<Triangle>, dynamicPolyList:Vector.<Triangle>, drawManager:IDrawManager):void{
 			
 			for each(var triangle:Triangle in polyList){
+					renderer.renderList.push(triangle);
+			}
+			
+			for each(var triangle:Triangle in dynamicPolyList){
 					renderer.renderList.push(triangle);
 			}
 						
 		}
 		
+		protected var dynamicChildren:Dictionary = new Dictionary(true);
+		private var triPool:TrianglePool = Triangle.pool;
+		public function pushChildrenOntoTree():void{
+			//trace("pushed", renderer.geometry.vertices.length, renderer.viewVertexData.length, renderer.geometry.viewVertexLength, renderer.screenVertexData.length);
+			triPool.reset();
+			resetToStatic();
+			
+			var inv:Matrix3D = new Matrix3D;
+			//trace((renderer.geometry as TriangleGeometry).triangles ? (renderer.geometry as TriangleGeometry).triangles.length : "nothing", renderer.geometry.vertices.length);
+			for each(var c:DisplayObject3D in dynamicChildren){
+				c.renderer.worldVertexData.length = 0;
+				c.transform.worldTransform.transformVectors(c.renderer.geometry.vertexData, c.renderer.worldVertexData);
+				var tris:Vector.<Triangle> = getObjectTriangles(c.renderer);
+				 for each(var t:Triangle in tris)
+					(renderer.geometry as TriangleGeometry).addTriangle(t); 
+				trickle(rootNode, tris /* (c.renderer.geometry as TriangleGeometry).triangles */, 0, renderer.geometry as TriangleGeometry, true);
+				
+			}
+			
+		
+			
+			//trace("after", (renderer.geometry as TriangleGeometry).triangles ? (renderer.geometry as TriangleGeometry).triangles.length : "nothing", renderer.geometry.vertices.length);
+			renderer.updateIndices();
+		//	trace("NEW",renderer.geometry.vertices.length, renderer.viewVertexData.length, renderer.screenVertexData.length);
+		}
+		
+		private function showVertexInfo(ar1:Vector.<Number>, ar2:Vector.<Number>, index:Number = 0):void{
+			var offset:Number = index*3;
+			trace("COMPAARE");
+			trace(ar1[offset], ar2[offset]);
+			trace(ar1[offset+1], ar2[offset+1]);
+			trace(ar1[offset+2], ar2[offset+2]);
+			trace("END");
+			
+		}
+		
+		private var tris:Vector.<Triangle> = new Vector.<Triangle>();
+		private function getObjectTriangles(objectRenderer:ObjectRenderer):Vector.<Triangle>{
+			tris.length = 0;
+			
+				for each(var t:Triangle in (objectRenderer.geometry as TriangleGeometry).triangles){
+					var tmp:Triangle = triPool.triangle;
+					tmp.shader = t.shader;
+					tmp.v0.x = objectRenderer.worldVertexData[t.v0.vectorIndexX];
+					tmp.v0.y = objectRenderer.worldVertexData[t.v0.vectorIndexY];
+					tmp.v0.z = objectRenderer.worldVertexData[t.v0.vectorIndexZ];
+					tmp.v1.x = objectRenderer.worldVertexData[t.v1.vectorIndexX];
+					tmp.v1.y = objectRenderer.worldVertexData[t.v1.vectorIndexY];
+					tmp.v1.z = objectRenderer.worldVertexData[t.v1.vectorIndexZ];
+					tmp.v2.x = objectRenderer.worldVertexData[t.v2.vectorIndexX];
+					tmp.v2.y = objectRenderer.worldVertexData[t.v2.vectorIndexY];
+					tmp.v2.z = objectRenderer.worldVertexData[t.v2.vectorIndexZ]; 
+
+					tmp.uv0 = t.uv0;
+					tmp.uv1 = t.uv1;
+					tmp.uv2 = t.uv2;			
+
+					tris.push(tmp);
+				}
+			return tris;
+		}
+		
+		public override function addChild(do3d:DisplayObject3D):DisplayObject3D{
+			
+			super.addChild(do3d);
+			dynamicChildren[do3d] = do3d;
+			do3d.renderer = new BSPChildRenderer(do3d);
+
+			return do3d;
+		}
+
+		public override function removeChild(child:DisplayObject3D, deep:Boolean=false):DisplayObject3D{
+			super.removeChild(child, deep);
+			delete dynamicChildren[child];
+			return child;
+		}
 
 		private static function chooseRandomPoly(polySet:Vector.<Triangle>):Triangle{
 			return polySet[int(Math.random()*polySet.length-1)];
@@ -155,12 +264,15 @@ package org.papervision3d.core.geom.BSP
 			
 		}
 		
+		/*
 		
+		BUILD THE INITIAL TREE
+		
+		*/		
 		
 		private static var staticPlane:Plane3D = new Plane3D();
-		public static function GenerateBSPTree(node:BSPTreeNode, polySet:Vector.<Triangle>, depth:int, geom:TriangleGeometry):void{
-			
-			//trace("depth: ", depth);
+		public static function GenerateBSPTree(node:BSPTreeNode, polySet:Vector.<Triangle>, depth:int, geom:TriangleGeometry, dynamicNode:Boolean = false):void{
+
 			if(depth > 1800){
 				trace("TOO DEEP!");
 				return;
@@ -168,19 +280,19 @@ package org.papervision3d.core.geom.BSP
 			
 			if(IsConvex(polySet)){
 				for each(var tt:Triangle in polySet)
-					node.polygonSet.push(tt);
+					dynamicNode? node.dynamicPolySet.push(tt) : node.polygonSet.push(tt);
 				return;
 			}
 			
-			var poly:Triangle = chooseBestPoly(polySet);
+			var poly:Triangle = dynamicNode ? chooseRandomPoly(polySet) : chooseBestPoly(polySet);
 			var divider : Plane3D = Plane3D.fromThreePoints(poly.v0, poly.v1, poly.v2);
 			
 			var posSet : Vector.<Triangle> = new Vector.<Triangle>();
 			var negSet : Vector.<Triangle> = new Vector.<Triangle>(); 
 			
 			node.divider = divider;
-			node.front = new BSPTreeNode(null);
-			node.back = new BSPTreeNode(null);
+			node.front = new BSPTreeNode(dynamicNode);
+			node.back = new BSPTreeNode(dynamicNode);
 			
 			for each(var t:Triangle in polySet){
 				
@@ -191,7 +303,7 @@ package org.papervision3d.core.geom.BSP
 					negSet.push(t);
 				}else if(side == GeomUtil.STRADDLE){
 					
-					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.01, true, 0.25);
+					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.01, !dynamicNode, 0.25, dynamicNode);
 					//geom.removeTriangle(t);
 					for each(var tF:Triangle in results[0]){
 						posSet.push(tF);
@@ -201,7 +313,7 @@ package org.papervision3d.core.geom.BSP
 					}
 				}else{
 										
-					node.polygonSet.push(t);
+					dynamicNode? node.dynamicPolySet.push(t) : node.polygonSet.push(t);
 				}
 				
 			}
@@ -211,6 +323,84 @@ package org.papervision3d.core.geom.BSP
 			GenerateBSPTree(node.front, posSet, depth+1, geom);
 			GenerateBSPTree(node.back, negSet, depth+1, geom);
 			
+		}
+		
+	
+		
+		/**
+		 * 
+		 *  pushObjectOntoTree & Trickle
+		 * 	- add a new static object to the tree
+		 * 
+		 * */
+		 
+		 
+		
+		public function addStaticChild(do3d:DisplayObject3D):void{
+			var cont:DisplayObject3D = new DisplayObject3D();
+			cont.addChild(do3d);
+			var geom : TriangleGeometry = GeomUtil.flattenObject(cont);
+			
+			trickle(rootNode, geom.triangles, 0, renderer.geometry as TriangleGeometry);
+			renderer.updateIndices();
+			updateStaticCounts();
+			
+		}
+		
+
+		
+		protected function trickle(node:BSPTreeNode, polySet:Vector.<Triangle>, depth:int, geom:TriangleGeometry, dynamicNode:Boolean = false):void{
+			
+			if(polySet.length == 0)
+				return;
+				
+			var generate:Boolean = false;
+
+			//at a leaf, start building on it
+			if(node.divider == null || node.front == null){
+
+				GenerateBSPTree(node, polySet, depth+1, geom, dynamicNode);
+				return;
+			}
+
+			
+			var divider : Plane3D = node.divider;
+			
+			var posSet : Vector.<Triangle> = new Vector.<Triangle>();
+			var negSet : Vector.<Triangle> = new Vector.<Triangle>(); 
+			
+			for each(var t:Triangle in polySet){
+				
+				var side:uint = GeomUtil.classifyTriangle(t, divider);
+				if(side == GeomUtil.FRONT){
+					posSet.push(t);
+				}else if(side == GeomUtil.BACK){
+					negSet.push(t);
+				}else if(side == GeomUtil.STRADDLE){
+					
+					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.01, !dynamicNode, 0.25, dynamicNode);
+					//geom.removeTriangle(t);
+					for each(var tF:Triangle in results[0]){
+						posSet.push(tF);
+					}
+					for each(var tB:Triangle in results[1]){
+						negSet.push(tB);
+					}
+				}else{
+					
+					dynamicNode? node.dynamicPolySet.push(t) : node.polygonSet.push(t);
+				}
+				
+			}
+			if(!generate){
+				trickle(node.front, posSet, depth+1, geom, dynamicNode);
+				trickle(node.back, negSet, depth+1, geom, dynamicNode);
+			}else{
+				node.front = new BSPTreeNode(dynamicNode);
+				node.back = new BSPTreeNode(dynamicNode);
+				GenerateBSPTree(node.front, posSet, depth+1, geom, dynamicNode);
+				GenerateBSPTree(node.back, negSet, depth+1, geom, dynamicNode);
+			}
 		}
 		
 		
@@ -231,6 +421,49 @@ package org.papervision3d.core.geom.BSP
 			} 
 			return true;
 		} 
+		
+		public function walkTree(camera:Camera3D, renderData:RenderData):void{
+			
+			_drawablePool.reset();
+			renderer.renderList.length = 0;
+			
+			//no polys, no children
+			if(rootNode.polygonSet == null && rootNode.dynamicPolySet == null && rootNode.back == null)
+				return;
+				
+			var eye: Vector3D = camera.transform.position;
+			
+			traverse(rootNode, eye, renderData);
+			
+			
+			
+		}
+		
+		public function traverse(node:BSPTreeNode, eye:Vector3D, renderData:RenderData):void{
+			
+			if(node == null)
+				return;
+				
+			if(node.divider == null){
+				addPolygons(node.polygonSet, node.dynamicPolySet, renderData.drawManager);
+				return;
+			}
+			
+			var side:uint = GeomUtil.classifyPoint(eye, node.divider);
+			if(side == GeomUtil.FRONT){
+				traverse(node.back, eye, renderData);
+				addPolygons(node.polygonSet, node.dynamicPolySet, renderData.drawManager);
+				renderData.stats.totalTriangles += node.polygonSet;
+				traverse(node.front, eye, renderData);
+				
+			}else {
+				//fix via tim's recommend
+				traverse(node.front, eye, renderData);
+				addPolygons(node.polygonSet, node.dynamicPolySet, renderData.drawManager);
+				renderData.stats.totalTriangles += node.polygonSet;
+				traverse(node.back, eye, renderData);
+			}  
+		}
 
 	}
 }

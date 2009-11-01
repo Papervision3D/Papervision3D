@@ -27,6 +27,7 @@ package org.papervision3d.core.render.object
 	public class ObjectRenderer
 	{
 		public var geometry : VertexGeometry;
+		public var worldVertexData : Vector.<Number>;
 		public var viewVertexData :Vector.<Number>;
 		public var screenVertexData :Vector.<Number>;
 		public var uvtData : Vector.<Number>;
@@ -39,6 +40,7 @@ package org.papervision3d.core.render.object
 			this.object = obj;
 			renderList = new Vector.<Triangle>();	
 			viewVertexData = new Vector.<Number>();
+			worldVertexData = new Vector.<Number>();
 			screenVertexData = new Vector.<Number>();
 			uvtData = new Vector.<Number>();
 			
@@ -49,10 +51,12 @@ package org.papervision3d.core.render.object
 		}
 		
 		public function updateIndices():void{
-			//trace(geometry, "in updateIndices");
-			viewVertexData.length = geometry.viewVertexLength;
+			
+			worldVertexData.length = viewVertexData.length = 0;
+			worldVertexData.length = viewVertexData.length = geometry.viewVertexLength;
 			screenVertexData.length = geometry.screenVertexLength;
 			uvtData.length = geometry.viewVertexLength;
+			
 			
 		}
 
@@ -77,6 +81,7 @@ package org.papervision3d.core.render.object
 			
 			if(object is BSPTree){
 				//walk the tree!
+				
 				(object as BSPTree).walkTree(camera, renderData);
 				
 			}

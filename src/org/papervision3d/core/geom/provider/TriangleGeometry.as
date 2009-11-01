@@ -13,7 +13,7 @@ package org.papervision3d.core.geom.provider
 		/** */
 		public var triangles :Vector.<Triangle>; 
 		
-		protected var vectorFaceLinks : Dictionary = new Dictionary(false);
+		protected var vectorFaceLinks : Dictionary = new Dictionary(true);
 		/**
 		 * 
 		 */ 
@@ -37,6 +37,7 @@ package org.papervision3d.core.geom.provider
 			
 			if (index < 0)
 			{
+				
 				triangle.v0 = addVertex(triangle.v0);
 				triangle.v1 = addVertex(triangle.v1);
 				triangle.v2 = addVertex(triangle.v2);
@@ -63,6 +64,7 @@ package org.papervision3d.core.geom.provider
 			}
 			else
 			{
+				trace("why??");
 				return triangles[index];
 			}
 		}

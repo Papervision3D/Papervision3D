@@ -2,6 +2,7 @@ package org.papervision3d.materials.shaders.light
 {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.SpreadMethod;
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
 	import flash.utils.Dictionary;
@@ -40,6 +41,14 @@ package org.papervision3d.materials.shaders.light
 				_drawContainer.addChildAt(new Bitmap(_baseBitmap),0);
 			}
 			
+		}
+		
+		public function get drawContext():Sprite{
+			return _drawContext;
+		}
+		
+		public function get drawContainer():Sprite{
+			return _drawContainer;
 		}
 		
 		protected var uvMatrices:Dictionary = new Dictionary(false);

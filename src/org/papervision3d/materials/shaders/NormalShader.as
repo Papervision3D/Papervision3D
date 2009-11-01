@@ -49,8 +49,11 @@ package org.papervision3d.materials.shaders
 			
 			var v:Vector.<Number> = new Vector.<Number>();
 			v.push(t.uv0.u*bw,  (1-t.uv0.v)*bh,  t.uv1.u*bw, (1-t.uv1.v)*bh, t.uv2.u*bw, (1-t.uv2.v)*bh);
-			
-			
+			//trace(getNormalColor(t.normal).toString(16));
+/* 			if(getNormalColor(t.normal).toString(16) == "7f7f7f"){
+				trace(t, t.normal, t.uv0, t.uv1, t.uv2);
+			} */
+				
 			drawCommand.push(new GraphicsSolidFill(getNormalColor(t.normal)));
 			drawCommand.push(new GraphicsTrianglePath(v));
 			drawCommand.push(new  GraphicsEndFill());
@@ -61,6 +64,7 @@ package org.papervision3d.materials.shaders
 			var r:Number = normal.x*half+half;
 			var g:Number = normal.y*half+half;
 			var b:Number = normal.z*half+half;
+			
 			return r<<16 | g << 8 | b;
 		}
 		

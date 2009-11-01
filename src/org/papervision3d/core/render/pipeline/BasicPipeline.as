@@ -6,6 +6,7 @@ package org.papervision3d.core.render.pipeline
 	import flash.geom.Vector3D;
 	
 	import org.papervision3d.cameras.Camera3D;
+	import org.papervision3d.core.geom.BSP.BSPTree;
 	import org.papervision3d.core.geom.provider.VertexGeometry;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.proto.Transform3D;
@@ -79,6 +80,7 @@ package org.papervision3d.core.render.pipeline
 		
 		public function transformToWorld(object:DisplayObject3D, renderData:RenderData):void
 		{
+			
 			var transform :Transform3D = object.transform;
 			var child :DisplayObject3D;
 			var wt :Matrix3D = object.transform.worldTransform;
@@ -111,6 +113,13 @@ package org.papervision3d.core.render.pipeline
 			{
 				transformToWorld(child, renderData);
 			}
+			
+			if(object is BSPTree){
+				//do some handling here for dynamics!
+				
+				(object as BSPTree).pushChildrenOntoTree();
+			
+			}
 		}
 		
 		/**
@@ -118,6 +127,7 @@ package org.papervision3d.core.render.pipeline
 		 */ 
 		protected function transformToView(camera:Camera3D, object:DisplayObject3D):void
 		{
+			
 			var child :DisplayObject3D;
 			var wt :Matrix3D = object.transform.worldTransform;
 			var vt :Matrix3D = object.transform.viewTransform;
@@ -141,12 +151,14 @@ package org.papervision3d.core.render.pipeline
 		 */ 
 		protected function projectVertices(camera:Camera3D, object:DisplayObject3D):void
 		{
+			
 			var vt :Matrix3D = object.transform.viewTransform;
 			var st :Matrix3D = object.transform.screenTransform;
 			var renderer : ObjectRenderer = object.renderer;
 			// move the vertices into view / camera space
 			// we'll need the vertices in this space to check whether vertices are behind the camera.
 			// if we move to screen space in one go, screen vertices could move to infinity.
+			
 			vt.transformVectors(renderer.geometry.vertexData, renderer.viewVertexData);
 			
 			// append the projection matrix to the object's view matrix
@@ -158,6 +170,7 @@ package org.papervision3d.core.render.pipeline
 			// NOTE: some vertices may have moved to infinity, we need to check while processing triangles.
 			//       IF so we need to check whether we need to clip the triangles or disgard them.
 			Utils3D.projectVectors(st, renderer.geometry.vertexData, renderer.screenVertexData, renderer.uvtData);
+			
 		}
 	}
 }

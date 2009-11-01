@@ -216,7 +216,7 @@ package org.papervision3d.core.math.utils {
 		 * 
 		 * @return	An Array of triangles.
 		 */
-		public static function splitTriangleByPlane(triangle:Triangle, geometry:TriangleGeometry, plane:Plane3D, epsilon:Number = 0.01, weldVertices:Boolean=true, weldTreshold:Number=0.0001):Array {
+		public static function splitTriangleByPlane(triangle:Triangle, geometry:TriangleGeometry, plane:Plane3D, epsilon:Number = 0.01, weldVertices:Boolean=true, weldTreshold:Number=0.0001, dynamicSplit:Boolean = false):Array {
 			var points:Array = [triangle.v0, triangle.v1, triangle.v2];
 			var uvs:Array = [triangle.uv0, triangle.uv1, triangle.uv2];
 			var triA:Array = new Array();
@@ -311,23 +311,23 @@ package org.papervision3d.core.math.utils {
 			
 			var nTri : Triangle;
 			if(triA.length > 2){
-				nTri = new Triangle(material, triA[0], triA[1], triA[2], uvsA[0], uvsA[1], uvsA[2]);
+				nTri = dynamicSplit? Triangle.pool.getTriangle(material, triA[0], triA[1], triA[2], uvsA[0], uvsA[1], uvsA[2]) : new Triangle(material, triA[0], triA[1], triA[2], uvsA[0], uvsA[1], uvsA[2]);
 				tris[0].push(nTri);
 				geometry.addTriangle(nTri);
 			}
 			if(triB.length > 2){
-				nTri = new Triangle(material, triB[0], triB[1], triB[2], uvsB[0], uvsB[1], uvsB[2]);
+				nTri = dynamicSplit? Triangle.pool.getTriangle(material, triB[0], triB[1], triB[2], uvsB[0], uvsB[1], uvsB[2]) : new Triangle(material, triB[0], triB[1], triB[2], uvsB[0], uvsB[1], uvsB[2]);
 
 				tris[1].push(nTri);
 				geometry.addTriangle(nTri);
 			}
 			if( triA.length > 3 ){
-				nTri = new Triangle(material, triA[0], triA[2], triA[3], uvsA[0], uvsA[2], uvsA[3]);
+				nTri = dynamicSplit ? Triangle.pool.getTriangle(material, triA[0], triA[2], triA[3], uvsA[0], uvsA[2], uvsA[3]) : new Triangle(material, triA[0], triA[2], triA[3], uvsA[0], uvsA[2], uvsA[3]);
 
 				tris[0].push(nTri);
 				geometry.addTriangle(nTri);
 			}else if( triB.length > 3 ){
-				nTri = new Triangle(material, triB[0], triB[2], triB[3], uvsB[0], uvsB[2], uvsB[3]);
+				nTri = dynamicSplit ?  Triangle.pool.getTriangle(material, triB[0], triB[2], triB[3], uvsB[0], uvsB[2], uvsB[3]) : new Triangle(material, triB[0], triB[2], triB[3], uvsB[0], uvsB[2], uvsB[3]);
 
 				tris[1].push(nTri);
 				geometry.addTriangle(nTri);

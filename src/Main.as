@@ -20,6 +20,7 @@ package
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
 	import org.papervision3d.core.render.draw.list.DrawableList;
+	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.materials.BitmapMaterial;
 	import org.papervision3d.materials.Material;
@@ -112,35 +113,52 @@ package
 			var bmp2:BitmapData = new BitmapData(256, 256);
 			bmp2.perlinNoise(256, 256, 2, 95800, true, true);
 
-			sun = new DisplayObject3D();
-			scene.addChild(sun);
+			
 			
 			var l:PointLight = new PointLight();
 			scene.addChild(l);
 			l.y = 300;
-			earth = new Cube(new BitmapMaterial(bmp), 50);
+			earth = new DisplayObject3D();//new Cube(new BitmapMaterial(bmp), 50);
+			
 			earth.addChild(new Plane(new BitmapMaterial(bmp, true), 300, 300));
 			earth.addChild(new Cube(new BitmapMaterial(bmp2), 50)).x = 70;
 			earth.addChild(new Cube(new BitmapMaterial(bmp2), 50)).z = -70;
 			earth.addChild(new Cube(new BitmapMaterial(bmp), 50)).z = 70;
-			earth.addChild(new Sphere(new BitmapMaterial((new earthMap() as Bitmap).bitmapData), 60)).x = 150;
-			var d:DisplayObject3D = earth.addChild(new Cube(new Material(new AnimatedTexture(new TestSprite()), new BasicShader()), 60));
+			//earth.addChild(new Sphere(new BitmapMaterial((new earthMap() as Bitmap).bitmapData), 60)).x = 150; 
+			var d:DisplayObject3D = new Cube(new Material(new AnimatedTexture(new TestSprite()), new BasicShader()), 60);
 			d.x = -100;
 			d.y = 10; 
 			d.z = 40;
 			d.rotationY = 60;
-			d.rotationZ = 45;
+			d.rotationZ = 45; 
 
+			var addon:Plane = new Plane(new BitmapMaterial(bmp, true), 300, 300);
+			addon.x = 20;
+			addon.y = 10;
+	
+			
 			BSP = new BSPTree(earth);
 			BSP.renderer.drawableList.sortIndex = 2;
 			scene.addChild(BSP);
 			
-			var blue : Sphere = new Sphere(new Material(new AnimatedTexture(new TestSprite()), new NormalShader()), 30, 20, 20);
+		//	BSP.addStaticChild(d);
+			
+			
+			var blue : Sphere = new Sphere(new Material(new AnimatedTexture(new TestSprite()), new NormalShader()), 30, 3, 4);
 			sun = blue;
-			scene.addChild(blue);
+			//scene.addChild(blue);
 			blue.y = 130;
 			blue.renderer.drawableList = new DrawableList(null, null, 1);
 			blue.x = 100;
+			
+			
+			moon = new Cube(new BitmapMaterial((new earthMap() as Bitmap).bitmapData, true), 50);
+			moon.y = 10;
+			moon.rotationX  = 10;
+		
+			BSP.addChild(moon);
+			OBJRENDERER = BSP.renderer;
+			//scene.addChild(moon);
 			
 			/* var p:Plane = new Plane(new WireframeMaterial());
 			scene.addChild(p);
@@ -153,20 +171,38 @@ package
 			camera.y = 100;
 			
 			var ucs :UCS = new UCS("ucs0", 100);
-			blue.addChild(ucs);
+			//blue.addChild(ucs);
 			
 
 			addEventListener(Event.ENTER_FRAME, render);
+			//stage.addEventListener(MouseEvent.CLICK, stageClick);
 		}
-		
+		public static var OBJRENDERER:ObjectRenderer;
 		private var _r :Number = 0;
 		private var _s :Number = 0;
-		 
+		
+		private var hasMoon :Boolean = true;
+		private function stageClick(e:Event):void{
+			if(hasMoon){
+				BSP.removeChild(moon);
+				scene.addChild(moon);
+			}
+			else{
+				scene.removeChild(moon);
+				BSP.addChild(moon);
+			}
+				hasMoon = !hasMoon;
+		} 
+		
 		private function render(event:Event=null):void
 		{
-
-			sun.rotationY++;
-			_s += 0.02;
+			//moon.y += 0.5;
+			//moon.rotationY++;
+			moon.rotationY++;
+			moon.rotationZ++;
+			moon.y = Math.sin(_s) * 50;
+		
+			_s += 0.03;
 
 			camera.y = viewport.containerSprite.mouseY/(viewport.viewportHeight*0.5)*290;
 			camera.x = viewport.containerSprite.mouseX/(viewport.viewportWidth*0.5)*290;

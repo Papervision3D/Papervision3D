@@ -3,7 +3,6 @@ package org.papervision3d.core.geom
 	import flash.geom.Vector3D;
 	
 	import org.papervision3d.core.geom.provider.VertexGeometry;
-	import org.papervision3d.core.ns.pv3d;
 	
 	public class Vertex extends Vector3D
 	{
@@ -16,6 +15,7 @@ package org.papervision3d.core.geom
 		public var vectorIndexX:int = -1;
 		public var vectorIndexY:int = -1;
 		public var vectorIndexZ:int = -1;
+	
 		public var screenIndexX:int = -1;
 		public var screenIndexY:int = -1;
 		
@@ -23,6 +23,14 @@ package org.papervision3d.core.geom
 		{
 			super(x, y, z, w);
 			this.normal = new Vector3D();
+		}
+		
+		public function cloneIndices(v:Vertex):void{
+			this.vectorIndexX = v.vectorIndexX;
+			this.vectorIndexY = v.vectorIndexY;
+			this.vectorIndexZ = v.vectorIndexZ;
+			this.screenIndexX = v.screenIndexX;
+			this.screenIndexY = v.screenIndexY;
 		}
 	}
 }

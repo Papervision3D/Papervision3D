@@ -2,15 +2,17 @@ package org.papervision3d.core.geom.provider
 {
 	import org.papervision3d.core.geom.Geometry;
 	import org.papervision3d.core.geom.Vertex;
-	import org.papervision3d.core.ns.pv3d;
 	
 	public class VertexGeometry extends Geometry
 	{
 		public var vertices :Vector.<Vertex>;
+		
 		//public var uvtData :Vector.<Number>;
 		public var vertexData :Vector.<Number>;
 		public var screenVertexLength : int = 0;
 		public var viewVertexLength : int = 0;
+		
+		public var allowDuplicates : Boolean = false;
 		
 		/**
 		 * Constructor
@@ -40,6 +42,7 @@ package org.papervision3d.core.geom.provider
 			
 			if (index >= 0)
 			{
+				
 				return vertices[index];
 			}
 			else
@@ -51,11 +54,13 @@ package org.papervision3d.core.geom.provider
 				vertex.vectorIndexY = vertexData.push(vertex.y) - 1;
 				vertex.vectorIndexZ = vertexData.push(vertex.z) - 1;
 				
-				viewVertexLength += 3;
+				viewVertexLength += 3; 
+				
 				vertex.screenIndexX = screenVertexLength;
 				
 				vertex.screenIndexY = screenVertexLength+1;
 				screenVertexLength += 2;
+				
 				//uvtData.push(0, 0, 0);
 				vertices.push(vertex);
 				
@@ -142,9 +147,9 @@ package org.papervision3d.core.geom.provider
 			
 			for each (vertex in vertices)
 			{
-				vertex.vectorIndexX = vertexData.push(vertex.x) - 1;
-				vertex.vectorIndexY = vertexData.push(vertex.y) - 1;
-				vertex.vectorIndexZ = vertexData.push(vertex.z) - 1;
+				vertex.vectorIndexX = vertexData.push(0) - 1;
+				vertex.vectorIndexY = vertexData.push(0) - 1;
+				vertex.vectorIndexZ = vertexData.push(0) - 1;
 				
 				viewVertexLength += 3;
 				vertex.screenIndexX = screenVertexLength;
