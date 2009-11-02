@@ -40,6 +40,9 @@ package org.papervision3d.core.geom.BSP
 		private var staticScreenVertexCount:int = 0;
 		private var staticVertexCount:int = 0;
 		
+		
+		public var treeIsDynamic : Boolean = false;
+		
 		public function BSPTree(do3d:DisplayObject3D)
 		{
 			super();
@@ -133,6 +136,8 @@ package org.papervision3d.core.geom.BSP
 		protected var dynamicChildren:Dictionary = new Dictionary(true);
 		private var triPool:TrianglePool = Triangle.pool;
 		public function pushChildrenOntoTree():void{
+			if(!treeIsDynamic)
+				return;
 			//trace("pushed", renderer.geometry.vertices.length, renderer.viewVertexData.length, renderer.geometry.viewVertexLength, renderer.screenVertexData.length);
 			triPool.reset();
 			Vertex.pool.reset();
@@ -178,7 +183,7 @@ package org.papervision3d.core.geom.BSP
 		}
 		
 		public override function addChild(do3d:DisplayObject3D):DisplayObject3D{
-			
+			treeIsDynamic = true;
 			super.addChild(do3d);
 			dynamicChildren[do3d] = do3d;
 			do3d.renderer = new BSPChildRenderer(do3d);
@@ -265,7 +270,7 @@ package org.papervision3d.core.geom.BSP
 			var splitCount : int = 0;
 			var backCount : int = 0;
 			var frontCount : int = 0;
-			var bestValue : Number = 0;
+			var bestValue : Number = Number.POSITIVE_INFINITY;
 			var relation : Number = 0;
 			var minRelation : Number = Number.NEGATIVE_INFINITY * -1;
 			
@@ -293,7 +298,7 @@ package org.papervision3d.core.geom.BSP
 					} 
 					
 					var value : Number = Math.abs( frontCount - backCount ) + (splitCount * 2 );
-					if(value > bestValue){
+					if(value < bestValue){
 						bestValue = value;
 						bestTriangle = tri;
 					}

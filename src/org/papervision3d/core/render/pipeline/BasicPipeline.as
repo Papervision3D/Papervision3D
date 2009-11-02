@@ -128,6 +128,9 @@ package org.papervision3d.core.render.pipeline
 		protected function transformToView(camera:Camera3D, object:DisplayObject3D):void
 		{
 			
+			if(!object.renderer.projectToView)
+				return;
+			
 			var child :DisplayObject3D;
 			var wt :Matrix3D = object.transform.worldTransform;
 			var vt :Matrix3D = object.transform.viewTransform;

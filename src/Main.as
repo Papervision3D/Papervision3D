@@ -7,6 +7,9 @@ package
 	import flash.display.StageQuality;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.geom.Matrix3D;
+	import flash.geom.Vector3D;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
@@ -18,13 +21,9 @@ package
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
-	import org.papervision3d.core.render.draw.list.DrawableList;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.materials.ColorMaterial;
-	import org.papervision3d.materials.Material;
-	import org.papervision3d.materials.shaders.BasicShader;
-	import org.papervision3d.materials.textures.AnimatedTexture;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.lights.PointLight;
 	import org.papervision3d.objects.primitives.Cube;
@@ -121,13 +120,21 @@ package
 			//earth.addChild(new Plane(new BitmapMaterial(bmp, true), 300, 300));
 	
 			
-			earth.addChild(new Plane(new ColorMaterial(0x64219A, 1, true), 300, 300));
+			earth.addChild(new Plane(new ColorMaterial(0x64219A, 1, true), 660, 660));
+			for(var i:int = 0;i<19;i++){
+				var d:Cube = new Cube(new ColorMaterial(0xFFFFFF*Math.random()), 40);
+				d.x = Math.random()*600-300;
+				d.y = Math.random()*200+10;
+				d.z = Math.random()*600-300;
+				d.scaleY = d.y/20;
+				earth.addChild(d);
+			}
 			//earth.addChild(new Cube(/* new BitmapMaterial(bmp2) */ new ColorMaterial(), 50)).x = 70;
 			//earth.addChild(new Cube(/* new BitmapMaterial(bmp2)  */new ColorMaterial(0x9A5BFA), 50)).z = -70;
 			//earth.addChild(new Cube(/* new BitmapMaterial(bmp) */ new ColorMaterial(0x224466), 50)).z = 70;
 			//earth.addChild(new Cube(/* new BitmapMaterial(bmp) */ new ColorMaterial(0x28F4F5), 50)).x = -80;
 			//earth.addChild(new Sphere(new BitmapMaterial((new earthMap() as Bitmap).bitmapData), 60)).x = 150; 
-			var d:DisplayObject3D = new Cube(new Material(new AnimatedTexture(new TestSprite()), new BasicShader()), 60);
+		/* 	var d:DisplayObject3D = new Cube(new Material(new AnimatedTexture(new TestSprite()), new BasicShader()), 60);
 			d.x = -100;
 			d.y = 100; 
 			d.z = 40;
@@ -135,7 +142,9 @@ package
 			d.rotationZ = 45; 
 			d.renderer.drawableList = new DrawableList();
  			scene.addChild(d); 
-			
+			 */
+			 
+			 
 			
 			BSP = new BSPTree(earth);
 			BSP.renderer.drawableList.sortIndex = 2;
@@ -147,15 +156,15 @@ package
 			tallCube.x = - 100;
 			tallCube.y = 60;
 			tallCube.rotationX = 74;
-			BSP.addChild(tallCube);
+		//	BSP.addChild(tallCube);
 			
 			
 			moon = new Cube(/* new BitmapMaterial((new earthMap() as Bitmap).bitmapData, true) */ new ColorMaterial(0xFF66FF), 50);
 			moon.y = 10;
 			moon.rotationX  = 10;
 		
-			BSP.addChild(moon);
-			OBJRENDERER = BSP.renderer;
+		//	BSP.addChild(moon);
+		
 			//scene.addChild(moon);
 			
 			/* var p:Plane = new Plane(new WireframeMaterial());
@@ -167,18 +176,50 @@ package
 			//renderer.drawManager.drawList.sorter.sortMode = DefaultDrawSorter.INDEXSORT;
 			
 			camera.y = 100;
-			
+			camera.transform.update();
 			var ucs :UCS = new UCS("ucs0", 100);
 			//blue.addChild(ucs);
 			
 
 			addEventListener(Event.ENTER_FRAME, render);
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
+			stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 		
 		}
 		public static var OBJRENDERER:ObjectRenderer;
 		private var _r :Number = 0;
 		private var _s :Number = 0;
-
+		private var mx:Number = 0;
+		private var my:Number = 0;
+		private var lx : Number = 0;
+		private var ly : Number = 0;
+		
+		private function clamp(num:Number, min:Number, max:Number):Number{
+			return num <= min ? min : num >= max ? max : num;
+		}
+		
+		private var _forward:Boolean = false;
+		private var _left:Boolean = false;
+		private var _right:Boolean = false;
+		private var _back:Boolean = false;
+		
+		private function keyDown(e:KeyboardEvent):void{
+			switch(String.fromCharCode(e.charCode)){
+				case "w": _forward= true;break;
+				case "s": _back = true;break;
+				case "a":_left=true;break;
+				case "d":_right=true;break;
+			}
+		}
+		private function keyUp(e:KeyboardEvent):void{
+			switch(String.fromCharCode(e.charCode)){
+				case "w": _forward= false;break;
+				case "s": _back = false;break;
+				case "a":_left=false;break;
+				case "d":_right=false;break;
+			}
+		}
+		
 		private function render(event:Event=null):void
 		{
 			//moon.y += 0.5;
@@ -193,11 +234,29 @@ package
 		
 			_s += 0.05;
 
-			camera.y = viewport.containerSprite.mouseY/(viewport.viewportHeight*0.5)*290;
+			lx -= (viewport.containerSprite.mouseY-my)*0.15;
+			my =  viewport.containerSprite.mouseY;
+			ly -= (viewport.containerSprite.mouseX-mx)*0.15;
+			mx =  viewport.containerSprite.mouseX;
+			
+			lx = clamp(lx, -50, 60);
+			
+			 
+			 camera.transform._eulerAngles = new Vector3D(lx, ly, 0);
+
+			camera.x += _left?-5:0 + _right?5:0;
+			camera.z += _forward?-5:0+_back?5:0;
+	
+			
+			/* camera.rotationX = lx;
+			camera.rotationY = ly; */
+			
+			
+			/* camera.y = viewport.containerSprite.mouseY/(viewport.viewportHeight*0.5)*290;
 			camera.x = viewport.containerSprite.mouseX/(viewport.viewportWidth*0.5)*290;
 			camera.z = (camera.x + camera.z)/2+100;
 			
-			camera.lookAt(BSP);
+			camera.lookAt(BSP); */
 			
 			renderer.renderScene(scene, camera, viewport);	
 			

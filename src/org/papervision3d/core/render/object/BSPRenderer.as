@@ -8,6 +8,7 @@ package org.papervision3d.core.render.object
 		public function BSPRenderer(do3d:DisplayObject3D)
 		{
 			super(do3d);
+			this.projectToView = false;
 		}
 		
 

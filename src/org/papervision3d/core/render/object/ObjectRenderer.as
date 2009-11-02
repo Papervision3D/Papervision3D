@@ -34,6 +34,7 @@ package org.papervision3d.core.render.object
 		protected var object : DisplayObject3D;
 		public var renderList : Vector.<Triangle>;
 		public var drawableList : AbstractDrawableList;
+		public var projectToView : Boolean = true;
 			
 		public function ObjectRenderer(obj:DisplayObject3D)
 		{
