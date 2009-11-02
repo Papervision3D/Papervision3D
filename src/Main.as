@@ -1,6 +1,5 @@
 package 
 {
-	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Loader;
 	import flash.display.Sprite;
@@ -22,16 +21,14 @@ package
 	import org.papervision3d.core.render.draw.list.DrawableList;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
-	import org.papervision3d.materials.BitmapMaterial;
+	import org.papervision3d.materials.ColorMaterial;
 	import org.papervision3d.materials.Material;
 	import org.papervision3d.materials.shaders.BasicShader;
-	import org.papervision3d.materials.shaders.NormalShader;
 	import org.papervision3d.materials.textures.AnimatedTexture;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.lights.PointLight;
 	import org.papervision3d.objects.primitives.Cube;
 	import org.papervision3d.objects.primitives.Plane;
-	import org.papervision3d.objects.primitives.Sphere;
 	import org.papervision3d.objects.special.UCS;
 	import org.papervision3d.render.BasicRenderEngine;
 	import org.papervision3d.view.Viewport3D;
@@ -56,8 +53,9 @@ package
 		
 		public var sun :DisplayObject3D;
 		public var earth :DisplayObject3D;
-		public var moon :Cube;
+		public var moon :DisplayObject3D;
 		public var cube :Cube;
+		public var tallCube:Cube;
 		public var BSP:BSPTree;
 		
 		[Embed(source="testAssets/earthmap1k.jpg")]
@@ -120,39 +118,39 @@ package
 			l.y = 300;
 			earth = new DisplayObject3D();//new Cube(new BitmapMaterial(bmp), 50);
 			
-			earth.addChild(new Plane(new BitmapMaterial(bmp, true), 300, 300));
-			earth.addChild(new Cube(new BitmapMaterial(bmp2), 50)).x = 70;
-			earth.addChild(new Cube(new BitmapMaterial(bmp2), 50)).z = -70;
-			earth.addChild(new Cube(new BitmapMaterial(bmp), 50)).z = 70;
+			//earth.addChild(new Plane(new BitmapMaterial(bmp, true), 300, 300));
+	
+			
+			earth.addChild(new Plane(new ColorMaterial(0x64219A, 1, true), 300, 300));
+			//earth.addChild(new Cube(/* new BitmapMaterial(bmp2) */ new ColorMaterial(), 50)).x = 70;
+			//earth.addChild(new Cube(/* new BitmapMaterial(bmp2)  */new ColorMaterial(0x9A5BFA), 50)).z = -70;
+			//earth.addChild(new Cube(/* new BitmapMaterial(bmp) */ new ColorMaterial(0x224466), 50)).z = 70;
+			//earth.addChild(new Cube(/* new BitmapMaterial(bmp) */ new ColorMaterial(0x28F4F5), 50)).x = -80;
 			//earth.addChild(new Sphere(new BitmapMaterial((new earthMap() as Bitmap).bitmapData), 60)).x = 150; 
 			var d:DisplayObject3D = new Cube(new Material(new AnimatedTexture(new TestSprite()), new BasicShader()), 60);
 			d.x = -100;
-			d.y = 10; 
+			d.y = 100; 
 			d.z = 40;
 			d.rotationY = 60;
 			d.rotationZ = 45; 
-
-			var addon:Plane = new Plane(new BitmapMaterial(bmp, true), 300, 300);
-			addon.x = 20;
-			addon.y = 10;
-	
+			d.renderer.drawableList = new DrawableList();
+ 			scene.addChild(d); 
+			
 			
 			BSP = new BSPTree(earth);
 			BSP.renderer.drawableList.sortIndex = 2;
 			scene.addChild(BSP);
 			
-		//	BSP.addStaticChild(d);
+			//add a static object after BSP is created!
+			tallCube = new Cube(/* new BitmapMaterial(bmp2) */new ColorMaterial(0xFF9A22), 50);
+			tallCube.scaleY = 4;
+			tallCube.x = - 100;
+			tallCube.y = 60;
+			tallCube.rotationX = 74;
+			BSP.addChild(tallCube);
 			
 			
-			var blue : Sphere = new Sphere(new Material(new AnimatedTexture(new TestSprite()), new NormalShader()), 30, 3, 4);
-			sun = blue;
-			//scene.addChild(blue);
-			blue.y = 130;
-			blue.renderer.drawableList = new DrawableList(null, null, 1);
-			blue.x = 100;
-			
-			
-			moon = new Cube(new BitmapMaterial((new earthMap() as Bitmap).bitmapData, true), 50);
+			moon = new Cube(/* new BitmapMaterial((new earthMap() as Bitmap).bitmapData, true) */ new ColorMaterial(0xFF66FF), 50);
 			moon.y = 10;
 			moon.rotationX  = 10;
 		
@@ -175,41 +173,32 @@ package
 			
 
 			addEventListener(Event.ENTER_FRAME, render);
-			//stage.addEventListener(MouseEvent.CLICK, stageClick);
+		
 		}
 		public static var OBJRENDERER:ObjectRenderer;
 		private var _r :Number = 0;
 		private var _s :Number = 0;
-		
-		private var hasMoon :Boolean = true;
-		private function stageClick(e:Event):void{
-			if(hasMoon){
-				BSP.removeChild(moon);
-				scene.addChild(moon);
-			}
-			else{
-				scene.removeChild(moon);
-				BSP.addChild(moon);
-			}
-				hasMoon = !hasMoon;
-		} 
-		
+
 		private function render(event:Event=null):void
 		{
 			//moon.y += 0.5;
 			//moon.rotationY++;
 			moon.rotationY++;
 			moon.rotationZ++;
+			
+			//tallCube.rotationX++;
+			tallCube.rotationZ+=2;
+		
 			moon.y = Math.sin(_s) * 50;
 		
-			_s += 0.03;
+			_s += 0.05;
 
 			camera.y = viewport.containerSprite.mouseY/(viewport.viewportHeight*0.5)*290;
 			camera.x = viewport.containerSprite.mouseX/(viewport.viewportWidth*0.5)*290;
 			camera.z = (camera.x + camera.z)/2+100;
 			
 			camera.lookAt(BSP);
-
+			
 			renderer.renderScene(scene, camera, viewport);	
 			
 			var stats :RenderStats = renderer.renderData.stats;

@@ -10,6 +10,7 @@ package org.papervision3d.core.math.utils {
 	import org.papervision3d.core.geom.provider.TriangleGeometry;
 	import org.papervision3d.core.geom.provider.VertexGeometry;
 	import org.papervision3d.core.math.Plane3D;
+	import org.papervision3d.core.memory.pool.TrianglePool;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.proto.DisplayObjectContainer3D;
 	import org.papervision3d.materials.shaders.IShader;
@@ -240,7 +241,7 @@ package org.papervision3d.core.math.utils {
 				
 				if(sideB > epsilon) {
 					if(sideA < -epsilon) {
-						v = new Vertex(pA.x, pA.y, pA.z);
+						v = dynamicSplit? Vertex.pool.getVertex(pA.x, pA.y, pA.z) :  new Vertex(pA.x, pA.y, pA.z);
 						v.x += d * (pB.x - pA.x);
 						v.y += d * (pB.y - pA.y);
 						v.z += d * (pB.z - pA.z);
@@ -308,26 +309,29 @@ package org.papervision3d.core.math.utils {
 			tris.push(new Array(), new Array());
 			
 			var material : IShader = triangle.shader;
+			var tpool:TrianglePool;
+			if(dynamicSplit)
+				tpool = Triangle.pool; 
 			
 			var nTri : Triangle;
 			if(triA.length > 2){
-				nTri = dynamicSplit? Triangle.pool.getTriangle(material, triA[0], triA[1], triA[2], uvsA[0], uvsA[1], uvsA[2]) : new Triangle(material, triA[0], triA[1], triA[2], uvsA[0], uvsA[1], uvsA[2]);
+				nTri = dynamicSplit? tpool.getTriangle(material, triA[0], triA[1], triA[2], uvsA[0], uvsA[1], uvsA[2]) : new Triangle(material, triA[0], triA[1], triA[2], uvsA[0], uvsA[1], uvsA[2]);
 				tris[0].push(nTri);
 				geometry.addTriangle(nTri);
 			}
 			if(triB.length > 2){
-				nTri = dynamicSplit? Triangle.pool.getTriangle(material, triB[0], triB[1], triB[2], uvsB[0], uvsB[1], uvsB[2]) : new Triangle(material, triB[0], triB[1], triB[2], uvsB[0], uvsB[1], uvsB[2]);
+				nTri = dynamicSplit? tpool.getTriangle(material, triB[0], triB[1], triB[2], uvsB[0], uvsB[1], uvsB[2]) : new Triangle(material, triB[0], triB[1], triB[2], uvsB[0], uvsB[1], uvsB[2]);
 
 				tris[1].push(nTri);
 				geometry.addTriangle(nTri);
 			}
 			if( triA.length > 3 ){
-				nTri = dynamicSplit ? Triangle.pool.getTriangle(material, triA[0], triA[2], triA[3], uvsA[0], uvsA[2], uvsA[3]) : new Triangle(material, triA[0], triA[2], triA[3], uvsA[0], uvsA[2], uvsA[3]);
+				nTri = dynamicSplit ? tpool.getTriangle(material, triA[0], triA[2], triA[3], uvsA[0], uvsA[2], uvsA[3]) : new Triangle(material, triA[0], triA[2], triA[3], uvsA[0], uvsA[2], uvsA[3]);
 
 				tris[0].push(nTri);
 				geometry.addTriangle(nTri);
 			}else if( triB.length > 3 ){
-				nTri = dynamicSplit ?  Triangle.pool.getTriangle(material, triB[0], triB[2], triB[3], uvsB[0], uvsB[2], uvsB[3]) : new Triangle(material, triB[0], triB[2], triB[3], uvsB[0], uvsB[2], uvsB[3]);
+				nTri = dynamicSplit ?  tpool.getTriangle(material, triB[0], triB[2], triB[3], uvsB[0], uvsB[2], uvsB[3]) : new Triangle(material, triB[0], triB[2], triB[3], uvsB[0], uvsB[2], uvsB[3]);
 
 				tris[1].push(nTri);
 				geometry.addTriangle(nTri);

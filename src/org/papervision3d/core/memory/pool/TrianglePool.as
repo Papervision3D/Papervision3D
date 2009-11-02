@@ -38,9 +38,9 @@ package org.papervision3d.core.memory.pool
 		public function getTriangle(shader:IShader, v0:Vertex, v1:Vertex, v2:Vertex, uv0:UVCoord, uv1:UVCoord, uv2:UVCoord):Triangle{
 			var t:Triangle = triangle;
 			t.shader = shader;
-			t.v0 = v0;
-			t.v1 = v1;
-			t.v2 = v2;
+			t.v0.clonePosition(v0);
+			t.v1.clonePosition(v1);
+			t.v2.clonePosition(v2);
 			t.uv0 = uv0;
 			t.uv1 = uv1;
 			t.uv2 = uv2;

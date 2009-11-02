@@ -24,6 +24,7 @@ package org.papervision3d.core.render.draw.manager
 			_listStack = new Vector.<AbstractDrawableList>();
 			_objectStack = new Vector.<DisplayObject3D>();
 			drawLists = new Vector.<AbstractDrawableList>();
+			_currentList = drawlist;
 			_listStack.push(drawlist);
 		}
 		

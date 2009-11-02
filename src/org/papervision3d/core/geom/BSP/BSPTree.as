@@ -2,12 +2,12 @@ package org.papervision3d.core.geom.BSP
 {
 	import __AS3__.vec.Vector;
 	
-	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
 	
 	import org.papervision3d.cameras.Camera3D;
 	import org.papervision3d.core.geom.Triangle;
+	import org.papervision3d.core.geom.Vertex;
 	import org.papervision3d.core.geom.provider.TriangleGeometry;
 	import org.papervision3d.core.math.Plane3D;
 	import org.papervision3d.core.math.utils.GeomUtil;
@@ -21,6 +21,12 @@ package org.papervision3d.core.geom.BSP
 	import org.papervision3d.core.render.object.BSPRenderer;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.objects.DisplayObject3D;
+	
+	/**
+	 * 
+	 * @author: andy zupko / zupko.info
+	 * 
+	 **/
 	
 	public class BSPTree extends DisplayObject3D
 	{
@@ -51,11 +57,11 @@ package org.papervision3d.core.geom.BSP
 		}
 		
 		protected function resetToStatic():void{
-			
-			/* nodeCount = 0;
+		/* 	
+			nodeCount = 0;
 			countNodes(rootNode);
-			trace("NODE COUNT BEFORE: ", nodeCount); */
-			
+			trace("NODE COUNT: "+nodeCount);
+		 */
 			(renderer.geometry as TriangleGeometry).triangles.length = staticTriCount;
 			
 			renderer.geometry.vertices.length = staticVertexCount;
@@ -66,10 +72,7 @@ package org.papervision3d.core.geom.BSP
 			
 			
 			clearDynamicNodes(rootNode);
-			
-			/* nodeCount = 0;
-			countNodes(rootNode);
-			trace("NODE COUNT AFTER: ", nodeCount); */
+
 		}
 		private static var nodeCount : int = 0;
 		public function countNodes(node:BSPTreeNode):void{
@@ -121,8 +124,8 @@ package org.papervision3d.core.geom.BSP
 					renderer.renderList.push(triangle);
 			}
 			
-			for each(var triangle:Triangle in dynamicPolyList){
-					renderer.renderList.push(triangle);
+			for each(var triangle2:Triangle in dynamicPolyList){
+					renderer.renderList.push(triangle2);
 			}
 						
 		}
@@ -132,12 +135,9 @@ package org.papervision3d.core.geom.BSP
 		public function pushChildrenOntoTree():void{
 			//trace("pushed", renderer.geometry.vertices.length, renderer.viewVertexData.length, renderer.geometry.viewVertexLength, renderer.screenVertexData.length);
 			triPool.reset();
+			Vertex.pool.reset();
 			resetToStatic();
-			
-			var inv:Matrix3D = new Matrix3D;
-			//trace((renderer.geometry as TriangleGeometry).triangles ? (renderer.geometry as TriangleGeometry).triangles.length : "nothing", renderer.geometry.vertices.length);
 			for each(var c:DisplayObject3D in dynamicChildren){
-				c.renderer.worldVertexData.length = 0;
 				c.transform.worldTransform.transformVectors(c.renderer.geometry.vertexData, c.renderer.worldVertexData);
 				var tris:Vector.<Triangle> = getObjectTriangles(c.renderer);
 				 for each(var t:Triangle in tris)
@@ -145,23 +145,11 @@ package org.papervision3d.core.geom.BSP
 				trickle(rootNode, tris /* (c.renderer.geometry as TriangleGeometry).triangles */, 0, renderer.geometry as TriangleGeometry, true);
 				
 			}
-			
-		
-			
-			//trace("after", (renderer.geometry as TriangleGeometry).triangles ? (renderer.geometry as TriangleGeometry).triangles.length : "nothing", renderer.geometry.vertices.length);
+	
 			renderer.updateIndices();
-		//	trace("NEW",renderer.geometry.vertices.length, renderer.viewVertexData.length, renderer.screenVertexData.length);
-		}
 		
-		private function showVertexInfo(ar1:Vector.<Number>, ar2:Vector.<Number>, index:Number = 0):void{
-			var offset:Number = index*3;
-			trace("COMPAARE");
-			trace(ar1[offset], ar2[offset]);
-			trace(ar1[offset+1], ar2[offset+1]);
-			trace(ar1[offset+2], ar2[offset+2]);
-			trace("END");
-			
 		}
+
 		
 		private var tris:Vector.<Triangle> = new Vector.<Triangle>();
 		private function getObjectTriangles(objectRenderer:ObjectRenderer):Vector.<Triangle>{
@@ -237,7 +225,7 @@ package org.papervision3d.core.geom.BSP
 							continue;
 						}
 						
-						var side : uint = GeomUtil.classifyTriangle(tri2, _splitTestPlane, 0.01);
+						var side : uint = GeomUtil.classifyTriangle(tri2, _splitTestPlane, 0.03125);
 						if(side == GeomUtil.BACK)
 							backCount++;
 						else if(side == GeomUtil.FRONT)
@@ -264,31 +252,86 @@ package org.papervision3d.core.geom.BSP
 			
 		}
 		
+		
+		//http://www.exaflop.org/docs/naifgfx/naifbsp.html
+		protected static function chooseBestValuePoly(polySet : Vector.<Triangle>) : Triangle
+		{
+
+			var _splitTestPlane : Plane3D = new Plane3D();
+			var bestTriangle : Triangle = polySet[0];
+			var leastSplits : Number = Number.POSITIVE_INFINITY;
+			var bestRelation : Number = -1;
+			
+			var splitCount : int = 0;
+			var backCount : int = 0;
+			var frontCount : int = 0;
+			var bestValue : Number = 0;
+			var relation : Number = 0;
+			var minRelation : Number = Number.NEGATIVE_INFINITY * -1;
+			
+			
+				for each(var tri:Triangle in polySet){
+					
+					splitCount = 0;
+					frontCount = 0;
+					backCount = 0;
+					_splitTestPlane.setThreePoints(tri.v0, tri.v1, tri.v2);
+					for each(var tri2 :Triangle in polySet){
+						
+						if(tri == tri2){
+							continue;
+						}
+						
+						var side : uint = GeomUtil.classifyTriangle(tri2, _splitTestPlane, 0.03125);
+						if(side == GeomUtil.BACK)
+							backCount++;
+						else if(side == GeomUtil.FRONT)
+							frontCount++;
+						else if(side == GeomUtil.STRADDLE)
+							splitCount++;
+							
+					} 
+					
+					var value : Number = Math.abs( frontCount - backCount ) + (splitCount * 2 );
+					if(value > bestValue){
+						bestValue = value;
+						bestTriangle = tri;
+					}
+						
+					
+				}
+
+			return bestTriangle;
+			
+		}
+		
 		/*
 		
 		BUILD THE INITIAL TREE
 		
 		*/		
 		
-		private static var staticPlane:Plane3D = new Plane3D();
-		public static function GenerateBSPTree(node:BSPTreeNode, polySet:Vector.<Triangle>, depth:int, geom:TriangleGeometry, dynamicNode:Boolean = false):void{
+		private  var staticPlane:Plane3D = new Plane3D();
+		public function GenerateBSPTree(node:BSPTreeNode, polySet:Vector.<Triangle>, depth:int, geom:TriangleGeometry, dynamicNode:Boolean = false):void{
 
 			if(depth > 1800){
 				trace("TOO DEEP!");
 				return;
 			}
 			
-			if(IsConvex(polySet)){
+			if(IsConvex(polySet, dynamicNode)){
 				for each(var tt:Triangle in polySet)
 					dynamicNode? node.dynamicPolySet.push(tt) : node.polygonSet.push(tt);
 				return;
 			}
 			
-			var poly:Triangle = dynamicNode ? chooseRandomPoly(polySet) : chooseBestPoly(polySet);
-			var divider : Plane3D = Plane3D.fromThreePoints(poly.v0, poly.v1, poly.v2);
 			
-			var posSet : Vector.<Triangle> = new Vector.<Triangle>();
-			var negSet : Vector.<Triangle> = new Vector.<Triangle>(); 
+			var poly:Triangle = dynamicNode ? chooseBestValuePoly(polySet) : chooseBestValuePoly(polySet);
+			var divider:Plane3D = Plane3D.fromThreePoints(poly.v0, poly.v1, poly.v2);
+			
+			
+			var posSet:Vector.<Triangle> = new Vector.<Triangle>();
+			var negSet:Vector.<Triangle> = new Vector.<Triangle>();
 			
 			node.divider = divider;
 			node.front = new BSPTreeNode(dynamicNode);
@@ -303,7 +346,7 @@ package org.papervision3d.core.geom.BSP
 					negSet.push(t);
 				}else if(side == GeomUtil.STRADDLE){
 					
-					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.01, !dynamicNode, 0.25, dynamicNode);
+					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.03125, !dynamicNode, 0.25, dynamicNode);
 					//geom.removeTriangle(t);
 					for each(var tF:Triangle in results[0]){
 						posSet.push(tF);
@@ -353,7 +396,7 @@ package org.papervision3d.core.geom.BSP
 			
 			if(polySet.length == 0)
 				return;
-				
+			
 			var generate:Boolean = false;
 
 			//at a leaf, start building on it
@@ -378,7 +421,7 @@ package org.papervision3d.core.geom.BSP
 					negSet.push(t);
 				}else if(side == GeomUtil.STRADDLE){
 					
-					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.01, !dynamicNode, 0.25, dynamicNode);
+					var results:Array = GeomUtil.splitTriangleByPlane(t, geom, divider, 0.03125, !dynamicNode, 0.25, dynamicNode);
 					//geom.removeTriangle(t);
 					for each(var tF:Triangle in results[0]){
 						posSet.push(tF);
@@ -404,15 +447,21 @@ package org.papervision3d.core.geom.BSP
 		}
 		
 		
-		private static var _workPlane : Plane3D = new Plane3D();
-		protected static function PolyInFront(t0:Triangle, t1:Triangle):Boolean{
+		private  var _workPlane : Plane3D = new Plane3D();
+		protected  function PolyInFront(t0:Triangle, t1:Triangle):Boolean{
 			_workPlane.setThreePoints(t1.v0, t1.v1, t1.v2);
 			return GeomUtil.classifyTriangle(t0, _workPlane) == GeomUtil.FRONT;
 		}
 		
-		protected static function IsConvex(polySet:Vector.<Triangle>):Boolean{
+		protected function IsConvex(polySet:Vector.<Triangle>, dynamicNode:Boolean = false):Boolean{
+			
 			if(polySet.length == 1)
 				return true;
+			
+			//for dynamic nodes, lets not compare all of them, only goto single leafs
+			if(dynamicNode)
+				return false;
+				
 			for each(var t0:Triangle in polySet){
 				for each(var t1:Triangle in polySet){
 					if(t0 != t1 && !PolyInFront(t0, t1))

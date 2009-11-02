@@ -62,8 +62,11 @@ package org.papervision3d.view
 		 */ 
 		protected function onAddedToStage(event:Event):void
 		{
+			this.viewportWidth = stage.stageWidth;
+			this.viewportHeight = stage.stageHeight;
+			
 			stage.addEventListener(Event.RESIZE, onStageResize);
-			onStageResize();
+			
 		}
 		
 		/**
@@ -109,7 +112,7 @@ package org.papervision3d.view
 		public function set viewportWidth(width:Number):void
 		{
 			_width = width;
-			_hWidth = width / 2;
+			_hWidth = width * 0.5;
 			_containerSprite.x = _hWidth;
 			
 			cullingRectangle.x = -_hWidth;
@@ -118,6 +121,7 @@ package org.papervision3d.view
 			sizeRectangle.width = width;
 			if(_autoClipping)
 			{
+				
 				scrollRect = sizeRectangle;
 			}
 		}
@@ -137,7 +141,7 @@ package org.papervision3d.view
 		public function set viewportHeight(height:Number):void
 		{
 			_height = height;
-			_hHeight = height / 2;
+			_hHeight = height * 0.5;
 			_containerSprite.y = _hHeight;
 			
 			cullingRectangle.y = -_hHeight;

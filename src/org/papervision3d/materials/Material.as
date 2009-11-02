@@ -8,8 +8,9 @@ package org.papervision3d.materials
 		public function Material(texture:Texture, shader:IShader, doubleSided:Boolean = false)
 		{
 			super();
-			this.texture = texture;
+			
 			this.shader = shader;
+			this.texture = texture;
 			this.doubleSided = doubleSided;
 		}
 		

@@ -2,6 +2,7 @@ package org.papervision3d.core.geom
 {
 	import flash.geom.Vector3D;
 	
+	import org.papervision3d.core.math.Plane3D;
 	import org.papervision3d.core.memory.pool.TrianglePool;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.render.draw.items.IDrawable;
@@ -45,6 +46,8 @@ package org.papervision3d.core.geom
 		/** */
 		public var shader : IShader;
 		
+		public var plane3d : Plane3D;
+		
 		
 		pv3d var cullFlags : int;
 		
@@ -71,6 +74,7 @@ package org.papervision3d.core.geom
 			this.uv1 = uv1 || new UVCoord();
 			this.uv2 = uv2 || new UVCoord();
 			this.visible = true;
+			this.plane3d = null;
 		}
 		
 		public function createNormal():void

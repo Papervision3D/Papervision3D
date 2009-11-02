@@ -3,6 +3,9 @@ package org.papervision3d.materials
 	import org.papervision3d.materials.shaders.IShader;
 	import org.papervision3d.materials.textures.Texture;
 	
+	/** 
+	 * @author: andy zupko / zupko.info
+	 **/
 	public class AbstractMaterial
 	{
 			
