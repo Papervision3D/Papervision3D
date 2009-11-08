@@ -1,9 +1,13 @@
 package org.papervision3d.materials.shaders
 {
+	import __AS3__.vec.Vector;
+	
 	import flash.display.BitmapData;
+	import flash.display.Graphics;
 	import flash.display.IGraphicsData;
 	
 	import org.papervision3d.core.render.data.RenderData;
+	import org.papervision3d.core.render.draw.items.AbstractDrawable;
 	import org.papervision3d.materials.AbstractMaterial;
 	import org.papervision3d.materials.textures.Texture;
 	import org.papervision3d.objects.DisplayObject3D;
@@ -18,11 +22,20 @@ package org.papervision3d.materials.shaders
 		protected var _clear : IGraphicsData;
 		protected var _usesUV : Boolean = true;
 		protected var _dirty : Boolean = false;
-				
+		protected var _drawVector : Vector.<IGraphicsData> = new Vector.<IGraphicsData>(3, true);
+		
 		protected var _doubleSided : Boolean = false;	
 		
 		public function AbstractShader()
 		{
+		}
+		
+		public function render(drawable:AbstractDrawable):Vector.<IGraphicsData>{
+			_drawVector[0] = drawProperties;
+			_drawVector[1] = drawable.path;
+			_drawVector[2] = _clear;
+			return _drawVector;
+			
 		}
 
 		public function process(renderData:RenderData, object:DisplayObject3D):void
@@ -48,6 +61,8 @@ package org.papervision3d.materials.shaders
 		
 		public function set drawProperties(value:IGraphicsData):void{
 			_drawProperties = value;
+			_drawVector[0] = _drawProperties;
+			
 		}
 		
 		public function get drawProperties():IGraphicsData{

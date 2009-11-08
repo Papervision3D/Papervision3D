@@ -4,7 +4,7 @@ package org.papervision3d.core.render.draw.items
 	
 	import flash.display.GraphicsPath;
 	import flash.display.GraphicsPathCommand;
-	import flash.display.IGraphicsPath;
+	import flash.display.IGraphicsData;
 	
 	public class LineDrawable extends AbstractDrawable
 	{
@@ -35,7 +35,7 @@ package org.papervision3d.core.render.draw.items
 			y1 *= hh;
 		}
 		
-		public override function get path():IGraphicsPath
+		public override function get path():IGraphicsData
 		{
 			_path.data[0] = x0;
 			_path.data[1] = y0;

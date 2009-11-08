@@ -76,7 +76,7 @@ package org.papervision3d.objects.primitives
 			triGeometry.addTriangle(new Triangle(material.shader, v[6], v[5], v[4], uv0, uv1, uv2) );
 			triGeometry.addTriangle(new Triangle(material.shader, v[6], v[4], v[7], uv0, uv2, uv3) );
 			
-		//	renderer.updateIndices();
+			renderer.updateIndices();
 			
 		}	
 	}

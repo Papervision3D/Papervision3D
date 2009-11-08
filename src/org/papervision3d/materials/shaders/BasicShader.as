@@ -11,7 +11,7 @@ package org.papervision3d.materials.shaders
 	public class BasicShader extends AbstractShader
 	{
 		protected var graphicsFill : GraphicsBitmapFill;
-		
+		protected var texture2D : Texture2D;
 		public function BasicShader()
 		{
 			graphicsFill = new GraphicsBitmapFill();
@@ -27,10 +27,13 @@ package org.papervision3d.materials.shaders
 		
 		public override function set texture(value:Texture):void{
 			super.texture = value;
-			bitmap = (value as Texture2D).bitmap;
+			texture2D = (value as Texture2D);
+			bitmap = texture2D.bitmap;
+			
 			graphicsFill.bitmapData = bitmap;
 		}
 		public override function set bitmap(bitmapData:BitmapData):void{
+			trace("setting bitmap");
 			_baseBitmap  = bitmapData;
 			_outputBitmap = bitmapData.clone();
 		}

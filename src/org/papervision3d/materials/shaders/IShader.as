@@ -1,9 +1,12 @@
 package org.papervision3d.materials.shaders
 {
+	import __AS3__.vec.Vector;
+	
 	import flash.display.BitmapData;
 	import flash.display.IGraphicsData;
 	
 	import org.papervision3d.core.render.data.RenderData;
+	import org.papervision3d.core.render.draw.items.AbstractDrawable;
 	import org.papervision3d.materials.AbstractMaterial;
 	import org.papervision3d.materials.textures.Texture;
 	import org.papervision3d.objects.DisplayObject3D;
@@ -23,5 +26,8 @@ package org.papervision3d.materials.shaders
 		function get usesUV():Boolean;
 		function set doubleSided(value:Boolean):void;
 		function get doubleSided():Boolean;
+		function render(drawable:AbstractDrawable):Vector.<IGraphicsData>;
+			
+	
 	}
 }

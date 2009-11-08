@@ -61,19 +61,20 @@ package org.papervision3d.core.render.object
 			
 		}
 
-
+			private var v0 :Vector3D = new Vector3D();
+			private var v1 :Vector3D = new Vector3D();
+			private var v2 :Vector3D = new Vector3D();
+			private var sv0 :Vector3D = new Vector3D();
+			private var sv1 :Vector3D = new Vector3D();
+			private var sv2 :Vector3D = new Vector3D();
+			
 		public function fillRenderList(camera:Camera3D, renderData:RenderData, clipper:IPolygonClipper, drawablePool:DrawablePool, _clipFlags:uint ):void 
 		{
 			use namespace pv3d;
 			var stats : RenderStats = renderData.stats;
 			var child :DisplayObject3D;
 			var clipPlanes :Vector.<Plane3D> = camera.frustum.viewClippingPlanes;
-			var v0 :Vector3D = new Vector3D();
-			var v1 :Vector3D = new Vector3D();
-			var v2 :Vector3D = new Vector3D();
-			var sv0 :Vector3D = new Vector3D();
-			var sv1 :Vector3D = new Vector3D();
-			var sv2 :Vector3D = new Vector3D();
+			
 		
 			
 			stats.totalObjects++;

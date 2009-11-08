@@ -4,6 +4,7 @@ package org.papervision3d.render
 	
 	import org.papervision3d.cameras.Camera3D;
 	import org.papervision3d.core.geom.provider.TriangleGeometry;
+	import org.papervision3d.core.memory.Timing;
 	import org.papervision3d.core.memory.pool.DrawablePool;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.render.clipping.ClipFlags;
@@ -79,6 +80,7 @@ package org.papervision3d.render
 		override public function renderScene(scene:DisplayObject3D, camera:Camera3D, viewport:Viewport3D):void
 		{	
 			
+			
 			renderData.scene = scene;
 			renderData.camera = camera;
 			renderData.viewport = viewport;
@@ -87,11 +89,15 @@ package org.papervision3d.render
 			
 			renderData.lights.clear();
 			
+			Timing.startTime();
 			TextureManager.updateTextures();
+			Timing.transformTime = Timing.stopTime();
 			camera.update(renderData.viewport.sizeRectangle);
 		
 			
 			pipeline.execute(renderData);
+ 			Timing.projectTime = Timing.stopTime(); 
+ 			
  			
  			
  			drawManager.reset();
@@ -99,11 +105,13 @@ package org.papervision3d.render
  			
  			_drawablePool.reset();
  			
+ 			Timing.startTime();
 			fillRenderList(camera, scene);
-			
+			Timing.renderTime = Timing.stopTime();
 			drawManager.handleList();
 			
 			rasterizer.rasterize(renderData);
+			
 			
 		}
 		

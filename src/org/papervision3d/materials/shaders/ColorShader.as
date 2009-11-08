@@ -19,12 +19,13 @@ package org.papervision3d.materials.shaders
 			_usesUV = false;
 			this.drawProperties = graphicsFill = new GraphicsSolidFill(0, 1);
 			this.clear = new GraphicsEndFill();
+			
 		}
 		
 		public override function get drawProperties():IGraphicsData{
 			
 			graphicsFill.color = _texture.color;
-			graphicsFill.alpha = _texture.alpha;
+			graphicsFill.alpha = _texture.alpha; 
 			return _drawProperties;
 		}
 	

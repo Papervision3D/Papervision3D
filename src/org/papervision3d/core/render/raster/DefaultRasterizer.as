@@ -2,14 +2,13 @@ package org.papervision3d.core.render.raster
 {
 	import __AS3__.vec.Vector;
 	
+	import flash.display.Graphics;
 	import flash.display.GraphicsSolidFill;
 	import flash.display.GraphicsStroke;
 	import flash.display.IGraphicsData;
 	
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.draw.items.AbstractDrawable;
-	import org.papervision3d.core.render.draw.items.LineDrawable;
-	import org.papervision3d.core.render.draw.items.TriangleDrawable;
 	import org.papervision3d.core.render.draw.list.AbstractDrawableList;
 	
 	public class DefaultRasterizer implements IRasterizer
@@ -35,22 +34,23 @@ package org.papervision3d.core.render.raster
 			drawArray.length = 0;
 			renderData.viewport.containerSprite.graphics.clear();	
 
-			drawDrawableList(renderData.drawManager.drawables);
-
-			renderData.viewport.containerSprite.graphics.drawGraphicsData(drawArray);
+			drawDrawableList(renderData.drawManager.drawables, renderData.viewport.containerSprite.graphics);
+			
+			//renderData.viewport.containerSprite.graphics.drawGraphicsData(drawArray);
 			
 		}
 		
-		protected function drawDrawableList(drawables:Vector.<AbstractDrawable>):void{
+		protected function drawDrawableList(drawables:Vector.<AbstractDrawable>, graphics:Graphics):void{
 			for each (drawable in drawables)
 			{
 				if(drawable is AbstractDrawableList){
 					//trace("drawing the list", (drawable as AbstractDrawableList).drawables.length);
-					drawDrawableList((drawable as AbstractDrawableList).drawables);
+					drawDrawableList((drawable as AbstractDrawableList).drawables, graphics);
 				}else{
 					drawable.toViewportSpace(hw, -hh);
-					drawArray.push(stroke, drawable.shader.drawProperties, drawable.path, drawable.shader.clear, endStroke);
+					//drawArray.push(stroke, drawable.shader.drawProperties, drawable.path, drawable.shader.clear, endStroke);
 					//drawArray.push(drawable.shader.drawProperties, drawable.path, drawable.shader.clear);
+					graphics.drawGraphicsData(drawable.shader.render(drawable));
 				}
 							
 			}

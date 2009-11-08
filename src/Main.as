@@ -8,7 +8,6 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
-	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
@@ -19,11 +18,13 @@ package
 	import org.papervision3d.core.geom.BSP.BSPTree;
 	import org.papervision3d.core.geom.provider.VertexGeometry;
 	import org.papervision3d.core.ns.pv3d;
+	import org.papervision3d.core.render.clipping.ClipFlags;
 	import org.papervision3d.core.render.data.RenderData;
 	import org.papervision3d.core.render.data.RenderStats;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.core.render.pipeline.BasicPipeline;
 	import org.papervision3d.materials.ColorMaterial;
+	import org.papervision3d.materials.WireframeMaterial;
 	import org.papervision3d.objects.DisplayObject3D;
 	import org.papervision3d.objects.lights.PointLight;
 	import org.papervision3d.objects.primitives.Cube;
@@ -94,14 +95,14 @@ package
 			camera = new Camera3D(50, 400, 2300, "Camera01");
 			
 			scene.addChild( camera );
-			camera.enableCulling = false
+			camera.enableCulling = true;
 			camera.showFrustum = false;
 			camera.near = 1;
 			camera.z = 800;
 			camera.y = 500;
 
 			renderer = new BasicRenderEngine();
-			//renderer.clipFlags = ClipFlags.NEAR;			
+			renderer.clipFlags = ClipFlags.NONE;			
 			
 			var bmp:BitmapData = new BitmapData(256, 256);
 			bmp.perlinNoise(256, 256, 2, 300, true, false);
@@ -121,8 +122,8 @@ package
 	
 			
 			earth.addChild(new Plane(new ColorMaterial(0x64219A, 1, true), 660, 660));
-			for(var i:int = 0;i<19;i++){
-				var d:Cube = new Cube(new ColorMaterial(0xFFFFFF*Math.random()), 40);
+			for(var i:int = 0;i<109;i++){
+				var d:Cube = new Cube(new WireframeMaterial(0xFFFFFF*Math.random()), 40);
 				d.x = Math.random()*600-300;
 				d.y = Math.random()*200+10;
 				d.z = Math.random()*600-300;
@@ -144,11 +145,12 @@ package
  			scene.addChild(d); 
 			 */
 			 
+			 scene.addChild(earth);
 			 
 			
-			BSP = new BSPTree(earth);
+			/*  BSP = new BSPTree(earth);
 			BSP.renderer.drawableList.sortIndex = 2;
-			scene.addChild(BSP);
+			scene.addChild(BSP);   */
 			
 			//add a static object after BSP is created!
 			tallCube = new Cube(/* new BitmapMaterial(bmp2) */new ColorMaterial(0xFF9A22), 50);
@@ -220,8 +222,11 @@ package
 			}
 		}
 		
+		private var startTime:Number = 0;
 		private function render(event:Event=null):void
 		{
+			//trace(getTimer()-startTime);
+			
 			//moon.y += 0.5;
 			//moon.rotationY++;
 			moon.rotationY++;
@@ -259,7 +264,8 @@ package
 			camera.lookAt(BSP); */
 			
 			renderer.renderScene(scene, camera, viewport);	
-			
+			//trace(getTimer()-startTime);
+			//Timing.printInfo();
 			var stats :RenderStats = renderer.renderData.stats;
 			
 			tf.text = "Papervision3D - version 3.0\n" +
@@ -270,6 +276,8 @@ package
 				"\nclipped triangles: " + stats.clippedTriangles +
 				"\n\nlocal: " + earth.transform.localEulerAngles +
 				"\nglobal: " + earth.transform.eulerAngles;
+				
+		//	startTime = getTimer();
 		}
 	
 	}

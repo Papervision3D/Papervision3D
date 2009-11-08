@@ -8,6 +8,7 @@ package org.papervision3d.core.render.pipeline
 	import org.papervision3d.cameras.Camera3D;
 	import org.papervision3d.core.geom.BSP.BSPTree;
 	import org.papervision3d.core.geom.provider.VertexGeometry;
+	import org.papervision3d.core.memory.Timing;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.proto.Transform3D;
 	import org.papervision3d.core.render.data.RenderData;
@@ -43,7 +44,8 @@ package org.papervision3d.core.render.pipeline
 			camera = renderData.camera;	
 			
 			_lookAts.length = 0;
-
+			
+		
 			transformToWorld(renderData.scene, renderData);
 
 			if (_lookAts.length)
@@ -55,6 +57,7 @@ package org.papervision3d.core.render.pipeline
 			projection = camera.projectionMatrix;
 			
 			transformToView(camera, renderData.scene);
+			
 		}
 		
 		public function processLookAt():void

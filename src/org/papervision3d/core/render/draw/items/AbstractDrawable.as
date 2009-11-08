@@ -1,6 +1,6 @@
 package org.papervision3d.core.render.draw.items
 {
-	import flash.display.IGraphicsPath;
+	import flash.display.IGraphicsData;
 	
 	import org.papervision3d.materials.shaders.IShader;
 	
@@ -9,6 +9,7 @@ package org.papervision3d.core.render.draw.items
 		public var shader : IShader;
 		public var screenZ :Number;
 		public var sortIndex : Number = 0;
+		public var uvtData :Vector.<Number>;
 		
 		public function AbstractDrawable()
 		{
@@ -19,7 +20,7 @@ package org.papervision3d.core.render.draw.items
 		
 		}
 		
-		public function get path():IGraphicsPath
+		public function get path():IGraphicsData
 		{
 			return null;
 		}
