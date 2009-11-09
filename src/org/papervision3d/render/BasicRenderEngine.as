@@ -92,6 +92,7 @@ package org.papervision3d.render
 			Timing.startTime();
 			TextureManager.updateTextures();
 			Timing.transformTime = Timing.stopTime();
+			Timing.startTime();
 			camera.update(renderData.viewport.sizeRectangle);
 		
 			
@@ -107,9 +108,9 @@ package org.papervision3d.render
  			
  			Timing.startTime();
 			fillRenderList(camera, scene);
-			Timing.renderTime = Timing.stopTime();
-			drawManager.handleList();
 			
+			drawManager.handleList();
+			Timing.renderTime = Timing.stopTime();
 			rasterizer.rasterize(renderData);
 			
 			

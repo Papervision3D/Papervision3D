@@ -11,6 +11,7 @@ package
 	import flash.geom.Vector3D;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
+	import flash.utils.getTimer;
 	
 	import net.hires.debug.Stats;
 	
@@ -124,7 +125,7 @@ package
 			
 			earth.addChild(new Plane(new ColorMaterial(0x64219A, 1, true), 660, 660));
 			for(var i:int = 0;i<109;i++){
-				var d:Cube = new Cube(new WireframeMaterial(0xFFFFFF*Math.random()), 40);
+				var d:Cube = new Cube(new ColorMaterial(0xFFFFFF*Math.random()), 40);
 				d.x = Math.random()*600-300;
 				d.y = Math.random()*200+10;
 				d.z = Math.random()*600-300;
@@ -224,8 +225,10 @@ package
 		}
 		
 		private var startTime:Number = 0;
+		private var drawTime:Number = 0;
 		private function render(event:Event=null):void
 		{
+			drawTime = getTimer()-startTime;
 			//trace(getTimer()-startTime);
 			
 			//moon.y += 0.5;
@@ -238,7 +241,7 @@ package
 		
 			moon.y = Math.sin(_s) * 50;
 		
-			_s += 0.05;
+			_s += 0.05; 
 
 			lx -= (viewport.containerSprite.mouseY-my)*0.15;
 			my =  viewport.containerSprite.mouseY;
@@ -277,12 +280,13 @@ package
 				"\nclipped triangles: " + stats.clippedTriangles +
 				"\n\nlocal: " + earth.transform.localEulerAngles +
 				"\nglobal: " + earth.transform.eulerAngles +
-				"\n\n"+
+				"\n"+
 				"\nProjection: " + Timing.projectTime +" ms"+
-				"\nRender Time: " + Timing.renderTime+" ms"; 
+				"\nRender Time: " + Timing.renderTime+" ms" + 
+				"\nDraw Time: " + drawTime +" ms"; 
 				
 				
-		//	startTime = getTimer();
+		   startTime = getTimer();
 		}
 	
 	}
