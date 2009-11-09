@@ -17,6 +17,7 @@ package
 	import org.papervision3d.cameras.Camera3D;
 	import org.papervision3d.core.geom.BSP.BSPTree;
 	import org.papervision3d.core.geom.provider.VertexGeometry;
+	import org.papervision3d.core.memory.Timing;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.render.clipping.ClipFlags;
 	import org.papervision3d.core.render.data.RenderData;
@@ -265,7 +266,7 @@ package
 			
 			renderer.renderScene(scene, camera, viewport);	
 			//trace(getTimer()-startTime);
-			//Timing.printInfo();
+		
 			var stats :RenderStats = renderer.renderData.stats;
 			
 			tf.text = "Papervision3D - version 3.0\n" +
@@ -275,7 +276,11 @@ package
 				"\nculled triangles: " + stats.culledTriangles +
 				"\nclipped triangles: " + stats.clippedTriangles +
 				"\n\nlocal: " + earth.transform.localEulerAngles +
-				"\nglobal: " + earth.transform.eulerAngles;
+				"\nglobal: " + earth.transform.eulerAngles +
+				"\n\n"+
+				"\nProjection: " + Timing.projectTime +" ms"+
+				"\nRender Time: " + Timing.renderTime+" ms"; 
+				
 				
 		//	startTime = getTimer();
 		}
