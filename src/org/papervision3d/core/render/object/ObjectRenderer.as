@@ -1,7 +1,5 @@
 package org.papervision3d.core.render.object
 {
-	import __AS3__.vec.Vector;
-	
 	import flash.geom.Utils3D;
 	import flash.geom.Vector3D;
 	
@@ -185,7 +183,7 @@ package org.papervision3d.core.render.object
 					{
 						flags = getClipFlags(clipPlanes[Frustum3D.BOTTOM], v0, v1, v2);
 						if (flags == 7 ) { stats.culledTriangles++; continue; }
-						else if (flags) { triangle.clipFlags |= ClipFlags.BOTTOM };
+						else if (flags) { triangle.clipFlags |= ClipFlags.BOTTOM; };
 					}
 						
 					if (triangle.clipFlags == 0)

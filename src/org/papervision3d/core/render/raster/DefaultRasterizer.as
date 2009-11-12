@@ -1,7 +1,5 @@
 package org.papervision3d.core.render.raster
 {
-	import __AS3__.vec.Vector;
-	
 	import flash.display.Graphics;
 	import flash.display.GraphicsSolidFill;
 	import flash.display.GraphicsStroke;

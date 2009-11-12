@@ -4,7 +4,7 @@ package org.papervision3d.materials.textures
 	
 	public class TextureManager
 	{
-		protected static var textureDictionary : Dictionary = new Dictionary(true);;
+		protected static var textureDictionary : Dictionary = new Dictionary(true);
 		
 		public function TextureManager()
 		{

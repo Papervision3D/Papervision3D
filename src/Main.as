@@ -253,8 +253,8 @@ package
 			 
 			 camera.transform._eulerAngles = new Vector3D(lx, ly, 0);
 
-			camera.x += _left?-5:0 + _right?5:0;
-			camera.z += _forward?-5:0+_back?5:0;
+			camera.x += _left?-5:0 + (_right?5:0);
+			camera.z += _forward?-5:0+(_back?5:0);
 	
 			
 			/* camera.rotationX = lx;

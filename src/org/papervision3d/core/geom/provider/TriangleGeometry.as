@@ -1,7 +1,5 @@
 package org.papervision3d.core.geom.provider
 {
-	import __AS3__.vec.Vector;
-	
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
 	

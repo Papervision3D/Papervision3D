@@ -1,7 +1,5 @@
 package org.papervision3d.core.render.data
 {
-	import __AS3__.vec.Vector;
-	
 	import org.papervision3d.objects.lights.ILight;
 	
 	public class LightVector

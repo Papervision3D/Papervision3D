@@ -1,7 +1,5 @@
 package org.papervision3d.core.render.draw.manager
 {
-	import __AS3__.vec.Vector;
-	
 	import org.papervision3d.core.render.draw.items.AbstractDrawable;
 	import org.papervision3d.core.render.draw.list.AbstractDrawableList;
 	import org.papervision3d.core.render.draw.list.DrawableList;

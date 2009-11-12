@@ -1,7 +1,5 @@
 package org.papervision3d.materials.shaders.light
 {
-	import __AS3__.vec.Vector;
-	
 	import flash.display.Bitmap;
 	import flash.display.GraphicsEndFill;
 	import flash.display.GraphicsSolidFill;

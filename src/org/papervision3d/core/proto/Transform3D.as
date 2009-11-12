@@ -1,7 +1,5 @@
 package org.papervision3d.core.proto
 {
-	import __AS3__.vec.Vector;
-	
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	

@@ -11,13 +11,10 @@ package
 			super();
 		}
 		
-		public function drawBSP(BSPTree:BSPTree):void{
+		public function drawBSP(tree:BSPTree):void{
 			
 			graphics.clear();
 			
-		}
-		
-		
-		
+		}		
 	}
 }

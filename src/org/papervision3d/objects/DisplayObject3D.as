@@ -1,8 +1,5 @@
 package org.papervision3d.objects
 {
-	import __AS3__.vec.Vector;
-	
-	import org.papervision3d.core.geom.Geometry;
 	import org.papervision3d.core.proto.DisplayObjectContainer3D;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.materials.AbstractMaterial;

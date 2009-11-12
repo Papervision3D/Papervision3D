@@ -317,7 +317,7 @@ package org.papervision3d.core.proto
 		public function set rotationY(value:Number):void
 		{
 			yaw(value - transform.localEulerAngles.y);
-			transform.localEulerAngles.y = value
+			transform.localEulerAngles.y = value;
 		}
 		
 		/**

@@ -1,7 +1,5 @@
 package org.papervision3d.core.geom.BSP
 {
-	import __AS3__.vec.Vector;
-	
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
 	
@@ -507,14 +505,14 @@ package org.papervision3d.core.geom.BSP
 			if(side == GeomUtil.FRONT){
 				traverse(node.back, eye, renderData);
 				addPolygons(node.polygonSet, node.dynamicPolySet, renderData.drawManager);
-				renderData.stats.totalTriangles += node.polygonSet;
+				renderData.stats.totalTriangles += node.polygonSet.length;
 				traverse(node.front, eye, renderData);
 				
 			}else {
 				//fix via tim's recommend
 				traverse(node.front, eye, renderData);
 				addPolygons(node.polygonSet, node.dynamicPolySet, renderData.drawManager);
-				renderData.stats.totalTriangles += node.polygonSet;
+				renderData.stats.totalTriangles += node.polygonSet.length;
 				traverse(node.back, eye, renderData);
 			}  
 		}

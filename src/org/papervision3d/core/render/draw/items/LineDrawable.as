@@ -1,7 +1,5 @@
 package org.papervision3d.core.render.draw.items
 {
-	import __AS3__.vec.Vector;
-	
 	import flash.display.GraphicsPath;
 	import flash.display.GraphicsPathCommand;
 	import flash.display.IGraphicsData;

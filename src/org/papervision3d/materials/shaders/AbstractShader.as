@@ -1,7 +1,5 @@
 package org.papervision3d.materials.shaders
 {
-	import __AS3__.vec.Vector;
-	
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
 	import flash.display.IGraphicsData;
