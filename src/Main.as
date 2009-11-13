@@ -87,10 +87,13 @@ package
 			renderer.clipFlags = ClipFlags.NONE;			
 	
 			dae = new DAE();
+			dae.addFileSearchPath("testAssets");
 			dae.load(new CowModel());
 			
 			scene.addChild(dae);
 			
+			dae.scaleX = dae.scaleY = dae.scaleZ = 160;
+			dae.rotationX = -90;
 			camera.lookAt(dae);
 			
 			addEventListener(Event.ENTER_FRAME, render);
