@@ -28,8 +28,6 @@ package org.papervision3d.objects.primitives
 			var stepZ :Number = height / segY;
 			var curX :Number = -sizeX;
 			var curZ :Number = sizeZ;
-			var curU :Number = 0;
-			var curV :Number = 0;
 			
 			var i :int, j :int;
 			

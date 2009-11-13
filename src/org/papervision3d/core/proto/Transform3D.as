@@ -121,8 +121,8 @@ package org.papervision3d.core.proto
 			_localEulerAngles.y = 0;
 			_localEulerAngles.z = 0;
 			
-			var eye :Vector3D = _position;
-			var center :Vector3D = target.position;
+		//	var eye :Vector3D = _position;
+		//	var center :Vector3D = target.position;
 			
 			//_lookAt = MatrixUtil.createLookAtMatrix(eye, center, DEFAULT_LOOKAT_UP);
 			/*

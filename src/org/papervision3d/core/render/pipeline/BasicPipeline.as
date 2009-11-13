@@ -8,7 +8,6 @@ package org.papervision3d.core.render.pipeline
 	import org.papervision3d.cameras.Camera3D;
 	import org.papervision3d.core.geom.BSP.BSPTree;
 	import org.papervision3d.core.geom.provider.VertexGeometry;
-	import org.papervision3d.core.memory.Timing;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.core.proto.Transform3D;
 	import org.papervision3d.core.render.data.RenderData;
