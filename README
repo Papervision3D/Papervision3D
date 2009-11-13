@@ -1,5 +1,3 @@
-MERGED WITH TRANSFORM
+COLLADA
 
-The texture contains the graphics that will be drawn.  A movietexture, for instance, will update its bitmap every frame, while a bitmap texture will simply hold a bitmap.  Moreover, a texture has color/alpha, which can be set for ColorMaterial/linematerial, for instance.
-
-Shaders take the bitmap (or color or whatever) from the texture and "process" them somehow - returning a new result that is set to the drawProperties of the shader - which is used for the final render to screen.
+This branch tests COLLADA parsing.
