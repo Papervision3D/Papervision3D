@@ -1,34 +1,24 @@
-package org.papervision3d.core.io.parser {
+package org.papervision3d.core.io.parser 
+{
 	import flash.display.BitmapData;
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.ProgressEvent;
+	import flash.geom.Matrix3D;
+	import flash.geom.Vector3D;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	
-	import org.ascollada.core.DaeDocument;
-	import org.ascollada.core.DaeGeometry;
-	import org.ascollada.core.DaeImage;
-	import org.ascollada.core.DaeInput;
-	import org.ascollada.core.DaeInstanceGeometry;
-	import org.ascollada.core.DaeMesh;
-	import org.ascollada.core.DaeNode;
-	import org.ascollada.core.DaePrimitive;
-	import org.ascollada.core.DaeSource;
-	import org.ascollada.fx.DaeBindMaterial;
-	import org.ascollada.fx.DaeColorOrTexture;
-	import org.ascollada.fx.DaeEffect;
-	import org.ascollada.fx.DaeInstanceMaterial;
-	import org.ascollada.fx.DaeMaterial;
-	import org.ascollada.fx.DaeTexture;
-	import org.papervision3d.core.geom.Triangle;
-	import org.papervision3d.core.geom.TriangleMesh;
-	import org.papervision3d.core.geom.UVCoord;
-	import org.papervision3d.core.geom.Vertex;
+	import org.ascollada.core.*;
+	import org.ascollada.fx.*;
+	import org.papervision3d.core.animation.keyframe.*;
+	import org.papervision3d.core.animation.track.*;
+	import org.papervision3d.core.controller.*;
+	import org.papervision3d.core.geom.*;
 	import org.papervision3d.materials.AbstractMaterial;
 	import org.papervision3d.materials.BitmapMaterial;
 	import org.papervision3d.objects.DisplayObject3D;
@@ -36,8 +26,8 @@ package org.papervision3d.core.io.parser {
 	/**
 	 * @author Tim Knip / Floorplanner.com
 	 */
-	public class DAEParser extends EventDispatcher {
-		
+	public class DAEParser extends EventDispatcher 
+	{	
 		/** */
 		public var document :DaeDocument;
 		
@@ -50,6 +40,8 @@ package org.papervision3d.core.io.parser {
 		private var _numTriangles :uint;
 		private var _parseStartTime :int;
 		private var _fileSearchPaths :Array;
+		private var _bakeAnimations :Boolean;
+		private var _bakeFrameDuration :Number;
 		
 		/**
 		 *  
@@ -94,6 +86,272 @@ package org.papervision3d.core.io.parser {
 			{
 				throw new IllegalOperationError("Expected an url, some XML or a ByteArray!");
 			}
+		}
+		
+		/**
+		 * 
+		 * @param parent
+		 * @param node
+		 */
+		private function buildAnimations(node : DaeNode) : void 
+		{
+			if(!node.channels) 
+			{
+				return;
+			}
+			
+			var target : DisplayObject3D = _nodeToObject[node];
+			if(!target) 
+			{
+				trace("no target for node " + node.id);
+				return;
+			}
+			
+			var matrixStackTrack :MatrixStackTrack = buildMatrixStackTrack(node);
+			var track : AbstractTrack = matrixStackTrack;
+			
+			if(matrixStackTrack) 
+			{
+				var controller :AnimationController = new AnimationController(target);
+				if(_bakeAnimations) 
+				{
+					// bake!
+					track = matrixStackTrack.bake(_bakeFrameDuration) || matrixStackTrack;
+				} 
+				controller.addTrack(track);
+				
+				target.controllers.unshift(controller);
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		private function buildMatrixStackTrack(node : DaeNode) : MatrixStackTrack 
+		{
+			var transform : DaeTransform;
+			var channel : DaeChannel;
+			var matrixStackTrack : MatrixStackTrack = new MatrixStackTrack();
+			var i : int;
+			
+			for(i = 0; i < node.transforms.length; i++) 
+			{
+				var track :AbstractTrack;
+				
+				transform = node.transforms[i];	
+				channel = node.getTransformChannelBySID(transform.sid);
+				
+				switch(transform.nodeName)
+				{
+					case "matrix":
+						track = channel ? buildMatrixTrack(channel, transform) : new MatrixTrack();
+						break;
+					case "rotate":
+						track = channel ? buildRotationTrack(channel, transform) : new RotationTrack();
+						break;
+					case "scale":
+						track = channel ? buildScaleTrack(channel, transform) : new ScaleTrack();
+						break;
+					case "translate":
+						track = channel ? buildTranslationTrack(channel, transform) : new TranslationTrack();
+						break;
+					default:
+						trace("unhandled transform type : " + transform.nodeName);
+						continue;
+				}
+				
+				if(track) 
+				{	
+					if(!channel) 
+					{
+						track.addKeyframe(new NumberKeyframe3D(0, Vector.<Number>(transform.data.concat())));
+					}
+					matrixStackTrack.addTrack(track);	
+					
+					if(channel && channel.animation.clips) 
+					{
+						trace("CLIPS: " + channel.animation.id + " " + channel.animation.clips[0].id);	
+					}
+				}
+			}
+			
+			return matrixStackTrack;
+		}
+		
+		private function buildMatrixTrack(channel : DaeChannel, transform : DaeTransform) : MatrixTrack 
+		{
+			if(!channel.sampler || !channel.sampler.input || !channel.sampler.output) 
+			{
+				trace("invalid animation channel! " + channel.source + " " + channel.target);
+				return null;
+			}
+			
+			var track : MatrixTrack = new MatrixTrack();
+			var input : Array = channel.sampler.input.data;
+			var output : Array = channel.sampler.output.data;
+			var i : int;
+			
+			for(i = 0; i < input.length; i++) 
+			{
+				var time : Number = input[i];
+				var data : Array = output[i] is Array ? output[i] : null;
+				
+				if(channel.type == DaeChannel.ARRAY_ACCESS) 
+				{
+					data = transform.data;
+					if(channel.arrayIndex0 >= 0 && channel.arrayIndex1 >= 0) 
+					{
+						var idx : int = (channel.arrayIndex1 * 4) + channel.arrayIndex0;
+						data[idx] = output[i];
+					}
+				}
+				
+				if(!data) 
+				{
+					trace("DAEParser#buildBakedMatrixTrack : invalid data!");
+					continue;
+				}
+				var matrix : Matrix3D = new Matrix3D(Vector.<Number>(data));
+				
+				matrix.transpose();
+
+				track.addKeyframe(new NumberKeyframe3D(time, matrix.rawData));
+			}
+			
+			return track;
+		}
+		
+		private function buildRotationTrack(channel:DaeChannel, transform:DaeTransform):RotationTrack 
+		{
+			if(!channel.sampler || !channel.sampler.input || !channel.sampler.output) 
+			{
+				trace("invalid animation channel! " + channel.source + " " + channel.target);
+				return null;
+			}
+			
+			var track : RotationTrack = new RotationTrack();
+			var input : Array = channel.sampler.input.data;
+			var output : Array = channel.sampler.output.data;
+			var i : int;
+
+			for(i = 0; i < input.length; i++) 
+			{
+				var time : Number = input[i];
+				var data : Array = output[i] is Array ? output[i] : [output[i]];
+				var vdata : Vector.<Number>;
+				
+				switch(channel.targetMember) 
+				{
+					case "ANGLE":
+						vdata = new Vector.<Number>(4);
+						vdata[0] = transform.data[0];
+						vdata[1] = transform.data[1];
+						vdata[2] = transform.data[2];
+						vdata[3] = data[0];
+						track.addKeyframe(new NumberKeyframe3D(time, vdata));
+						break;
+					default:
+						trace("unhandled channel " + channel);
+						break;
+				}
+			}
+			return track;
+		}
+		
+		private function buildScaleTrack(channel:DaeChannel, transform:DaeTransform):ScaleTrack 
+		{
+			if(!channel.sampler || !channel.sampler.input || !channel.sampler.output) 
+			{
+				trace("invalid animation channel! " + channel.source + " " + channel.target);
+				return null;
+			}
+			
+			var track : ScaleTrack = new ScaleTrack();
+			var input : Array = channel.sampler.input.data;
+			var output : Array = channel.sampler.output.data;
+			var i : int;
+
+			for(i = 0; i < input.length; i++) 
+			{
+				var time : Number = input[i];
+				var data : Array = output[i] is Array ? output[i] : [output[i]];
+				var vdata : Vector.<Number> = new Vector.<Number>(3);
+				
+				vdata[0] = transform.data[0];
+				vdata[1] = transform.data[1];
+				vdata[2] = transform.data[2];
+						
+				switch(channel.targetMember) {
+					case "X":
+						vdata[0] = data[0];
+						break;
+					case "Y":
+						vdata[1] = data[0];
+						break;
+					case "Z":
+						vdata[2] = data[0];
+						break;
+					default:
+						trace("DAEParser#buildScaleTrack : unhandled " + channel);
+						continue;
+				}
+				track.addKeyframe(new NumberKeyframe3D(time, vdata));
+			}
+			return track;
+		}
+		
+		/**
+		 * 
+		 */
+		private function buildTranslationTrack(channel:DaeChannel, transform:DaeTransform):TranslationTrack 
+		{
+			if(!channel.sampler || !channel.sampler.input || !channel.sampler.output) 
+			{
+				trace("invalid animation channel! " + channel.source + " " + channel.target);
+				return null;
+			}
+			
+			var track : TranslationTrack = new TranslationTrack();
+			var input : Array = channel.sampler.input.data;
+			var output : Array = channel.sampler.output.data;
+			var i : int;
+
+			for(i = 0; i < input.length; i++) 
+			{
+				var time : Number = input[i];
+				var data : Array = output[i] is Array ? output[i] : [output[i]];
+				var vdata : Vector.<Number> = new Vector.<Number>(3);
+				
+				vdata[0] = transform.data[0];
+				vdata[1] = transform.data[1];
+				vdata[2] = transform.data[2];
+						
+				switch(channel.targetMember) 
+				{
+					case "X":
+						vdata[0] = data[0];
+						break;
+					case "Y":
+						vdata[1] = data[0];
+						break;
+					case "Z":
+						vdata[2] = data[0];
+						break;
+					default:
+						if(channel.targetMember == null && data.length == 3) 
+						{
+							vdata = Vector.<Number>(data);
+						} 
+						else 
+						{
+							trace("DAEParser#buildTranslationTrack : unhandled " + channel);
+							continue;
+						}
+						break;
+				}
+				track.addKeyframe(new NumberKeyframe3D(time, vdata));
+			}
+			return track;
 		}
 		
 		/**
@@ -226,6 +484,31 @@ package org.papervision3d.core.io.parser {
 		}
 		
 		/**
+		 * 
+		 */
+		private function buildModifiers(target:TriangleMesh, node : DaeNode) : void 
+		{
+			var controllerInstance : DaeInstanceController;
+			var controller : DaeController;
+			var i : int;
+			
+			for(i = 0; i < node.controllerInstances.length; i++) 
+			{
+				controllerInstance = node.controllerInstances[i];
+				controller = this.document.controllers[ controllerInstance.url ]; 
+				
+				if(controller.skin) 
+				{
+				//	buildSkinModifier(target, controllerInstance);
+				} 
+				else if(controller.morph) 
+				{
+				//	buildMorphModifier(target, controllerInstance);
+				}
+			}
+		}
+		
+		/**
 		 * Builds a node.
 		 * 
 		 * @param node
@@ -259,7 +542,47 @@ package org.papervision3d.core.io.parser {
 			_objectToNode[object] = node;
 			_nodeToObject[node] = object;
 			
-		//	buildAnimations(node);
+			buildAnimations(node);
+		}
+		
+		/**
+		 * Builds a matrix for a node.
+		 * 
+		 * @param node
+		 * 
+		 * @return The created Matrix3D
+		 */
+		private function buildNodeMatrix(node : DaeNode) : Matrix3D 
+		{
+			var matrix : Matrix3D = new Matrix3D();
+			var transform : DaeTransform;
+			var i : int;
+			
+			for(i = 0; i < node.transforms.length; i++) 
+			{
+				transform = node.transforms[i];
+				switch(transform.nodeName) 
+				{
+					case "rotate":
+						var axis : Vector3D = new Vector3D(transform.data[0], transform.data[1], transform.data[2]);
+						matrix.prependRotation(transform.data[3], axis);
+						break;
+					case "scale":
+						matrix.prependScale(transform.data[0], transform.data[1], transform.data[2]);
+						break;
+					case "translate":
+						matrix.prependTranslation(transform.data[0], transform.data[1], transform.data[2]);
+						break;
+					case "matrix":
+						var m : Matrix3D = new Matrix3D(Vector.<Number>(transform.data));
+						m.transpose();
+						matrix.append(m);
+						break;
+					default:
+						break;
+				}
+			}
+			return matrix;
 		}
 		
 		/**

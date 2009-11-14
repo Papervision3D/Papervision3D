@@ -1,5 +1,6 @@
 package org.papervision3d.objects
 {
+	import org.papervision3d.core.controller.AbstractController;
 	import org.papervision3d.core.proto.DisplayObjectContainer3D;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.materials.AbstractMaterial;
@@ -19,7 +20,11 @@ package org.papervision3d.objects
 		 */
 		public var renderer:ObjectRenderer;
 		
-		
+		/**
+		 * 
+		 */
+		public var controllers :Vector.<AbstractController>;
+		  
 		/**
 		 * 
 		 */  
@@ -27,7 +32,8 @@ package org.papervision3d.objects
 		{
 			super(name);
 			
-			renderer = new ObjectRenderer(this);
+			this.renderer = new ObjectRenderer(this);
+			this.controllers = new Vector.<AbstractController>();
 		}
 	}
 }

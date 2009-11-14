@@ -110,6 +110,11 @@ package
 			
 			renderer.renderScene(scene, camera, viewport);	
 
+			if (dae)
+			{
+				dae.rotationZ++;
+			}
+			
 			var stats :RenderStats = renderer.renderData.stats;
 			
 			tf.text = "Papervision3D - version 3.0\n" +
