@@ -139,13 +139,13 @@ package org.papervision3d.core.math.utils {
 				//NEED TO UPDATE!!
 				
 				var v:Vector.<Vector3D> = new Vector.<Vector3D>();
-				v.push(child.transform.localPosition, child.transform.localEulerAngles, child.transform.localScale);
+				v.push(child.transform.translation, child.transform.rotation, child.transform.scale);
 				
-				child.transform.local.recompose(v);
+				child.transform.matrix.recompose(v);
 			//	child.localTransform.recompose(child._components);
 					
 				// world
-				child.transform.worldTransform.rawData = child.transform.local.rawData;			
+				child.transform.worldTransform.rawData = child.transform.matrix.rawData;			
 				child.transform.worldTransform.append(displayObject3D.transform.worldTransform);
 					
 				/*//Probably faster to do this by hand, this spawns new vector3d's.

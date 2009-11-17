@@ -6,6 +6,7 @@ package org.papervision3d.core.render.pipeline
 	import flash.geom.Vector3D;
 	
 	import org.papervision3d.cameras.Camera3D;
+	import org.papervision3d.core.controller.AbstractController;
 	import org.papervision3d.core.geom.BSP.BSPTree;
 	import org.papervision3d.core.geom.provider.VertexGeometry;
 	import org.papervision3d.core.ns.pv3d;
@@ -52,6 +53,8 @@ package org.papervision3d.core.render.pipeline
 				processLookAt();	
 			}
 			
+			updateControllers(renderData.scene);
+			
 			camera.update(rect);
 			projection = camera.projectionMatrix;
 			
@@ -67,8 +70,8 @@ package org.papervision3d.core.render.pipeline
 				var targetTM :Transform3D = object.transform.scheduledLookAt;
 				var sourceTM :Transform3D = object.transform;
 				var wt :Matrix3D = object.transform.worldTransform;
-				var target :Vector3D = targetTM.position;
-				var eye :Vector3D = object.transform.position;
+				var target :Vector3D = targetTM.worldTransform.position;
+				var eye :Vector3D = object.transform.worldTransform.position;
 
 				_pos.x = target.x - eye.x;
 				_pos.y = target.y - eye.y;
@@ -80,8 +83,28 @@ package org.papervision3d.core.render.pipeline
 			}
 		}
 		
+		public function updateControllers(object:DisplayObject3D):void
+		{
+			var controller :AbstractController;
+			var child :DisplayObject3D;
+			
+			for each (controller in object.controllers)
+			{
+				controller.update();
+			}
+			
+			for each (child in object._children)
+			{
+				updateControllers(child);
+			}
+		}
+		
 		public function transformToWorld(object:DisplayObject3D, renderData:RenderData):void
 		{
+			if (object.animation)
+			{
+				object.animation.update();
+			}
 			
 			var transform :Transform3D = object.transform;
 			var child :DisplayObject3D;
@@ -91,21 +114,24 @@ package org.papervision3d.core.render.pipeline
 			{
 				_lookAts.push(object);
 			}
-
-			wt.rawData = object.transform.localToWorldMatrix.rawData;
-
+			transform.update();
+			
+			wt.rawData = object.transform.matrix.rawData;
+			
+			if (!object.skin)
+			{
 			if (object.parent)
 			{
 				wt.append(object.parent.transform.worldTransform);
 			}
 			
-			transform.rotateGlob(1, 0, 0, transform.eulerAngles.x, wt);
-			transform.rotateGlob(0, 1, 0, transform.eulerAngles.y, wt);
-			transform.rotateGlob(0, 0, 1, transform.eulerAngles.z, wt);
+		//	transform.rotateGlob(1, 0, 0, transform.eulerAngles.x, wt);
+		//	transform.rotateGlob(0, 1, 0, transform.eulerAngles.y, wt);
+		//	transform.rotateGlob(0, 0, 1, transform.eulerAngles.z, wt);
 			
-			wt.prependScale(transform.localScale.x, transform.localScale.y, transform.localScale.z);
-			
-			object.transform.position = wt.position;
+			wt.prependScale(transform.scale.x, transform.scale.y, transform.scale.z);
+			}
+		//	object.transform.position = wt.position;
 			
 			if(object is ILight){
 				renderData.lights.addLight(object as ILight);

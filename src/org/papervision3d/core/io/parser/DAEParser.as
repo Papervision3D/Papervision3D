@@ -19,6 +19,7 @@ package org.papervision3d.core.io.parser
 	import org.papervision3d.core.animation.track.*;
 	import org.papervision3d.core.controller.*;
 	import org.papervision3d.core.geom.*;
+	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.materials.AbstractMaterial;
 	import org.papervision3d.materials.BitmapMaterial;
 	import org.papervision3d.objects.DisplayObject3D;
@@ -28,6 +29,13 @@ package org.papervision3d.core.io.parser
 	 */
 	public class DAEParser extends EventDispatcher 
 	{	
+		use namespace pv3d;
+		
+		/**
+		 * Default frame duration, used when #bakeAnimations is set to true. @see #bakeAnimations
+		 */
+		public static var DEFAULT_FRAME_DURATION : Number = 0.333;
+		
 		/** */
 		public var document :DaeDocument;
 		
@@ -49,7 +57,10 @@ package org.papervision3d.core.io.parser
 		public function DAEParser() 
 		{
 			super();
+			
 			_fileSearchPaths = new Array();
+			_bakeAnimations = true;
+			_bakeFrameDuration = DEFAULT_FRAME_DURATION;
 		}
 
 		/**
@@ -120,7 +131,8 @@ package org.papervision3d.core.io.parser
 				} 
 				controller.addTrack(track);
 				
-				target.controllers.unshift(controller);
+				target.animation = controller;
+				//target.controllers.push(controller);
 			}
 		}
 		
@@ -356,6 +368,31 @@ package org.papervision3d.core.io.parser
 		
 		/**
 		 * 
+		 */
+		private function buildControllers(target:TriangleMesh, node : DaeNode) : void 
+		{
+			var controllerInstance : DaeInstanceController;
+			var controller : DaeController;
+			var i : int;
+			
+			for(i = 0; i < node.controllerInstances.length; i++) 
+			{
+				controllerInstance = node.controllerInstances[i];
+				controller = this.document.controllers[ controllerInstance.url ]; 
+				
+				if(controller.skin) 
+				{
+					buildSkinController(target, controllerInstance);
+				} 
+				else if(controller.morph) 
+				{
+					buildMorphController(target, controllerInstance);
+				}
+			}
+		}
+		
+		/**
+		 * 
 		 * @param parent
 		 * @param node
 		 */
@@ -486,26 +523,9 @@ package org.papervision3d.core.io.parser
 		/**
 		 * 
 		 */
-		private function buildModifiers(target:TriangleMesh, node : DaeNode) : void 
+		private function buildMorphController(target:TriangleMesh, controllerInstance:DaeInstanceController) : void 
 		{
-			var controllerInstance : DaeInstanceController;
-			var controller : DaeController;
-			var i : int;
 			
-			for(i = 0; i < node.controllerInstances.length; i++) 
-			{
-				controllerInstance = node.controllerInstances[i];
-				controller = this.document.controllers[ controllerInstance.url ]; 
-				
-				if(controller.skin) 
-				{
-				//	buildSkinModifier(target, controllerInstance);
-				} 
-				else if(controller.morph) 
-				{
-				//	buildMorphModifier(target, controllerInstance);
-				}
-			}
 		}
 		
 		/**
@@ -537,7 +557,7 @@ package org.papervision3d.core.io.parser
 				buildNode(node.nodes[i], object);
 			}
 			
-		//	object.transform.matrix3D = buildNodeMatrix(node);
+			object.transform.matrix = buildNodeMatrix(node);
 			
 			_objectToNode[object] = node;
 			_nodeToObject[node] = object;
@@ -660,7 +680,7 @@ package org.papervision3d.core.io.parser
 			
 			buildNode(this.document.scene, target);
 			
-	//		linkControllers(_outputObject);
+			linkControllers(target);
 			
 			var elapsed : Number = (getTimer() - _parseStartTime) / 1000;
 			
@@ -668,6 +688,93 @@ package org.papervision3d.core.io.parser
 			trace(" -> #vertices : " + _numVertices);
 			trace(" -> #triangles: " + _numTriangles);
 		} 
+		
+		/**
+		 * 
+		 */
+		private function buildSkinController(target:TriangleMesh, controllerInstance:DaeInstanceController) : SkinController 
+		{
+			var controller : DaeController = this.document.controllers[ controllerInstance.url ];
+			var geometry : DaeGeometry;
+			var skin : DaeSkin = controller.skin;
+			var url : String = skin.source;
+			var morphController :DaeController;
+			
+			if(url.charAt(0) == "#") 
+			{
+				url = url.substr(1);
+			} 
+			else 
+			{
+				// TODO: handle skin controller xrefs
+				return null;
+			}
+			
+			geometry = this.document.geometries[url];
+			if(geometry) 
+			{
+				buildMesh(target, geometry.mesh, controllerInstance.bindMaterial);
+			} 
+			else 
+			{
+				morphController = this.document.controllers[url];	
+				if(morphController && morphController.morph) 
+				{
+					var morphInstance : DaeInstanceController = new DaeInstanceController(null, null);
+					
+					morphInstance.url = morphController.id;
+					morphInstance.bindMaterial = controllerInstance.bindMaterial;
+					
+				//	morphModifier = buildMorphModifier(target, morphInstance);
+				}	
+			}
+			
+			var skinController :SkinController = new SkinController();
+			var i : int;
+			var bindMatrix : Matrix3D = new Matrix3D(Vector.<Number>(skin.bind_shape_matrix.data));
+			
+			/*
+			if(morphModifier) 
+			{
+				modifier.input = morphModifier;
+			}
+			*/
+			
+			bindMatrix.transpose();
+			
+			skinController.bindShapeMatrix = bindMatrix;
+			
+			for(i = 0; i < skin.joints.length; i++)
+			{
+				var node : DaeNode = this.document.getNodeByName(skin.joints[i]) || this.document.getNodeBySID(skin.joints[i]);
+				
+				node = node || this.document.getNodeByID(skin.joints[i]);
+
+				var joint : DisplayObject3D = _nodeToObject[node] as DisplayObject3D;	
+				if(!joint) 
+				{
+					trace("could not find joint with name = " + skin.joints[i]);
+					continue;
+				}
+
+				var blendWeights : Vector.<DaeBlendWeight> = Vector.<DaeBlendWeight>(skin.getBlendWeightsForJoint(skin.joints[i]));
+				
+				var transform : DaeTransform = skin.inv_bind_matrix[i];
+				var rawData : Array = transform.data;
+				var inverseBindMatrix : Matrix3D = new Matrix3D(Vector.<Number>(rawData));
+				
+				inverseBindMatrix.transpose();
+
+				skinController.addJoint(joint, inverseBindMatrix, blendWeights);			
+			}
+			
+			skinController.geometry = target.renderer.geometry;
+			
+			target.skin = true;
+			target.controllers.push(skinController);
+		
+			return skinController;			
+		}
 		
 		/**
 		 * Builds uvs.
@@ -724,6 +831,28 @@ package org.papervision3d.core.io.parser
 		}
 		
 		/**
+		 * Links controllers to the specified object.
+		 * 
+		 * @param object
+		 */
+		private function linkControllers(object : DisplayObject3D) : void 
+		{
+			var child : DisplayObject3D;
+			
+			var node : DaeNode = _objectToNode[object];
+			
+			if(object is TriangleMesh && node.controllerInstances.length) 
+			{
+				buildControllers(object as TriangleMesh, node);	
+			}
+			
+			for each(child in object._children) 
+			{
+				linkControllers(child);
+			}
+		}
+		
+		/**
 		 * 
 		 */
 		protected function parseXML(xml:XML):void
@@ -767,6 +896,32 @@ package org.papervision3d.core.io.parser
 			buildScene();
 			
 			dispatchEvent(event);
+		}
+		
+		/**
+		 * Whether to bake animations to single MatrixTrack's.
+		 */
+		public function set bakeAnimations(value : Boolean) : void 
+		{
+			_bakeAnimations = value;
+		}
+		
+		public function get bakeAnimations() : Boolean 
+		{
+			return _bakeAnimations;	
+		}
+		
+		/**
+		 * The duration of a animation frame. Only used when #bakeAnimations was set to true.
+		 */
+		public function set bakeFrameDuration(value : Number) : void
+		{
+			_bakeFrameDuration = value;
+		}
+		
+		public function get bakeFrameDuration() : Number 
+		{
+			return _bakeFrameDuration;	
 		}
 	}
 }

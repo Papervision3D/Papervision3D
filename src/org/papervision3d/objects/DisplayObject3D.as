@@ -1,6 +1,7 @@
 package org.papervision3d.objects
 {
 	import org.papervision3d.core.controller.AbstractController;
+	import org.papervision3d.core.controller.AnimationController;
 	import org.papervision3d.core.proto.DisplayObjectContainer3D;
 	import org.papervision3d.core.render.object.ObjectRenderer;
 	import org.papervision3d.materials.AbstractMaterial;
@@ -24,6 +25,16 @@ package org.papervision3d.objects
 		 * 
 		 */
 		public var controllers :Vector.<AbstractController>;
+		
+		/**
+		 * 
+		 */
+		public var animation :AnimationController;
+		
+		/**
+		 * 
+		 */
+		public var skin :Boolean;
 		  
 		/**
 		 * 

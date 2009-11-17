@@ -483,7 +483,7 @@ package org.papervision3d.core.geom.BSP
 			if(rootNode.polygonSet == null && rootNode.dynamicPolySet == null && rootNode.back == null)
 				return;
 				
-			var eye: Vector3D = camera.transform.position;
+			var eye: Vector3D = camera.transform.worldTransform.position;
 			
 			traverse(rootNode, eye, renderData);
 			

@@ -66,7 +66,7 @@ package org.papervision3d.core.controller
 				track.updateToTime(time);
 				if(track.matrixOutput) 
 				{
-				//	target.transform.matrix3D = track.matrixOutput;
+					target.transform.matrix = track.matrixOutput;
 				}
 			} 
 			else 
@@ -82,7 +82,7 @@ package org.papervision3d.core.controller
 						output.prepend(track.matrixOutput);	
 					}
 				}
-	//			target.transform.matrix3D = output;
+				target.transform.matrix = output;
 			}
 		}
 		

@@ -37,7 +37,7 @@ package
 		public var dae :DAE;
 		public var tf :TextField;
 		
-		[Embed (source="testAssets/cow.dae", mimeType="application/octet-stream")]
+		[Embed (source="testAssets/monster.dae", mimeType="application/octet-stream")]
 		public var CowModel:Class;
 		
 		[Embed (source="testAssets/Cow.png")]
@@ -81,7 +81,6 @@ package
 			camera.showFrustum = false;
 			camera.near = 1;
 			camera.z = 800;
-			camera.y = 500;
 
 			renderer = new BasicRenderEngine();
 			renderer.clipFlags = ClipFlags.NONE;			
@@ -92,7 +91,7 @@ package
 			
 			scene.addChild(dae);
 			
-			dae.scaleX = dae.scaleY = dae.scaleZ = 160;
+			dae.scaleX = dae.scaleY = dae.scaleZ = 0.5;
 			dae.rotationX = -90;
 			camera.lookAt(dae);
 			
@@ -112,7 +111,7 @@ package
 
 			if (dae)
 			{
-				dae.rotationZ++;
+				dae.rotationY++;
 			}
 			
 			var stats :RenderStats = renderer.renderData.stats;

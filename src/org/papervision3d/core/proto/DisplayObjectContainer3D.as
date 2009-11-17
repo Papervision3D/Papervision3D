@@ -2,6 +2,7 @@ package org.papervision3d.core.proto
 {
 	import flash.geom.Vector3D;
 	
+	import org.papervision3d.core.math.utils.MathUtil;
 	import org.papervision3d.core.ns.pv3d;
 	import org.papervision3d.objects.DisplayObject3D;
 	
@@ -57,7 +58,7 @@ package org.papervision3d.core.proto
 			}
 			
 			child.parent = this;
-			child.transform.parent = this.transform;
+		//	child.transform.parent = this.transform;
 			
 			_children.push(child);
 			
@@ -145,7 +146,7 @@ package org.papervision3d.core.proto
 		 */
 		public function lookAt(object:DisplayObject3D, up:Vector3D=null):void
 		{
-			transform.lookAt(object.transform, up);
+			//transform.lookAt(object.transform, up);
 		}
 		
 		/**
@@ -204,6 +205,7 @@ package org.papervision3d.core.proto
 		 */
 		public function rotateAround(degrees:Number, axis:Vector3D, pivot:*=null):void
 		{
+			/*
 			pivot = pivot || this.parent;
 			
 			var pivotPoint :Vector3D;
@@ -221,6 +223,7 @@ package org.papervision3d.core.proto
 			{
 				transform.rotate(axis, false);
 			}
+			*/
 		}
 		
 		/**
@@ -228,8 +231,8 @@ package org.papervision3d.core.proto
 		 */ 
 		public function pitch(degrees:Number):void
 		{
-			transform.local.prependRotation(degrees, Vector3D.X_AXIS);
-			transform.dirty = true;
+	//		transform.local.prependRotation(degrees, Vector3D.X_AXIS);
+	//		transform.dirty = true;
 		}
 		
 		/**
@@ -237,8 +240,8 @@ package org.papervision3d.core.proto
 		 */ 
 		public function yaw(degrees:Number):void
 		{
-			transform.local.prependRotation(degrees, Vector3D.Y_AXIS);
-			transform.dirty = true;
+	//		transform.local.prependRotation(degrees, Vector3D.Y_AXIS);
+	//		transform.dirty = true;
 		}
 		
 		/**
@@ -246,8 +249,8 @@ package org.papervision3d.core.proto
 		 */ 
 		public function roll(degrees:Number):void
 		{
-			transform.local.prependRotation(degrees, Vector3D.Z_AXIS);
-			transform.dirty = true;
+	//		transform.local.prependRotation(degrees, Vector3D.Z_AXIS);
+	//		transform.dirty = true;
 		}
 		
 		/**
@@ -255,12 +258,12 @@ package org.papervision3d.core.proto
 		 */ 
 		public function get x():Number
 		{
-			return transform.localPosition.x;
+			return transform.translation.x;
 		}
 		
 		public function set x(value:Number):void
 		{
-			transform.localPosition.x = value;
+			transform.translation.x = value;
 			transform.dirty = true;
 		}
 		
@@ -269,12 +272,12 @@ package org.papervision3d.core.proto
 		 */ 
 		public function get y():Number
 		{
-			return transform.localPosition.y;
+			return transform.translation.y;
 		}
 		
 		public function set y(value:Number):void
 		{
-			transform.localPosition.y = value;
+			transform.translation.y = value;
 			transform.dirty = true;
 		}
 		
@@ -283,12 +286,12 @@ package org.papervision3d.core.proto
 		 */ 
 		public function get z():Number
 		{
-			return transform.localPosition.z;
+			return transform.translation.z;
 		}
 		
 		public function set z(value:Number):void
 		{
-			transform.localPosition.z = value;
+			transform.translation.z = value;
 			transform.dirty = true;
 		}
 	
@@ -297,13 +300,14 @@ package org.papervision3d.core.proto
 		 */ 
 		public function get rotationX():Number
 		{
-			return transform.localEulerAngles.x;
+			return transform.rotation.x * MathUtil.TO_DEGREES;
 		}
 		
 		public function set rotationX(value:Number):void
 		{
-			pitch(value - transform.localEulerAngles.x);
-			transform.localEulerAngles.x = value;	
+		//	pitch(value - this.rotationX);
+			transform.rotation.x = value * MathUtil.TO_RADIANS;	
+			transform.dirty = true;
 		}
 		
 		/**
@@ -311,13 +315,14 @@ package org.papervision3d.core.proto
 		 */ 
 		public function get rotationY():Number
 		{
-			return transform.localEulerAngles.y;
+			return transform.rotation.y * MathUtil.TO_DEGREES;
 		}
 		
 		public function set rotationY(value:Number):void
 		{
-			yaw(value - transform.localEulerAngles.y);
-			transform.localEulerAngles.y = value;
+			//yaw(value - transform.rotation.y);
+			transform.rotation.y = value * MathUtil.TO_RADIANS;
+			transform.dirty = true;
 		}
 		
 		/**
@@ -325,13 +330,14 @@ package org.papervision3d.core.proto
 		 */ 
 		public function get rotationZ():Number
 		{
-			return transform.localEulerAngles.z;
+			return transform.rotation.z * MathUtil.TO_DEGREES;
 		}
 		
 		public function set rotationZ(value:Number):void
 		{
-			roll(value - transform.localEulerAngles.z);
-			transform.localEulerAngles.z = value;
+			//roll(value - transform.rotation.z);
+			transform.rotation.z = value * MathUtil.TO_RADIANS;
+			transform.dirty = true;
 		}
 		
 		/**
@@ -339,12 +345,12 @@ package org.papervision3d.core.proto
 		 */ 
 		public function get scaleX():Number
 		{
-			return transform.localScale.x;
+			return transform.scale.x;
 		}
 		
 		public function set scaleX(value:Number):void
 		{
-			transform.localScale.x = value;
+			transform.scale.x = value;
 			transform.dirty = true;
 		}
 		
@@ -353,12 +359,12 @@ package org.papervision3d.core.proto
 		 */ 
 		public function get scaleY():Number
 		{
-			return transform.localScale.y;
+			return transform.scale.y;
 		}
 		
 		public function set scaleY(value:Number):void
 		{
-			transform.localScale.y = value;
+			transform.scale.y = value;
 			transform.dirty = true;
 		}
 		
@@ -367,12 +373,12 @@ package org.papervision3d.core.proto
 		 */ 
 		public function get scaleZ():Number
 		{
-			return transform.localScale.z;
+			return transform.scale.z;
 		}
 		
 		public function set scaleZ(value:Number):void
 		{
-			transform.localScale.z = value;
+			transform.scale.z = value;
 			transform.dirty = true;
 		}
 	}
